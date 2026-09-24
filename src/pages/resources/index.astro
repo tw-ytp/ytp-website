@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import { getCollection } from 'astro:content';
 import exams from '../../data/exams.json';
-const hub = (await getCollection('hub')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const hub = (await getCollection('hub')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id));
 const latest = exams.items.filter(e => e.url).slice(0, 4);
 ---
 <Base title="備賽資源" description="YTP 歷年線上初賽與程式挑戰營考古題、題目講解、練習平台與準備指南。">

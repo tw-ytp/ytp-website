@@ -9,9 +9,9 @@ import { getCollection } from 'astro:content';
 import { fmtRange } from '../lib/cohort';
 
 const projects = (await getCollection('projects', p => p.data.status !== 'todo' && p.data.source === 'stage2-project'))
-  .filter(p => p.data.rank === 1).sort((a, b) => b.data.year - a.data.year).slice(0, 4);
-const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 1);
-const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+  .filter(p => p.data.rank === 1).sort((a, b) => b.data.year - a.data.year || a.id.localeCompare(b.id)).slice(0, 4);
+const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id)).slice(0, 1);
+const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id)).slice(0, 3);
 
 const e = season.edition, y = season.year;
 const cohort = (await getCollection('cohorts')).find(c => c.data.edition === e)!;

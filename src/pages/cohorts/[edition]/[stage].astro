@@ -19,12 +19,12 @@ const d = c.data;
 const n = d.edition;
 
 const projects = s.type === 'project'
-  ? (await getCollection('projects', p => p.data.source === 'stage2-project' && p.data.edition === n)).sort((a, b) => (a.data.rank || 9) - (b.data.rank || 9))
+  ? (await getCollection('projects', p => p.data.source === 'stage2-project' && p.data.edition === n)).sort((a, b) => (a.data.rank || 9) - (b.data.rank || 9) || a.id.localeCompare(b.id))
   : [];
 const stories = s.type === 'overseas'
-  ? (await getCollection('stories', x => x.data.kind === 'overseas' && cohortEditions(x.data.cohort).includes(n))).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  ? (await getCollection('stories', x => x.data.kind === 'overseas' && cohortEditions(x.data.cohort).includes(n))).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id))
   : [];
-const news = s.type === 'camp' ? (await getCollection('news', x => x.data.edition === n)) : [];
+const news = s.type === 'camp' ? (await getCollection('news', x => x.data.edition === n)).sort((a, b) => a.id.localeCompare(b.id)) : [];
 const papers = s.type === 'camp' ? exams.items.filter(e => e.year === d.year && e.url) : [];
 const stageLabel = { prelim: '線上初賽', camp: '程式挑戰營', revival: '複賽', international: '國際賽' };
 const groupLabel = { senior: '高中職五專組', junior: '國中組' };

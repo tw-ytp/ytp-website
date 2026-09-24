@@ -3,8 +3,8 @@ import Base from '../../layouts/Base.astro';
 import Todo from '../../components/Todo.astro';
 import PageHead from '../../components/PageHead.astro';
 import { getCollection } from 'astro:content';
-const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 4);
+const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id));
+const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id)).slice(0, 4);
 const kind = { announcement: '公告', recap: '回顧', notice: '通知' };
 ---
 <Base title="最新消息">

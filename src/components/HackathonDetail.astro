@@ -12,7 +12,7 @@ const d = h.data;
 const stage = track === 'main';
 const stateLabel = { archived: '已結束', upcoming: '即將舉行', planning: '規劃中' };
 const eventKey = String(stage ? d.edition : d.year);
-const winners = (await getCollection('projects', p => p.data.source === (stage ? 'stage2-hackathon' : 'turing-plus') && p.data.event === eventKey)).sort((a, b) => a.data.rank - b.data.rank);
+const winners = (await getCollection('projects', p => p.data.source === (stage ? 'stage2-hackathon' : 'turing-plus') && p.data.event === eventKey)).sort((a, b) => a.data.rank - b.data.rank || a.id.localeCompare(b.id));
 const medal = ['', '金牌', '銀牌', '銅牌', '佳作'];
 const yt = d.links.briefingVideo?.replace('watch?v=', 'embed/');
 const short = d.title.split('：')[0];

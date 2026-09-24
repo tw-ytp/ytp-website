@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import { getCollection } from 'astro:content';
-const all = (await getCollection('projects')).sort((a, b) => b.data.year - a.data.year || (a.data.rank || 9) - (b.data.rank || 9));
+const all = (await getCollection('projects')).sort((a, b) => b.data.year - a.data.year || (a.data.rank || 9) - (b.data.rank || 9) || a.id.localeCompare(b.id));
 const editions = [...new Set(all.filter(p => p.data.source === 'stage2-project').map(p => p.data.edition))].sort((a, b) => b - a);
 const events = [...new Set(all.filter(p => p.data.source !== 'stage2-project').map(p => `${p.data.source}:${p.data.event}`))].sort().reverse();
 const eventLabel = (k: string) => { const [src, ev] = k.split(':'); return src === 'turing-plus' ? `YTP${ev}黑客松` : `第 ${ev} 屆黑客松`; };

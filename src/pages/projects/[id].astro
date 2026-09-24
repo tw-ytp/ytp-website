@@ -15,7 +15,7 @@ const isH = p.data.source !== 'stage2-project';
 const isAlumni = p.data.source === 'turing-plus';
 const eventHref = isAlumni ? `/turing-plus/${p.data.event}/` : `/cohorts/${p.data.event}/hackathon/`;
 const eventName = isAlumni ? `YTP${p.data.event}黑客松` : `第 ${p.data.event} 屆黑客松`;
-const related = (await getCollection('projects')).filter(x => x.id !== p.id && x.data.status !== 'todo' && (isH ? (x.data.source === p.data.source && x.data.event === p.data.event) : (x.data.source === 'stage2-project' && x.data.edition === p.data.edition))).slice(0, 8);
+const related = (await getCollection('projects')).sort((a, b) => a.id.localeCompare(b.id)).filter(x => x.id !== p.id && x.data.status !== 'todo' && (isH ? (x.data.source === p.data.source && x.data.event === p.data.event) : (x.data.source === 'stage2-project' && x.data.edition === p.data.edition))).slice(0, 8);
 ---
 <Base title={p.data.title} description={`${isH ? eventName + '作品' : `YTP 第 ${p.data.edition} 屆專題`}：${p.data.title}。${p.data.members.map(m => m.name).join('、')}。`}>
   <div class="wrap page-head">
