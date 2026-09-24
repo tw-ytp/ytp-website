@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection } from 'astro:content';
+import exams from '../../data/exams.json';
+const hub = (await getCollection('hub')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latest = exams.items.filter(e => e.url).slice(0, 4);
+---
+<Base title="備賽資源" description="YTP 歷年線上初賽與程式挑戰營考古題、題目講解、練習平台與準備指南。">
+  <PageHead title="備賽資源" lead="舊站的 Coding Hub 重新定位：這裡只放對備賽有用的東西。" />
+  <section class="section">
+    <div class="wrap grid c2">
+      <div>
+        <h2>考古題</h2>
+        <p>2016 年起，線上初賽與程式挑戰營的題目 PDF，依年份與組別整理。</p>
+        <ul class="list">
+          {latest.map(e => <li><a href={e.url}>{e.year} {e.group === 'senior' ? '高中組' : '國中組'} {e.stage === 'camp' ? '程式挑戰營' : '線上初賽'}（{e.lang}）</a></li>)}
+        </ul>
+        <div class="btn-row"><a class="btn ghost" href="/resources/past-exams/">全部考古題</a></div>
+      </div>
+      <div>
+        <h2>題目講解與指南</h2>
+        <ul class="list">
+          {hub.map(h => <li><span class="meta">{h.data.type === 'video' ? '影片' : h.data.type === 'guide' ? '指南' : '解析'}</span><br/><a href={`/resources/solutions/#${h.id}`}>{h.data.title}</a>{h.data.status === 'todo' && <span class="tag">待補</span>}</li>)}
+        </ul>
+        <div class="btn-row"><a class="btn ghost" href="/resources/solutions/">全部講解</a></div>
+      </div>
+    </div>
+  </section>
+  <section class="section alt">
+    <div class="wrap prose">
+      <h2>練習平台</h2>
+      <p><a href={exams.oj.url} rel="noopener">{exams.oj.label}</a>：收錄歷年線上初賽題目，註冊帳號即可上傳程式並取得評測結果。</p>
+      <h2>社群</h2>
+      <p>比賽期間與賽後的題目討論在 <a href="https://discord.gg/KpqC6CEthk">Discord</a>；公告與花絮在 <a href="https://www.facebook.com/groups/1527998927505701/">FB 社團</a>。</p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,77 @@
+{
+  "_doc": "當屆賽季狀態。phase 可為 registration | preliminary | camp | hackathon | offseason，改這個檔案就會切換首頁 Hero。 少年圖靈計畫各屆日期以 src/content/cohorts/ 為準；青年圖靈++ 見 src/content/turing-plus/。",
+  "edition": 11,
+  "year": 2026,
+  "phase": "hackathon",
+  "phaseNote": "2026-09-04：報名、初賽、挑戰營已結束；H2 黑客松培訓 E0–E5 進行中，12/12 決賽。",
+  "stages": [
+    {
+      "key": "registration",
+      "label": "報名",
+      "date": "2026/04/20 ～ 06/20",
+      "detail": "線上簡易註冊，3 人一組（國中組 2–3 人）",
+      "groups": "國中組・高中職五專組"
+    },
+    {
+      "key": "preliminary",
+      "label": "線上初賽",
+      "date": "2026/07/07（二）",
+      "detail": "台灣時間下午，地點不限",
+      "groups": "國中組・高中職五專組",
+      "href": "/cohorts/11/camp/"
+    },
+    {
+      "key": "camp",
+      "label": "程式挑戰營",
+      "date": "2026/08/01（六）",
+      "detail": "台北實體賽，高中組 4 小時、國中組 3 小時",
+      "groups": "國中組・高中職五專組",
+      "href": "/cohorts/11/camp/"
+    },
+    {
+      "key": "hackathon",
+      "label": "YTP2026H2黑客松",
+      "date": "2026/12/12（六）",
+      "detail": "8/28 起 E0–E5 六場培訓，12/12 一日實體賽",
+      "groups": "限高中職五專組（第二階段）",
+      "href": "/cohorts/11/hackathon/"
+    },
+    {
+      "key": "overseas",
+      "label": "海外參訪",
+      "date": "2027/03 選拔・2027/08 出訪",
+      "detail": "矽谷新創與大學創新實驗室參訪",
+      "groups": "限高中職五專組（第三階段）",
+      "href": "/cohorts/11/overseas/"
+    },
+    {
+      "key": "plus",
+      "label": "YTP2026黑客松",
+      "date": "2026/04/25–26（已結束）",
+      "detail": "青年圖靈++ 第 1 場",
+      "groups": "青年組・高中組",
+      "kind": "plus",
+      "href": "/turing-plus/2026/"
+    }
+  ],
+  "registration": {
+    "open": "2026-04-20",
+    "close": "2026-06-20",
+    "closeNote": "2026-09-24 Thomas 確認：第 11 屆報名 2026/04/20 – 06/20（簡章原寫 6/10，以此為準）。",
+    "formSenior": "https://systex.surveycake.biz/s/RWlDz",
+    "formJunior": "https://systex.surveycake.biz/s/omGzK"
+  },
+  "documents": {
+    "brochure": {
+      "label": "第 11 屆簡章辦法",
+      "url": "/legacy/%E7%AC%AC11%E5%B1%86ytp%E5%B0%91%E5%B9%B4%E5%9C%96%E9%9D%88%E8%A8%88%E7%95%AB%E7%B0%A1%E7%AB%A0%E8%BE%A6%E6%B3%95_Final.pdf"
+    },
+    "faq": {
+      "label": "第 11 屆常見 FAQ",
+      "url": "/legacy/%E7%AC%AC11%E5%B1%86-ytp%E5%B0%91%E5%B9%B4%E5%9C%96%E9%9D%88%E8%A8%88%E7%95%AB-%E5%B8%B8%E8%A6%8BFAQ.pdf"
+    }
+  },
+  "hackathonUrl": "/cohorts/11/hackathon/",
+  "video": "https://www.youtube.com/embed/yAkMorAJzv4",
+  "plusUrl": "/turing-plus/"
+}

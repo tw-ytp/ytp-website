@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import TrackBadge from '../../components/TrackBadge.astro';
+import StageEvents from '../../components/StageEvents.astro';
+import { getCollection } from 'astro:content';
+import { PHASE_LABEL, stagePath } from '../../lib/cohort';
+import season from '../../data/season.json';
+const cur = (await getCollection('cohorts')).find(c => c.data.edition === season.edition)!;
+---
+<Base title="計畫介紹" description="YTP 少年圖靈計畫一次看懂：程式挑戰營、第二階段（第 1–10 屆專題實作、第 11 屆起黑客松）、海外參訪。誰可以參加、會得到什麼。">
+  <div class="wrap page-head track-main">
+    <p class="crumb"><TrackBadge track="main" /></p>
+    <h1>少年圖靈計畫</h1>
+    <p class="lead measure">國中、高中職五專學生的年度計畫，以「屆」編號（第 N 屆 = 2015 + N 年）。國中組參加第一階段，高中職五專組走完三個階段。</p>
+    <div class="btn-row">
+      <a class="btn" href="/program/apply/">報名</a>
+      <a class="btn ghost" href="/program/rules/">時程與規則</a>
+      <a class="btn ghost" href="/program/faq/">常見問題</a>
+      <a class="btn ghost" href="/cohorts/">歷屆一覽</a>
+    </div>
+  </div>
+  <section class="section alt">
+    <div class="wrap">
+      <h2>第 {season.edition} 屆（{season.year}）時程</h2>
+      <div class="grid c3">
+        {cur.data.stages.map(s => <div class="rule-left track-main">
+          <p class="meta">{PHASE_LABEL[s.phase]}</p>
+          <h3><a href={stagePath(cur.data.edition, s.type)}>{s.title}</a></h3>
+          <StageEvents events={s.events} />
+        </div>)}
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      <h2>三階段沿革：第 1–10 屆與第 11 屆起</h2>
+      <table>
+        <thead><tr><th></th><th>Phase I</th><th>Phase II</th><th>Phase III</th></tr></thead>
+        <tbody>
+          <tr><th>第 1–10 屆（2016–2025）</th><td>程式挑戰營</td><td>專題實作（約半年，教授指導）</td><td>海外參訪</td></tr>
+          <tr><th>第 11 屆起（2026–）</th><td>程式挑戰營</td><td><b>YTP{season.year}H2黑客松</b>（賽前培訓＋12 月一日賽）</td><td>海外參訪（隔年 3 月選拔、8 月出訪）</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted" style="margin-top:12px">YTP 校友另有每年上半年舉辦的 <a href="/turing-plus/">青年圖靈++</a>，與少年圖靈計畫分開報名。</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap prose">
+
+      <h2>線上初賽</h2>
+      <p>報名後在指定日期上網作答，決定程式挑戰營資格；初賽得分不計入挑戰營成績。使用與 IOI 相同的 Contest Management System，賽前有統一的環境測試時段。</p>
+
+      <h2>程式挑戰營</h2>
+      <p>依初賽成績通知晉級隊伍到台北實體競賽（另邀請至多 3 隊女子隊伍）。高中組 4 小時、國中組 3 小時，題目以中文為主，另提供英文版。台中以南、花東及離島同學可申請交通補助。</p>
+      <p>獎金（第 10 屆簡章）：高中組金牌 30,000 / 銀牌 21,000 / 銅牌 15,000 元；國中組 15,000 / 12,000 / 9,000 元。全程參加者皆獲學習證書。</p>
+
+      <h2>專題實作（高中職五專組）</h2>
+      <p>挑戰營優勝隊伍（以 15 組為限）進入約半年的專題實作：大學教授指導、精誠集團同仁擔任導師、線上座談與社群交流。參與同學每人每月領 3,000 元獎學金，成果發表會前三名另有 10,000 / 20,000 / 30,000 元團隊獎金，並取得海外參訪遴選資格。</p>
+      <p>成果發表評分（第 9、10 屆）：創意 40%（獨創性、問題描述與社會或商業價值、問題深度分析）、實踐 40%（對創意的支持度、系統實用性、用對方法與工具）、溝通協作 10%（評審評）、團隊合作 10%（導師評）。歷屆評審包括賴飛羆、莊永裕、謝叔恒、黃鐘揚、鄭瑞光、林淦偉等教授。</p>
+      <p class="muted small">以上為第 1–10 屆（2016–2025）的第二階段做法，第 11 屆起改為 H2 黑客松。</p>
+
+      <h2>YTP{season.year}H2黑客松（第 11 屆起的第二階段）</h2>
+      <p>程式挑戰營晉級的高中職五專組隊伍（邀請制），自 8 月底起參加 E0–E5 六場賽前培訓（僅 E3 實體），12 月進行 12 小時一日實體賽，作品主體須當日完成，以 GitHub 快照驗證真實性。評分：創新性 30%、教育價值與契合度 20%、完成度 50%。前三名獎金 60,000 / 45,000 / 30,000 元；完賽者每人 5,000 元助學金；每隊 8,000 元 AI 工具補助。<a href="/cohorts/11/hackathon/">YTP2026H2黑客松詳細資訊</a></p>
+      <h2>海外參訪</h2>
+      <p>由評審委員會依創新創意提案、程式應用專案執行力、行動力進行個人遴選。曾參訪矽谷 Google、Meta、Plug and Play 加速器與海外大學創新創業營隊。對有心創業的學員另有天使創業基金與業界資源協助。<a href="/stories/">讀校友的參訪心得</a></p>
+    </div>
+  </section>
+</Base>

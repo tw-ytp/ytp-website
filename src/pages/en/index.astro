@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import Track from '../../components/Track.astro';
+import season from '../../data/season.json';
+---
+<Base title="English" description="Young Turing Program (YTP): a Taiwan-based youth software talent program by SYSTEX — algorithm competition, mentored projects, hackathon and overseas study visits.">
+  <div class="wrap page-head">
+    <h1>Young Turing Program</h1>
+    <p class="lead measure">It is now the era that software defines everything. Encourage young talents to dream, and make the world a better place through their logical thinking and innovative abilities.</p>
+  </div>
+  <div class="wrap prose">
+    <h2>About</h2>
+    <p>The Young Turing Program (YTP), named after Alan Turing, the father of computer science, is a social good initiative of SYSTEX Corporation, running in Taiwan since 2016. Junior-high and senior-high students form teams of three, take an online preliminary round, then a one-day on-site algorithm contest in Taipei. Top senior-high teams go on to a mentored project stage with university professors and industry volunteers, a hackathon, and a selection for an overseas study visit to Silicon Valley companies and university labs.</p>
+    <h2>Season {season.year}</h2>
+    <Track />
+    <h2>International program (iYTP)</h2>
+    <p>YTP has previously run an international edition for senior-high students in the Asia-Pacific region (registration on the old site last updated for the 2023 season, with a coding competition in September and a project challenge and free visit to Taiwan the following year).</p>
+    <Todo>Confirm with the organizing team whether iYTP is still running. If yes, add current dates, brochure and registration link here; if not, rewrite this section as an archive and link the 2022 APAC past exam.</Todo>
+    <h2>Contact</h2>
+    <p><a href="mailto:ytp@tw-ytp.org">ytp@tw-ytp.org</a></p>
+  </div>
+</Base>

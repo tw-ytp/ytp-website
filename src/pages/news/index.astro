@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection } from 'astro:content';
+const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 4);
+const kind = { announcement: '公告', recap: '回顧', notice: '通知' };
+---
+<Base title="最新消息">
+  <PageHead title="最新消息" lead="長效內容放這裡；即時通知請看 FB 社團與 Discord。" />
+  <section class="section">
+    <div class="wrap grid c2">
+      <div>
+        <h2>公告與回顧</h2>
+        <ul class="list">{news.map(n => <li><span class="meta">{n.data.date.toISOString().slice(0,10)}｜{kind[n.data.kind]}</span><br/><a href={`/news/${n.id}/`}>{n.data.title}</a></li>)}</ul>
+        <Todo>舊站最新消息第 1–4 頁已逐篇檢視完畢，長效內容全數搬入；即時通知與第三方活動宣傳依內容模型不搬。第十屆晉級名單目前為圖片，建議改為文字表格。</Todo>
+      </div>
+      <div>
+        <h2>學員故事</h2>
+        <ul class="list">{stories.map(s => <li><span class="meta">{s.data.author}｜{s.data.trip}</span><br/><a href={`/stories/${s.id}/`}>{s.data.title}</a></li>)}</ul>
+        <div class="btn-row"><a class="btn ghost" href="/stories/">全部故事</a></div>
+      </div>
+    </div>
+  </section>
+</Base>

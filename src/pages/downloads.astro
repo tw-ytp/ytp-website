@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import PageHead from '../components/PageHead.astro';
+import season from '../data/season.json';
+---
+<Base title="檔案下載">
+  <PageHead title="檔案下載" lead="簡章、FAQ、公文與宣傳素材。" />
+  <div class="wrap prose">
+    <h2>第 {season.edition} 屆</h2>
+    <ul>
+      <li><a href={season.documents.brochure.url}>{season.documents.brochure.label}（PDF）</a></li>
+      <li><a href={season.documents.faq.url}>{season.documents.faq.label}（PDF）</a>｜<a href="/program/faq/">網頁版</a></li>
+    </ul>
+    <h2>歷屆簡章</h2>
+    <ul>
+      <li><a href="/legacy/%E7%AC%AC%E5%8D%81%E5%B1%86ytp%E5%B0%91%E5%B9%B4%E5%9C%96%E9%9D%88%E8%A8%88%E7%95%AB%E7%B0%A1%E7%AB%A0%E8%BE%A6%E6%B3%95.pdf">第 10 屆簡章辦法（PDF）</a></li>
+      <li><a href="/legacy/%E7%AC%AC%E5%8D%81%E5%B1%86-ytp%E5%B0%91%E5%B9%B4%E5%9C%96%E9%9D%88%E8%A8%88%E7%95%AB-%E5%B8%B8%E8%A6%8BFAQ.pdf">第 10 屆常見 FAQ（PDF）</a></li>
+    </ul>
+    <h2>黑客松</h2>
+    <ul>
+      <li><a href="/legacy/2026%20YTP%20%E9%BB%91%E5%AE%A2%E6%9D%BE%E7%AB%B6%E8%B3%BD%E7%B0%A1%E7%AB%A0%E8%BE%A6%E6%B3%95.pdf">2026 上半年黑客松競賽規則（PDF，精誠活動網站，即將關閉）</a></li>
+      <li><a href="/legacy/2026YTP%E9%BB%91%E5%AE%A2%E6%9D%BE-%E6%B4%BB%E5%8B%95%E5%9B%9E%E9%A1%A7.pdf">2026 上半年黑客松活動回顧與得獎公告（PDF）</a></li>
+    </ul>
+    <h2>給學校與老師</h2>
+    <Todo>補公文範本、A4 海報、社群宣傳圖與文字。</Todo>
+    <h2>考古題</h2>
+    <p>見<a href="/resources/past-exams/">歷年考古題</a>。</p>
+    <Todo>所有 PDF 已存於站內 /legacy/，檔名沿用原始中文名以保留對照；日後若要整理，改名時記得同步更新 exams.json、season.json 與各 Markdown 的路徑。</Todo>
+  </div>
+</Base>

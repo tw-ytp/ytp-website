@@ -1,0 +1,92 @@
+---
+import site from '../data/site.json';
+import season from '../data/season.json';
+import '../styles/tokens.css';
+import '../styles/global.css';
+// brand：分頁標題的後綴。青年圖靈++ 的頁面傳入「青年圖靈++」，其餘預設為站名。
+interface Props { title: string; description?: string; brand?: string }
+const { title, description = site.description, brand = site.shortName } = Astro.props;
+const path = Astro.url.pathname;
+// [href, 標籤, 軌道, 其他也算「目前頁」的路徑前綴]
+const nav: [string, string, string, string[]][] = [
+  ['/', '首頁', '', []],
+  [`/cohorts/${season.edition}/`, `第 ${season.edition} 屆`, 'main', ['/program/']],   // 當屆，依 season.json 自動更新
+  ['/turing-plus/', '青年圖靈++', 'plus', []],
+  ['/projects/', '歷屆成果', '', ['/cohorts/']],
+  ['/stories/', '學員故事', '', []],
+  ['/news/', '最新消息', '', []],
+  ['/program/faq/', '常見問題', '', []],
+];
+// 取最長相符的前綴：/program/faq/ 只點亮「常見問題」，/cohorts/7/ 點亮「歷屆成果」，/cohorts/11/ 點亮「第 11 屆」
+const score = ([href, , , more]: typeof nav[number]) =>
+  href === '/' ? (path === '/' ? 1 : 0) : Math.max(0, ...[href, ...more].map(h => (path.startsWith(h) ? h.length : 0)));
+const active = nav.reduce((best, n) => (score(n) > score(best) ? n : best), nav[0]);
+const activeHref = score(active) > 0 ? active[0] : '';
+---
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{`${title}｜${brand}`}</title>
+  <meta name="description" content={description} />
+  {import.meta.env.PUBLIC_NOINDEX === 'true' && <meta name="robots" content="noindex, nofollow" />}
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:site_name" content={site.name} />
+  <link rel="canonical" href={new URL(path, site.url)} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">YTP <span>少年圖靈計畫</span></a>
+      <button class="menu-btn" aria-expanded="false" aria-controls="nav">選單</button>
+      <nav class="nav" id="nav" aria-label="主選單">
+        {nav.map(([href, label, track]) => (
+          <a href={href} class={track ? `nav-${track}` : undefined} aria-current={href === activeHref ? 'page' : undefined}>{label}</a>
+        ))}
+      </nav>
+    </div>
+  </header>
+  <main><slot /></main>
+  <footer class="site-footer">
+    <div class="wrap grid c4">
+      <div>
+        <h3>{site.shortName}</h3>
+        <p>主辦：{site.organizer}<br/>協辦：{site.coOrganizers.join('、')}</p>
+      </div>
+      <div>
+        <h3>聯絡</h3>
+        <ul><li><a href={`mailto:${site.email}`}>{site.email}</a></li></ul>
+      </div>
+      <div>
+        <h3>社群</h3>
+        <ul>
+          <li><a href={site.social.facebook} rel="noopener">Facebook 社團</a></li>
+          <li><a href={site.social.discord} rel="noopener">Discord</a></li>
+          {site.social.youtube ? <li><a href={site.social.youtube} rel="noopener">YouTube</a></li> : <li class="muted">YouTube（待補網址）</li>}
+          {site.social.github ? <li><a href={site.social.github} rel="noopener">GitHub</a></li> : <li class="muted">GitHub（待補網址）</li>}
+        </ul>
+      </div>
+      <div>
+        <h3>更多</h3>
+        <ul>
+          <li><a href="/about/">關於 YTP</a></li>
+          <li><a href="/resources/">備賽資源</a></li>
+          <li><a href="/cohorts/">歷屆一覽</a></li>
+          <li><a href="/downloads/">簡章與檔案下載</a></li>
+          <li><a href="/en/">English</a></li>
+        </ul>
+        <p class="small" style="margin-top:12px">© {new Date().getFullYear()} Young Turing Program</p>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const b = document.querySelector('.menu-btn'), n = document.getElementById('nav');
+    b?.addEventListener('click', () => { const o = n.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+---
+// 黑客松詳細頁版面。青年圖靈++（YTP{年}黑客松）與少年圖靈計畫第二階段（YTP{年}H2黑客松）共用。
+import Base from '../layouts/Base.astro';
+import Todo from './Todo.astro';
+import TrackBadge from './TrackBadge.astro';
+import { getCollection, render } from 'astro:content';
+import { cohortPath } from '../lib/cohort';
+interface Props { h: any; track: 'plus' | 'main' }
+const { h, track } = Astro.props;
+const { Content } = await render(h);
+const d = h.data;
+const stage = track === 'main';
+const stateLabel = { archived: '已結束', upcoming: '即將舉行', planning: '規劃中' };
+const eventKey = String(stage ? d.edition : d.year);
+const winners = (await getCollection('projects', p => p.data.source === (stage ? 'stage2-hackathon' : 'turing-plus') && p.data.event === eventKey)).sort((a, b) => a.data.rank - b.data.rank);
+const medal = ['', '金牌', '銀牌', '銅牌', '佳作'];
+const yt = d.links.briefingVideo?.replace('watch?v=', 'embed/');
+const short = d.title.split('：')[0];
+// 青年圖靈++ 的場次序號：依年度排序，2026 為第 1 場
+const plusRound = stage ? 0 : (await getCollection('turingPlus')).map(x => x.id).sort().indexOf(h.id) + 1;
+const cohortYear = stage ? (await getCollection('cohorts')).find(c => c.data.edition === d.edition)?.data.year : undefined;
+---
+<Base title={stage ? `第 ${d.edition} 屆・${short}` : short} brand={stage ? undefined : '青年圖靈++'} description={d.tagline ?? d.title}>
+  {d.banner && <div class="wrap"><img class="hero-banner" src={d.banner} alt={`${d.title} 主視覺`} loading="lazy" /></div>}
+
+  <div class="wrap page-head">
+    <p class="crumb"><TrackBadge track={track} link />{stage
+      ? <><a href={cohortPath(d.edition)}>第 {d.edition} 屆・{cohortYear}</a>｜Phase II</>
+      : <>第 {plusRound} 場・{d.label}</>}｜{stateLabel[d.state]}</p>
+    <h1>{d.title}</h1>
+    {d.tagline && <p class="lead measure">{d.tagline}</p>}
+    {d.state === 'planning' && <Todo>此頁為預留架構，材料到齊後填入。</Todo>}
+    {d.state === 'upcoming' && stage && <p class="muted">邀請制，不對外報名。所有內容以《參賽者手冊》與 email 通知為準。</p>}
+    {d.links.registerYouth && d.state === 'upcoming' && <div class="btn-row"><a class="btn" href={d.links.registerYouth}>報名・青年組</a><a class="btn" href={d.links.registerSenior}>報名・高中組</a></div>}
+  </div>
+
+  {d.stats.length > 0 && <section class="section alt"><div class="wrap grid c4">
+    {d.stats.map(s => <div class="stat"><b>{s.value.split('（')[0]}</b><span>{s.label}{s.value.includes('（') && `（${s.value.split('（')[1]}`}</span></div>)}
+  </div></section>}
+
+  <div class="wrap prose">
+    <h2>基本資訊</h2>
+    <table><tbody>
+      <tr><th>競賽期間</th><td>{d.period}</td></tr>
+      {d.venue && <tr><th>地點</th><td>{d.venue}</td></tr>}
+      {d.organizer && <tr><th>主辦</th><td>{d.organizer}</td></tr>}
+      {d.coOrganizers.length > 0 && <tr><th>協辦</th><td>{d.coOrganizers.join('、')}</td></tr>}
+      {d.partners.length > 0 && <tr><th>合作／命題</th><td>{d.partners.join('、')}</td></tr>}
+      {d.groups.length > 0 && <tr><th>組別</th><td>{d.groups.map(g => <div>{g}</div>)}</td></tr>}
+    </tbody></table>
+
+    {d.themes.length > 0 && <>
+      <h2>競賽主題</h2>
+      {d.themes.map(t => <div class="rule-left" style="margin-bottom:16px"><b>{t.name}</b><br/>{t.detail}</div>)}
+    </>}
+
+    {d.eligibility.length > 0 && <><h2>參賽資格</h2><ul>{d.eligibility.map(e => <li>{e}</li>)}</ul></>}
+
+    {d.timeline.length > 0 && <>
+      <h2>時程</h2>
+      <table><tbody>{d.timeline.map(t => <tr><th style="white-space:nowrap">{t.date}</th><td><b>{t.label}</b>{t.detail && <div class="meta">{t.detail}</div>}</td></tr>)}</tbody></table>
+    </>}
+
+    {yt && <><h2>{stage ? '賽前說明會 E0 回放' : '線上說明會重點回顧'}</h2><iframe class="video" src={yt} title="線上說明會" loading="lazy" allowfullscreen></iframe></>}
+
+    {d.judging.length > 0 && <>
+      <h2>評選標準</h2>
+      <table><tbody>{d.judging.map(j => <tr><td>{j.name}</td><td style="text-align:right"><b>{j.weight}</b></td></tr>)}</tbody></table>
+    </>}
+
+    {d.prizes.length > 0 && <>
+      <h2>競賽獎勵</h2>
+      <div class="grid c2">{d.prizes.map(p => <div><h3>{p.group}</h3><ul>{p.items.map(i => <li>{i}</li>)}</ul></div>)}</div>
+    </>}
+
+    <Content />
+
+    {d.partnerLogos.length > 0 && <div class="wide logo-band">
+      {d.partnerLogos.map(l => <img src={l.image} alt={l.alt} loading="lazy" />)}
+      <p class="logo-band-note">單位標示取自 2026 YTP 黑客松活動網站</p>
+    </div>}
+
+    {winners.length > 0 && <div class="wide">
+      <h2>得獎作品</h2>
+      {['youth', 'senior'].map(g => {
+        const list = winners.filter(w => w.data.group === g);
+        return list.length > 0 && <>
+          <h3>{g === 'youth' ? '青年組' : '高中組'}</h3>
+          <table>
+            <thead><tr><th>獎項</th><th>作品／隊名</th><th>賽題</th><th>技術棧</th></tr></thead>
+            <tbody>{list.map(w => <tr>
+              <td class="nowrap"><span class="rank">{medal[w.data.rank]}</span></td>
+              <td><a href={`/projects/${w.id}/`}>{w.data.title}</a><div class="meta">{w.data.team}・<a href={w.data.github}>GitHub</a></div></td>
+              <td class="nowrap">{w.data.theme?.split('・')[0]}</td>
+              <td class="small">{w.data.stack}</td>
+            </tr>)}</tbody>
+          </table>
+        </>;
+      })}
+    </div>}
+
+    {(d.links.brochure || d.links.recapPdf || d.links.github || d.links.original) && <>
+      <h2>相關連結</h2>
+      <ul>
+        {d.links.brochure && <li><a href={d.links.brochure}>{stage ? '賽前說明會簡報（PDF）' : '競賽簡章／規則（PDF）'}</a></li>}
+        {d.links.recapPdf && <li><a href={d.links.recapPdf}>活動回顧與得獎公告（PDF）</a></li>}
+        {d.links.github && <li><a href={d.links.github}>GitHub Organization</a>{stage && <span class="muted">（各隊私有 Repo，賽後公開得獎作品）</span>}</li>}
+        {d.links.original && <li><a href={d.links.original}>原活動網頁（精誠活動網站，即將關閉）</a></li>}
+      </ul>
+    </>}
+    <p class="small muted">有任何問題，歡迎來信 <a href="mailto:ytp@tw-ytp.org">ytp@tw-ytp.org</a>。</p>
+  </div>
+</Base>

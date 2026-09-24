@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import TrackBadge from '../../components/TrackBadge.astro';
+import { getCollection } from 'astro:content';
+import { fmtRange, cohortPath, stagePath } from '../../lib/cohort';
+const all = (await getCollection('cohorts')).sort((a, b) => b.data.edition - a.data.edition);
+---
+<Base title="歷屆一覽" description="YTP 少年圖靈計畫第 1 屆（2016）至今各屆的三階段：程式挑戰營、第二階段（專題實作／黑客松）、海外參訪。">
+  <div class="wrap page-head track-main">
+    <p class="crumb"><TrackBadge track="main" link /></p>
+    <h1>歷屆一覽</h1>
+    <p class="lead measure">第 N 屆 = 2015 + N 年。第 1–10 屆的第二階段是專題實作，第 11 屆起改為黑客松。</p>
+  </div>
+  <div class="wrap">
+    <table class="cohort-table">
+      <thead><tr><th>屆次</th><th>Phase I</th><th>Phase II</th><th>Phase III</th></tr></thead>
+      <tbody>
+        {all.map(c => <tr>
+          <th><a href={cohortPath(c.data.edition)}>第 {c.data.edition} 屆</a><div class="meta">{c.data.year}</div></th>
+          {c.data.stages.map(s => {
+            const dated = s.events.filter(e => e.start);
+            return <td><a href={stagePath(c.data.edition, s.type)}>{s.title}</a>
+              <div class="meta">{dated.length ? fmtRange(dated[0].start, dated.at(-1)!.end ?? dated.at(-1)!.start) : '日期待補'}</div></td>;
+          })}
+        </tr>)}
+      </tbody>
+    </table>
+  </div>
+</Base>

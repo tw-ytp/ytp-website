@@ -1,0 +1,19 @@
+{
+  "name": "Young Turing Program 少年圖靈計畫",
+  "shortName": "YTP 少年圖靈計畫",
+  "url": "https://www.tw-ytp.org",
+  "email": "ytp@tw-ytp.org",
+  "description": "以電腦科學之父 Alan Turing 為名，由精誠集團自 2016 年起舉辦的 ESG 計畫。透過程式競賽、專題實作、大學教授與企業導師輔導、黑客松與海外參訪，為台灣培育世界級軟體人才。",
+  "social": {
+    "facebook": "https://www.facebook.com/groups/1527998927505701/",
+    "discord": "https://discord.gg/KpqC6CEthk",
+    "youtube": "",
+    "github": "https://github.com/26ytph"
+  },
+  "organizer": "精誠集團",
+  "coOrganizers": ["財團法人台灣資訊科技發展教育基金會", "資訊之芽", "台大程式解題社"],
+  "todo": {
+    "youtube": "確認 YTP YouTube 頻道正式網址（舊站僅有單支影片與直播連結）",
+    "github_note": "26ytph 為 2026 上半年黑客松作品專用 organization；若日後有 YTP 總 org 請改此處"
+  }
+}

@@ -1,0 +1,82 @@
+---
+// 一條年度時程的 SVG（桌機）。資料由 src/lib/timeline.ts 的 build() 算好傳入。
+import { VW, X0, Y } from '../lib/timeline';
+interface Props { tl: any; now: number; uid: string }
+const { tl, now, uid } = Astro.props;
+const yearTok = (y: number) => `year-${2026 + (((y - 2026) % 4) + 4) % 4}`;
+const inWin = now >= tl.w0 && now < tl.w1;
+const todayX = tl.x(now);
+// 伺服器端先依建置時間算狀態；頁面載入後由 YearTimeline 的 script 依瀏覽器當天重算
+const mainNodes = [...tl.nodes].sort((a: any, b: any) => a.t - b.t);
+const nextIdx = mainNodes.findIndex((n: any) => n.t >= now);
+const nodeState = (n: any) => (n.t < now ? 'done' : inWin && mainNodes[nextIdx] === n ? 'now' : 'up');
+const order = (xx: number) => Math.round(((xx - X0) / (VW - X0)) * 1200);   // 動畫延遲（ms），依位置由左至右
+const d = (n: number) => n.toFixed(1);
+const titleId = `${uid}-title`, descId = `${uid}-desc`;
+const desc = [
+  `少年圖靈計畫第 ${tl.edition} 屆：` + mainNodes.map((n: any) => `${n.name} ${n.date}`).join('、'),
+  tl.plus.length ? '青年圖靈++：' + tl.plus.map((p: any) => `${p.name} ${p.dates}`).join('、') : '',
+].filter(Boolean).join('。');
+---
+<svg class="tl-svg" viewBox={`0 0 ${VW} ${Y.height}`} role="img" aria-labelledby={`${titleId} ${descId}`}
+  data-w0={tl.w0} data-w1={tl.w1} data-x0={X0} data-ppm={tl.pxPerMs}>
+  <title id={titleId}>{tl.year}–{tl.year + 1} 年度時程</title>
+  <desc id={descId}>{desc}</desc>
+
+  <!-- 年度色帶、月份 -->
+  {tl.years.map((y: any) => <rect class={`tl-yearband ${yearTok(y.year)}`} x={d(y.x1)} y={Y.axis - 2} width={d(y.x2 - y.x1)} height="4" />)}
+  {tl.years.map((y: any, i: number) => <text class={`tl-year ${yearTok(y.year)}`} x={d(y.x1 + (i ? 4 : 0))} y={Y.axis + 44}>{y.year}</text>)}
+  {tl.months.map((m: any) => <>
+    <line class="tl-tick" x1={d(m.x)} y1={Y.axis - 6} x2={d(m.x)} y2={Y.axis + 6} />
+    <text class="tl-month" x={d(m.mid)} y={Y.axis + 22}>{m.label}</text>
+  </>)}
+  <line class="tl-yeardiv" x1={d(tl.years[1].x1)} y1="40" x2={d(tl.years[1].x1)} y2={Y.plus + 40} />
+
+  <!-- 泳道名稱 -->
+  <text class="tl-lane main" x="0" y={Y.main + 5}>第 {tl.edition} 屆</text>
+  <text class="tl-lane plus" x="0" y={Y.plus + 5}>青年圖靈++</text>
+
+  <!-- 少年圖靈計畫：三段 -->
+  {tl.segs.map((s: any) => {
+    const prog = Math.min(Math.max(todayX, s.x1), s.x2);
+    return <a href={s.href} class="tl-seglink" aria-label={`${s.phase}｜${s.name}`}>
+      <path class="tl-bracket" d={`M${d(s.x1)} ${Y.bracket + 6} v-6 h${d(s.x2 - s.x1)} v6`} />
+      <text class="tl-phase" x={d((s.x1 + s.x2) / 2)} y={Y.phase}>{s.phase}｜{s.name}</text>
+      <line class={`tl-seg bg${s.dashed ? ' dashed' : ''}`} x1={d(s.x1)} y1={Y.main} x2={d(s.x2)} y2={Y.main} pathLength="1" style={`--d:${order(s.x1)}`} />
+      <line class="tl-seg prog" data-x1={d(s.x1)} data-x2={d(s.x2)} x1={d(s.x1)} y1={Y.main} x2={d(prog)} y2={Y.main} pathLength="1" style={`--d:${order(s.x1)}`} />
+    </a>;
+  })}
+  {mainNodes.map((n: any) => {
+    const ny = n.tier === 1 ? Y.tier1 : n.tier === 3 ? Y.tier3 : Y.tier2;
+    return <a href={n.href} class={`tl-node ${nodeState(n)}`} data-t={n.t} style={`--d:${order(n.x) + 200}`} aria-label={`${n.name} ${n.date}`}>
+      {n.tier === 2 && <line class="tl-leader" x1={d(n.x)} y1={ny + 20} x2={d(n.x)} y2={Y.main - 12} />}
+      <circle class="tl-halo" cx={d(n.x)} cy={Y.main} r="17" />
+      <circle class="tl-dot" cx={d(n.x)} cy={Y.main} r="9" />
+      <text class="tl-name" x={d(n.x)} y={ny}>{n.name}</text>
+      <text class="tl-date" x={d(n.x)} y={ny + 15}>{n.date}</text>
+    </a>;
+  })}
+
+  <!-- 青年圖靈++：軸線下方 -->
+  {tl.plus.map((p: any) => {
+    const s = p.seg, prog = Math.min(Math.max(todayX, s.x1), s.x2);
+    return <a href={p.href} class={`tl-plus ${p.pending ? 'pending' : p.endNode && p.endNode.t < now ? 'done' : 'up'}`} data-t1={s.t1} data-t2={s.t2} style={`--d:${order(s.x1)}`} aria-label={`${p.name} ${p.dates}`}>
+      {p.pending
+        ? <rect class="tl-pbox" x={d(s.x1)} y={Y.plus - 6} width={d(s.x2 - s.x1)} height="12" rx="6" />
+        : <>
+            {s.clipLeft && <path class="tl-pbar" d={`M${d(s.x1 - 8)} ${Y.plus} l8 -7 v14 z`} />}
+            <line class="tl-pseg bg" x1={d(s.x1)} y1={Y.plus} x2={d(s.x2)} y2={Y.plus} pathLength="1" />
+            <line class="tl-pseg prog" data-x1={d(s.x1)} data-x2={d(s.x2)} x1={d(s.x1)} y1={Y.plus} x2={d(prog)} y2={Y.plus} pathLength="1" />
+            <rect class="tl-psq" x={d(s.x2 - 10.5)} y={Y.plus - 10.5} width="21" height="21" rx="5" />
+          </>}
+      <text class="tl-pname" x={d(p.labelX)} y={Y.plus + 30}>{p.name}</text>
+      <text class="tl-pdate" x={d(p.labelX)} y={Y.plus + 46}>{p.dates}</text>
+    </a>;
+  })}
+
+  <!-- 今天 -->
+  <g class="tl-today" style={inWin ? undefined : "display:none"} data-today>
+    <line x1={d(todayX)} y1="44" x2={d(todayX)} y2={Y.plus + 14} />
+    <text x={d(todayX + 6)} y="54" data-today-label>今天 {new Date(now).toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit', timeZone: 'Asia/Taipei' })}</text>
+  </g>
+</svg>

@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import TrackBadge from '../../components/TrackBadge.astro';
+import { getCollection } from 'astro:content';
+import { fmtRange } from '../../lib/cohort';
+const all = (await getCollection('turingPlus')).sort((a, b) => a.id.localeCompare(b.id));
+const round = (id: string) => all.findIndex(h => h.id === id) + 1;
+const stateLabel = { archived: '已結束', upcoming: '即將舉行', planning: '籌備中' };
+const winners = (await getCollection('projects', p => p.data.source === 'turing-plus')).sort((a, b) => b.data.event!.localeCompare(a.data.event!) || a.data.rank - b.data.rank);
+const medal = ['', '金牌', '銀牌', '銅牌', '佳作'];
+const first = all[0]?.id, last = all.at(-1)?.id;
+---
+<Base title="青年圖靈++" brand="YTP 少年圖靈計畫" description="青年圖靈++：YTP 少年圖靈計畫校友的年度活動，自 2026 年起每年上半年舉辦，第 1 場為 YTP2026黑客松。">
+  <div class="wrap page-head track-plus">
+    <p class="crumb"><TrackBadge track="plus" /></p>
+    <h1>青年圖靈++</h1>
+    <p class="lead measure">少年圖靈，持續遞增。YTP 校友的年度活動，每年上半年舉辦。</p>
+  </div>
+  <section class="section">
+    <div class="wrap">
+      <h2>{first === last ? first : `${first}–${last}`} 活動</h2>
+      <ul class="list">
+        {[...all].reverse().map(h => (
+          <li>
+            <span class="meta">第 {round(h.id)} 場｜{h.data.label}｜{stateLabel[h.data.state]}</span><br/>
+            <a href={`/turing-plus/${h.id}/`}><b>{h.data.title}</b></a>
+            {h.data.tagline && <div class="meta">{h.data.tagline}</div>}
+            <div class="meta">{h.data.start ? fmtRange(h.data.start, h.data.end) : h.data.period}</div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <section class="section alt">
+    <div class="wrap prose">
+      <h2>參加資格</h2>
+      <ul>
+        <li>以隊伍報名，每隊 3–5 人，每人限報名 1 隊。</li>
+        <li>隊伍中至少一人曾參加歷屆 YTP 程式挑戰營（初賽或複賽）。</li>
+        <li>分青年組（大學以上在學或已就業）與高中組；各場次細節以該場簡章為準。</li>
+      </ul>
+      <p class="small muted">高中生另參加<a href="/program/">少年圖靈計畫</a>；第 11 屆起其第二階段的 YTP2026H2黑客松為邀請制，與青年圖靈++ 分開報名。</p>
+    </div>
+  </section>
+  {winners.length > 0 && <section class="section">
+    <div class="wrap">
+      <h2>歷屆得獎作品</h2>
+      <ul class="list">
+        {winners.map(p => <li><span class="meta">YTP{p.data.event}黑客松｜{p.data.group === 'youth' ? '青年組' : '高中組'}｜{medal[p.data.rank]}</span><br/><a href={`/projects/${p.id}/`}>{p.data.title}</a> <span class="meta">— {p.data.team}</span></li>)}
+      </ul>
+    </div>
+  </section>}
+</Base>

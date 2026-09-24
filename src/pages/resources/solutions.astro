@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection, render } from 'astro:content';
+const hub = (await getCollection('hub')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const items = await Promise.all(hub.map(async h => ({ ...h, Content: (await render(h)).Content })));
+---
+<Base title="題目講解與準備指南">
+  <PageHead crumb="備賽資源" title="題目講解與準備指南" lead="歷年直播的學長姐講題、文字解析，以及給新手的準備路徑。" />
+  <div class="wrap prose">
+    {items.length === 0 && <p class="muted">還沒有內容。</p>}
+    {items.map(h => (
+      <article id={h.id} style="margin-bottom:40px">
+        <h2>{h.data.title}</h2>
+        <p class="meta">{h.data.date.toISOString().slice(0,10)}｜{h.data.group === 'both' ? '國中組・高中組' : h.data.group === 'senior' ? '高中組' : '國中組'}</p>
+        {h.data.video_url && <iframe class="video" src={h.data.video_url} title={h.data.title} loading="lazy" allowfullscreen></iframe>}
+        <h.Content />
+        {h.data.status === 'todo' && <Todo>內容待補。</Todo>}
+      </article>
+    ))}
+    <Todo>此區是新站最缺內容、也最有價值的區塊。建議每年挑戰營後，請講題的學長姐把直播片段時間戳與一頁式文字解析交回，各建一個 hub/ 檔案。</Todo>
+  </div>
+</Base>

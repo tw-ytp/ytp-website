@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import Track from '../../components/Track.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const all = await getCollection('projects');
+  return all.map(p => ({ params: { id: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+const rankLabel = ['', '第一名', '第二名', '第三名'];
+const medal = ['', '金牌', '銀牌', '銅牌', '佳作'];
+const isH = p.data.source !== 'stage2-project';
+const isAlumni = p.data.source === 'turing-plus';
+const eventHref = isAlumni ? `/turing-plus/${p.data.event}/` : `/cohorts/${p.data.event}/hackathon/`;
+const eventName = isAlumni ? `YTP${p.data.event}黑客松` : `第 ${p.data.event} 屆黑客松`;
+const related = (await getCollection('projects')).filter(x => x.id !== p.id && x.data.status !== 'todo' && (isH ? (x.data.source === p.data.source && x.data.event === p.data.event) : (x.data.source === 'stage2-project' && x.data.edition === p.data.edition))).slice(0, 8);
+---
+<Base title={p.data.title} description={`${isH ? eventName + '作品' : `YTP 第 ${p.data.edition} 屆專題`}：${p.data.title}。${p.data.members.map(m => m.name).join('、')}。`}>
+  <div class="wrap page-head">
+    <p class="crumb"><a href="/projects/">歷屆成果</a>｜{isH ? <><a href={eventHref}>{eventName}</a>・{p.data.group === 'youth' ? '青年組' : '高中組'}</> : <><a href={`/cohorts/${p.data.edition}/project/`}>第 {p.data.edition} 屆專題實作</a>・{p.data.year}</>}</p>
+    <h1>{p.data.title}</h1>
+    <p>{p.data.rank > 0 && <span class="rank">{isH ? medal[p.data.rank] : rankLabel[p.data.rank]}</span>} {p.data.tags.map(t => <span class="tag">{t}</span>)}</p>
+    {!isH && <><Track current="hackathon" showDates={false} /><p class="small muted">出自第二階段專題實作（第 11 屆起改為黑客松）。</p></>}
+  </div>
+  <div class="wrap prose">
+    <h2>團隊</h2>
+    {p.data.team && <p><b>{p.data.team}</b>{p.data.theme && <span class="meta">｜{p.data.theme}</span>}{p.data.advisor && <span class="meta">｜指導：{p.data.advisor}</span>}</p>}
+    {p.data.members.length > 0 && <ul>{p.data.members.map(m => <li>{m.name}｜{m.school}{p.data.overseasReps.includes(m.name) && <span class="tag" style="margin-left:8px">海外參訪代表</span>}</li>)}</ul>}
+    <h2>簡介</h2>
+    <Content />
+    {!p.body?.trim() && p.data.status !== 'todo' && <Todo>補專題摘要（100 字內）。</Todo>}
+    {p.data.status === 'todo' && <Todo>此屆專題名單待補。</Todo>}
+    {/* 只列出有的連結。同學個人帳號的連結已依 PLAN §2.6 移除，不顯示「待補」 */}
+    {(p.data.github || p.data.demo || p.data.poster) && <>
+      <h2>連結</h2>
+      <ul>
+        {p.data.github && <li>GitHub：<a href={p.data.github}>{p.data.github}</a></li>}
+        {p.data.demo && <li>Demo：<a href={p.data.demo}>{p.data.demo}</a></li>}
+        {p.data.poster && <li>簡報：<a href={p.data.poster}>開啟</a></li>}
+      </ul>
+    </>}
+    {related.length > 0 && <>
+      <h2>{isH ? '同場得獎作品' : '同屆專題'}</h2>
+      <ul>{related.map(r => <li><a href={`/projects/${r.id}/`}>{r.data.title}</a></li>)}</ul>
+    </>}
+  </div>
+</Base>

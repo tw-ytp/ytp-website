@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection, render } from 'astro:content';
+const all = (await getCollection('faq')).sort((a, b) => a.data.order - b.data.order);
+const groups = { student: '學生', parent: '家長', teacher: '教師' } as const;
+const rendered = await Promise.all(all.map(async f => ({ ...f, Content: (await render(f)).Content })));
+---
+<Base title="常見問題" description="YTP 報名、線上初賽、程式挑戰營、交通補助、設備、獎金——學生、家長、教師常見問題。">
+  <PageHead crumb="參賽指南" title="常見問題" lead="依身份分頁。找不到答案請來信 ytp@tw-ytp.org。" />
+  <div class="wrap prose">
+    <div class="tabs" role="tablist">
+      {Object.entries(groups).map(([k, v], i) => <button role="tab" aria-selected={i === 0} aria-controls={`tab-${k}`} data-tab={k}>{v}</button>)}
+    </div>
+    {Object.keys(groups).map((k, i) => {
+      const items = rendered.filter(f => f.data.audience === k);
+      const sections = [...new Set(items.map(f => f.data.section))];
+      return (
+        <div id={`tab-${k}`} role="tabpanel" hidden={i !== 0}>
+          {sections.map(sec => (
+            <>
+              <h2>{sec}</h2>
+              {items.filter(f => f.data.section === sec).map(f => (
+                <details>
+                  <summary>{f.data.question}</summary>
+                  <div style="padding-top:8px"><f.Content /></div>
+                  {f.data.status === 'todo' && <Todo>此題答案待執行小組補充。</Todo>}
+                </details>
+              ))}
+            </>
+          ))}
+        </div>
+      );
+    })}
+  </div>
+  <script>
+    document.querySelectorAll('[role=tab]').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('[role=tab]').forEach(x => x.setAttribute('aria-selected', 'false'));
+      document.querySelectorAll('[role=tabpanel]').forEach(p => p.hidden = true);
+      b.setAttribute('aria-selected', 'true');
+      document.getElementById('tab-' + b.dataset.tab).hidden = false;
+    }));
+  </script>
+</Base>

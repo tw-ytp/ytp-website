@@ -1,0 +1,42 @@
+---
+import Base from '../../../layouts/Base.astro';
+import TrackBadge from '../../../components/TrackBadge.astro';
+import StageEvents from '../../../components/StageEvents.astro';
+import { getCollection } from 'astro:content';
+import { PHASE_LABEL, stagePath, cohortPath } from '../../../lib/cohort';
+import season from '../../../data/season.json';
+export async function getStaticPaths() {
+  const all = (await getCollection('cohorts')).sort((a, b) => a.data.edition - b.data.edition);
+  return all.map((c, i) => ({ params: { edition: String(c.data.edition) }, props: { c, prev: all[i - 1], next: all[i + 1] } }));
+}
+const { c, prev, next } = Astro.props;
+const d = c.data;
+const current = d.edition === season.edition;
+---
+<Base title={`第 ${d.edition} 屆・${d.year}`} description={`YTP 少年圖靈計畫第 ${d.edition} 屆（${d.year}）三階段：${d.stages.map(s => s.title).join('、')}。`}>
+  <div class="wrap page-head track-main">
+    <p class="crumb"><TrackBadge track="main" link />｜<a href="/cohorts/">歷屆一覽</a></p>
+    <h1>少年圖靈計畫 第 {d.edition} 屆・{d.year}</h1>
+    <p class="lead measure">{d.era === 'hackathon'
+      ? '程式挑戰營 → 黑客松 → 海外參訪。第二階段自本屆起由專題實作改為黑客松。'
+      : '程式挑戰營 → 專題實作 → 海外參訪。'}</p>
+    {current && season.documents && <div class="btn-row">
+      <a class="btn" href={season.documents.brochure.url}>{season.documents.brochure.label}</a>
+      <a class="btn ghost" href={season.documents.faq.url}>{season.documents.faq.label}</a>
+    </div>}
+  </div>
+  <section class="section">
+    <div class="wrap grid c3">
+      {d.stages.map(s => <div class="rule-left track-main">
+        <p class="meta">{PHASE_LABEL[s.phase]}</p>
+        <h2 style="font-size:var(--fs-4)"><a href={stagePath(d.edition, s.type)}>{s.title}</a></h2>
+        <StageEvents events={s.events} />
+        {s.note && <p class="meta">{s.note}</p>}
+      </div>)}
+    </div>
+  </section>
+  <nav class="wrap pager" aria-label="其他屆次">
+    {prev ? <a href={cohortPath(prev.data.edition)}>← 第 {prev.data.edition} 屆</a> : <span></span>}
+    {next ? <a href={cohortPath(next.data.edition)}>第 {next.data.edition} 屆 →</a> : <span></span>}
+  </nav>
+</Base>

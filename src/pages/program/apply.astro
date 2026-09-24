@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import season from '../../data/season.json';
+const open = season.phase === 'registration';
+---
+<Base title="報名" description="YTP 少年圖靈計畫報名：資格、組隊規則、報名表單。">
+  <PageHead crumb="參賽指南" title="組隊報名" lead={open ? `第 ${season.edition} 屆報名至 ${season.registration.close} 24:00 截止。` : `第 ${season.edition} 屆報名已於 ${season.registration.close} 截止。下一屆預計 ${season.year + 1} 年 3 月開放。`} />
+  <div class="wrap prose">
+    <h2>資格</h2>
+    <ul>
+      <li><b>高中職五專組</b>：國內註冊之公私立高中、高職、五專在學學生（五專為專一至專三），含應屆畢業生。3 人一組。</li>
+      <li><b>國中組</b>：國內註冊之公私立國中在學學生，含國三應屆畢業生。2–3 人一組。</li>
+      <li>可跨校、跨年級組隊；每隊推選一位隊長作為聯絡窗口。休學中請來信附證明。</li>
+      <li>有校內外程式競賽經驗尤佳，但不是必要條件。</li>
+    </ul>
+    <h2>流程</h2>
+    <ol>
+      <li>報名期間由隊長線上填寫全隊基本資料（SurveyCake 表單）。</li>
+      <li>收到自動回覆信即完成報名；沒收到請來信 ytp@tw-ytp.org。</li>
+      <li>初賽前一週前可來信更改隊員；之後不接受異動。</li>
+      <li>初賽晉級後，依通知在期限內填寫正式報名資料與家長同意書（未滿 18 歲）。</li>
+    </ol>
+    <h2>報名表單</h2>
+    {open ? (
+      <div class="btn-row">
+        <a class="btn" href={season.registration.formSenior} rel="noopener">高中職五專組報名</a>
+        <a class="btn" href={season.registration.formJunior} rel="noopener">國中組報名</a>
+      </div>
+    ) : (
+      <p class="muted">目前非報名期間。想在下屆開放時收到通知，請加入 <a href="https://www.facebook.com/groups/1527998927505701/">FB 社團</a>或 <a href="https://discord.gg/KpqC6CEthk">Discord</a>。</p>
+    )}
+    <Todo>每屆更新 season.json 的 formSenior / formJunior 與 close 日期。建議另建「訂閱下屆通知」表單（Google Form 或電子報），取代目前只能靠社群的做法。</Todo>
+    <h2>相關文件</h2>
+    <ul>
+      <li><a href={season.documents.brochure.url}>{season.documents.brochure.label}（PDF）</a></li>
+      <li><a href="/program/faq/">常見問題（網頁版）</a>｜<a href={season.documents.faq.url}>PDF 版</a></li>
+    </ul>
+  </div>
+</Base>

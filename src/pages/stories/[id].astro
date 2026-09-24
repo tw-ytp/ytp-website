@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  return (await getCollection('stories')).map(s => ({ params: { id: s.id }, props: { s } }));
+}
+const { s } = Astro.props;
+const { Content } = await render(s);
+---
+<Base title={s.data.title}>
+  <div class="wrap page-head">
+    <p class="crumb"><a href="/stories/">學員故事</a>｜{s.data.trip}</p>
+    <h1>{s.data.title}</h1>
+    <p class="meta">{s.data.author}｜{s.data.school}｜{s.data.cohort}｜{s.data.date.toISOString().slice(0,10)}</p>
+  </div>
+  <article class="wrap prose">
+    <Content />
+    {s.data.status === 'excerpt' && <Todo>此篇為摘錄，全文待補。<a href={s.data.source_url}>舊站原文</a></Todo>}
+  </article>
+</Base>

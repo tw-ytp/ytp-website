@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import exams from '../../data/exams.json';
+const stageName = { camp: '程式挑戰營', prelim: '線上初賽', revival: '線上復活賽', international: '國際賽（APAC）' };
+const years = [...new Set(exams.items.map(e => e.year))].sort((a, b) => b - a);
+---
+<Base title="歷年考古題" description="YTP 少年圖靈計畫 2016–2026 線上初賽與程式挑戰營考古題下載，高中組與國中組。">
+  <PageHead crumb="備賽資源" title="歷年考古題" lead="想了解出題方式、練習解題技巧，從最近一年開始寫起。" />
+  <div class="wrap">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-g="all">全部</button>
+      <button role="tab" aria-selected="false" data-g="senior">高中職五專組</button>
+      <button role="tab" aria-selected="false" data-g="junior">國中組</button>
+    </div>
+    <table id="exam-table">
+      <thead><tr><th>年份</th><th>組別</th><th>階段</th><th>語言</th><th>下載</th></tr></thead>
+      <tbody>
+        {exams.items.map(e => (
+          <tr data-g={e.group}>
+            <td>{e.year}</td>
+            <td>{e.group === 'senior' ? '高中職五專組' : '國中組'}</td>
+            <td>{stageName[e.stage]}{e.note && <span class="muted">（{e.note}）</span>}</td>
+            <td>{e.lang}</td>
+            <td>{e.url ? <a href={e.url}>PDF</a> : <span class="tag">待上架</span>}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="small muted" style="margin-top:16px">2017、2018 年考古題舊站未提供；2019、2020 年僅高中組。線上練習請到 <a href={exams.oj.url}>{exams.oj.label}</a>。</p>
+    <Todo>所有考古題 PDF 已存於站內 /legacy/。2026 線上初賽高中組、國中組題目尚未提供，兩筆顯示為待上架。</Todo>
+  </div>
+  <script>
+    document.querySelectorAll('[role=tab]').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('[role=tab]').forEach(x => x.setAttribute('aria-selected', 'false'));
+      b.setAttribute('aria-selected', 'true');
+      const g = b.dataset.g;
+      document.querySelectorAll('#exam-table tbody tr').forEach(r => r.hidden = g !== 'all' && r.dataset.g !== g);
+    }));
+  </script>
+</Base>

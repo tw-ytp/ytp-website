@@ -1,0 +1,39 @@
+# 舊站 → 新站 301（Cloudflare Pages / Netlify 格式）
+/apply/            /program/apply/          301
+/latest-news/*     /news/                   301
+/coding-hub/       /resources/              301
+/past-exam/        /resources/past-exams/   301
+/past-exam-eng/    /resources/past-exams/   301
+/coding-heroes/    /projects/               301
+/eventphoto/       /stories/                301
+/project/          /projects/               301
+/news/page/*       /news/                   301
+/1st-projectresult-1/  /projects/2016-03-sorting-hat-based-on/  301
+/1st-projectresult-2/  /projects/2016-06/  301
+/1st-projectresult-3/  /projects/2016-01-reinforcement-learning-ai/  301
+/overseas_wangyanren/     /stories/2023-05/    301
+/overseas_laichaohsun/    /stories/2023-03/   301
+/overseas_tsaochenjui/    /stories/2023-04/   301
+/overseas_huangyunqian/   /stories/2023-02/  301
+/overseas_zhengyunzhen/   /stories/2023-06/  301
+
+# 舊站「軟體青年培力—少年圖靈的故事」訪談
+/youngturing-huang/       /stories/2023-01/   301
+/youngturing-yen-jen/     /stories/2022-02/     301
+/youngturing-xiao/        /stories/2022-04/     301
+/youngturing-casper/      /stories/2022-03/    301
+/youngturing-sean/        /stories/2022-01/     301
+/youngturing-minson/      /stories/2021-01/    301
+# 舊站 2022 海外參訪心得
+/overseas-program-liu/    /stories/2022-06/      301
+/overseas-program-wang/   /stories/2022-05/     301
+# 舊站第七屆晉級名單
+/seventh-codingcamp/      /news/2022-07-camp-finalists/            301
+
+# 2026-09 雙軌改版：青年圖靈++（/turing-plus/）與少年圖靈計畫第 N 屆（/cohorts/N/）
+/hackathon/2026h1/        /turing-plus/2026/                       301
+/hackathon/2026h2/        /cohorts/11/hackathon/                   301
+/hackathon/2026h1         /turing-plus/2026/                       301
+/hackathon/2026h2         /cohorts/11/hackathon/                   301
+/hackathon/               /turing-plus/                            301
+/hackathon/*              /turing-plus/                            301

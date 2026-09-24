@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+.env
+_to_delete/
+
+# 私人名冊（含全名），不進任何 repo
+.private/

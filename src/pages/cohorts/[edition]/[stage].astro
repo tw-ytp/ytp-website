@@ -1,0 +1,66 @@
+---
+import Base from '../../../layouts/Base.astro';
+import TrackBadge from '../../../components/TrackBadge.astro';
+import StageEvents from '../../../components/StageEvents.astro';
+import HackathonDetail from '../../../components/HackathonDetail.astro';
+import { getCollection } from 'astro:content';
+import { PHASE_LABEL, cohortPath, cohortEditions } from '../../../lib/cohort';
+import exams from '../../../data/exams.json';
+export async function getStaticPaths() {
+  const cohorts = await getCollection('cohorts');
+  const hacks = await getCollection('stageHackathons');
+  return cohorts.flatMap(c => c.data.stages.map(s => ({
+    params: { edition: String(c.data.edition), stage: s.type },
+    props: { c, s, hack: s.type === 'hackathon' ? hacks.find(h => h.data.edition === c.data.edition) : undefined },
+  })));
+}
+const { c, s, hack } = Astro.props;
+const d = c.data;
+const n = d.edition;
+
+const projects = s.type === 'project'
+  ? (await getCollection('projects', p => p.data.source === 'stage2-project' && p.data.edition === n)).sort((a, b) => (a.data.rank || 9) - (b.data.rank || 9))
+  : [];
+const stories = s.type === 'overseas'
+  ? (await getCollection('stories', x => x.data.kind === 'overseas' && cohortEditions(x.data.cohort).includes(n))).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  : [];
+const news = s.type === 'camp' ? (await getCollection('news', x => x.data.edition === n)) : [];
+const papers = s.type === 'camp' ? exams.items.filter(e => e.year === d.year && e.url) : [];
+const stageLabel = { prelim: '線上初賽', camp: '程式挑戰營', revival: '複賽', international: '國際賽' };
+const groupLabel = { senior: '高中職五專組', junior: '國中組' };
+const rankLabel = ['', '第一名', '第二名', '第三名'];
+---
+{hack ? <HackathonDetail h={hack} track="main" /> :
+<Base title={`第 ${n} 屆・${s.title}`} description={`YTP 少年圖靈計畫第 ${n} 屆（${d.year}）${PHASE_LABEL[s.phase]}：${s.title}。`}>
+  <div class="wrap page-head track-main">
+    <p class="crumb"><TrackBadge track="main" link />｜<a href={cohortPath(n)}>第 {n} 屆・{d.year}</a>｜{PHASE_LABEL[s.phase]}</p>
+    <h1>{s.title}</h1>
+  </div>
+  <div class="wrap prose">
+    <h2>時程</h2>
+    <StageEvents events={s.events} />
+    {s.note && <p class="meta">{s.note}</p>}
+
+    {s.type === 'camp' && <>
+      <p>報名後先參加線上初賽，依成績通知晉級隊伍到台北參加實體的程式挑戰營。高中組 4 小時、國中組 3 小時。<a href="/program/rules/">規則與獎勵</a></p>
+      {papers.length > 0 && <><h2>本屆試題</h2><ul>{papers.map(e => <li><a href={e.url}>{groupLabel[e.group]}・{stageLabel[e.stage] ?? e.stage}（{e.lang}）</a></li>)}</ul></>}
+      {news.length > 0 && <><h2>本屆公告</h2><ul>{news.map(x => <li><a href={`/news/${x.id}/`}>{x.data.title}</a></li>)}</ul></>}
+    </>}
+
+    {s.type === 'project' && <>
+      <p>程式挑戰營高中組優勝隊伍進入約半年的專題實作，由大學教授指導、精誠集團同仁擔任導師，成果發表會後取得海外參訪選拔資格。</p>
+      <h2>本屆專題（{projects.length}）</h2>
+      {projects.length > 0
+        ? <ul>{projects.map(p => <li>{p.data.rank > 0 && <span class="rank">{rankLabel[p.data.rank]}</span>} <a href={`/projects/${p.id}/`}>{p.data.title}</a></li>)}</ul>
+        : <p class="muted">本屆專題資料待補。</p>}
+    </>}
+
+    {s.type === 'hackathon' && <p class="muted">本屆黑客松詳細資訊待公布。</p>}
+
+    {s.type === 'overseas' && <>
+      <p>由評審委員會依創新創意提案、程式應用專案執行力與行動力進行個人選拔，參訪矽谷新創、科技公司與海外大學創新實驗室。</p>
+      {stories.length > 0 && <><h2>參訪心得</h2><ul>{stories.map(x => <li><a href={`/stories/${x.id}/`}>{x.data.title}</a> <span class="meta">— {x.data.author}・{x.data.trip}</span></li>)}</ul></>}
+    </>}
+  </div>
+  <nav class="wrap pager"><a href={cohortPath(n)}>← 回第 {n} 屆總覽</a></nav>
+</Base>}

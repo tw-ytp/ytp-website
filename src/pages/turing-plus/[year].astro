@@ -1,0 +1,9 @@
+---
+import HackathonDetail from '../../components/HackathonDetail.astro';
+import { getCollection } from 'astro:content';
+export async function getStaticPaths() {
+  return (await getCollection('turingPlus')).map(h => ({ params: { year: h.id }, props: { h } }));
+}
+const { h } = Astro.props;
+---
+<HackathonDetail h={h} track="plus" />

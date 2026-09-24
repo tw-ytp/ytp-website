@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import season from '../../data/season.json';
+---
+<Base title="時程與競賽規則">
+  <PageHead crumb="參賽指南" title="時程與競賽規則" lead="程式挑戰營當天流程、設備規定、評測環境與獎金。內容整理自第 10 屆簡章，第 11 屆以當屆簡章為準。" />
+  <div class="wrap prose">
+    <h2>第 {season.edition} 屆時程</h2>
+    <table>
+      <tbody>{season.stages.map(s => <tr><th>{s.label}</th><td>{s.date}</td><td>{s.groups}</td></tr>)}</tbody>
+    </table>
+    <Todo>第 11 屆簡章 PDF 未能自動讀取，請比對後補上「公布晉級名單」「填寫正式報名」「資格審查」等中間日期。</Todo>
+
+    <h2>程式挑戰營當天（暫訂）</h2>
+    <div class="grid c2">
+      <div>
+        <h3>高中組</h3>
+        <table><tbody>
+          <tr><td>11:00–11:45</td><td>報到、設定設備</td></tr>
+          <tr><td>11:50–12:00</td><td>規則說明</td></tr>
+          <tr><td>12:00–16:00</td><td>程式挑戰對抗賽</td></tr>
+          <tr><td>16:15–16:45</td><td>第二階段介紹與大神解題</td></tr>
+          <tr><td>16:45–17:15</td><td>成果發表、大合照</td></tr>
+        </tbody></table>
+      </div>
+      <div>
+        <h3>國中組</h3>
+        <table><tbody>
+          <tr><td>11:00–11:30</td><td>報到、設定設備</td></tr>
+          <tr><td>11:30–11:40</td><td>規則說明</td></tr>
+          <tr><td>11:45–14:45</td><td>程式挑戰對抗賽</td></tr>
+          <tr><td>15:00–15:45</td><td>計畫介紹與大神解題</td></tr>
+          <tr><td>15:45–16:00</td><td>成果發表</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <h2>設備與場地規定</h2>
+    <ul>
+      <li>每組：筆記型電腦（有無線網卡）1 台、滑鼠 1 個、鍵盤 1 個。請避免音量過大的電競或機械式鍵盤。</li>
+      <li>禁止攜帶其他電子通訊器材進場；可交由主辦單位保管。</li>
+      <li>可帶書籍、手冊、紙本程式碼；不可帶外接硬碟、隨身碟、記憶卡等可讀寫設備。</li>
+      <li>競賽中只能與同隊隊員或工作人員交談。</li>
+      <li>嚴禁使用生成式 AI 工具。允許參考事先儲存在筆電內的題目與解答。</li>
+    </ul>
+
+    <h2>評測環境</h2>
+    <ul>
+      <li>Linux + GNU Compiler Collection；提交、評審、計分都透過無線網路連到主辦單位的競賽系統。</li>
+      <li>C（C11 / gcc）、C++（C++17 / g++）、Java（OpenJDK 1.8）、Python 3.10 或 Python 2.7。</li>
+      <li>檔案名稱須遵守命名規則；含特定 IDE 才能辨識的程式碼將無法通過評測。</li>
+    </ul>
+
+    <h2>獎金與證書</h2>
+    <table>
+      <thead><tr><th></th><th>金牌</th><th>銀牌</th><th>銅牌</th></tr></thead>
+      <tbody>
+        <tr><th>高中職五專組</th><td>30,000 元</td><td>21,000 元</td><td>15,000 元</td></tr>
+        <tr><th>國中組</th><td>15,000 元</td><td>12,000 元</td><td>9,000 元</td></tr>
+      </tbody>
+    </table>
+    <p>全程參加者皆可取得學習證書。專題實作獎學金與成果發表獎金見<a href="/program/">計畫全覽</a>。</p>
+  </div>
+</Base>

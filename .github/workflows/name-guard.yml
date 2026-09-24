@@ -1,0 +1,14 @@
+# 同學全名防漏（PLAN-v1 §2.5-5）。每次 push／PR 以 Secret ROSTER_NAMES（每行一個全名）掃描所有追蹤中的檔案，命中即失敗。
+# 設定：repo Settings → Secrets and variables → Actions → New repository secret，名稱 ROSTER_NAMES。
+name: name-guard
+on: [push, pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/name-guard.mjs
+        env:
+          ROSTER_NAMES: ${{ secrets.ROSTER_NAMES }}

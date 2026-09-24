@@ -1,0 +1,103 @@
+/* YTP 設計 tokens。來源：Claude Design「YTP 少年圖靈計畫」設計系統 tokens.json（2026-09-24 第二版）。
+   請勿手改顏色；改設計系統後重新匯出。元件一律用這裡的變數，不寫死色碼。 */
+:root{
+  --paper:#FAFAF7;
+  --surface:#FFFFFF;
+  --ink:#14213D;
+  --ink-2:#4A5568;
+  --line:#D9DED8;
+  --main:#0066A8;
+  --main-deep:#004E82;
+  --main-tint:#E4F1F8;
+  --on-main:#FFFFFF;
+  --main-faint:#B9D6EA;
+  --logo-lime:#7DB829;
+  --logo-teal:#0088A8;
+  --logo-blue:#0066AE;
+  --plus:#1B5E32;
+  --plus-deep:#12452A;
+  --plus-bright:#8CCB3F;
+  --plus-tint:#E7F2EA;
+  --on-plus:#FFFFFF;
+  --plus-block:#1B5E32;
+  --on-plus-block:#FFFFFF;
+  --plus-soft:#CDEBD6;
+  --signal:#FFB703;
+  --on-signal:#14213D;
+  --year-2026:#C2410C;
+  --year-2027:#3348C8;
+  --year-2028:#A62A74;
+  --year-2029:#6B46B8;
+  --focus-ring:#004E82;
+  --todo-bg:#FFF4D6;
+  --todo-ink:#7A4E00;
+  --font-sans:"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:20px;
+  --space-5:28px;
+  --space-6:40px;
+  --space-7:56px;
+  --radius-0:0px;
+  --radius-sm:4px;
+  --radius-pill:999px;
+  --measure:640px;
+  --wrap:1080px;
+  --rule-track:6px;
+  --node:21px;
+  /* 網站專用：永遠深色的底（白字 logo 帶） */
+  --band-dark:#14213D;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){
+  --paper:#0E1620;
+  --surface:#15212C;
+  --ink:#E6EDF2;
+  --ink-2:#A3B1BE;
+  --line:#2B3A47;
+  --main:#5DB8F0;
+  --main-deep:#9AD3F7;
+  --main-tint:#10283A;
+  --on-main:#0E1620;
+  --main-faint:#1F4A68;
+  --plus:#7FD39A;
+  --plus-deep:#B3E6C2;
+  --plus-tint:#14301F;
+  --on-plus:#0E1620;
+  --year-2026:#FF8A5C;
+  --year-2027:#9AA8FF;
+  --year-2028:#F58BC6;
+  --year-2029:#BCA2F5;
+  --focus-ring:#FFB703;
+  --todo-bg:#3A2E0A;
+  --todo-ink:#FFD66B;
+  color-scheme:dark;
+}
+}
+:root[data-theme="dark"]{
+  --paper:#0E1620;
+  --surface:#15212C;
+  --ink:#E6EDF2;
+  --ink-2:#A3B1BE;
+  --line:#2B3A47;
+  --main:#5DB8F0;
+  --main-deep:#9AD3F7;
+  --main-tint:#10283A;
+  --on-main:#0E1620;
+  --main-faint:#1F4A68;
+  --plus:#7FD39A;
+  --plus-deep:#B3E6C2;
+  --plus-tint:#14301F;
+  --on-plus:#0E1620;
+  --year-2026:#FF8A5C;
+  --year-2027:#9AA8FF;
+  --year-2028:#F58BC6;
+  --year-2029:#BCA2F5;
+  --focus-ring:#FFB703;
+  --todo-bg:#3A2E0A;
+  --todo-ink:#FFD66B;
+  color-scheme:dark;
+}

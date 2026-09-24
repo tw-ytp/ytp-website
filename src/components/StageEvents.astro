@@ -1,0 +1,15 @@
+---
+// 一個階段的子活動與日期。日期未知者顯示「日期待補」，不推估。
+import Todo from './Todo.astro';
+import { fmtRange } from '../lib/cohort';
+interface Props { events: { name: string; start?: string; end?: string; note?: string }[] }
+const { events } = Astro.props;
+const missing = events.filter(e => !e.start).map(e => e.name);
+---
+<table class="events"><tbody>
+  {events.map(e => <tr>
+    <th>{e.name}</th>
+    <td>{e.start ? fmtRange(e.start, e.end) : <span class="muted">日期待補</span>}{e.note && <div class="meta">{e.note}</div>}</td>
+  </tr>)}
+</tbody></table>
+{missing.length > 0 && <Todo>補實際日期：{missing.join('、')}（見 docs/cohort-dates-audit.md）</Todo>}

@@ -1,0 +1,185 @@
+---
+// 首頁年度時程（PLAN-v1 階段 4）：雙泳道 SVG，上方少年圖靈計畫第 N 屆三階段，下方青年圖靈++。
+// 切換鈕：「第 11 屆起（黑客松）」與「第 1–10 屆（專題實作）」——後者以最近一屆專題實作時代（第 10 屆）為例。
+// 手機（< 640px）改顯示直式清單；清單在桌機上只給螢幕閱讀器讀。
+import { getCollection } from 'astro:content';
+import TimelineSvg from './TimelineSvg.astro';
+import { build } from '../lib/timeline';
+interface Props { edition: number }
+const { edition } = Astro.props;
+const cohorts = await getCollection('cohorts');
+const plusEvents = (await getCollection('turingPlus')).sort((a, b) => a.id.localeCompare(b.id));
+const stageHacks = await getCollection('stageHackathons');
+const cur = cohorts.find(c => c.data.edition === edition)!;
+const legacy = cohorts.filter(c => c.data.era === 'project').sort((a, b) => b.data.edition - a.data.edition)[0];
+const titleOf = (n: number) => stageHacks.find(h => h.data.edition === n)?.data.title.split('：')[0];
+const views = [
+  { key: 'now', label: `第 ${cur.data.edition} 屆起｜黑客松`, tl: build(cur, plusEvents, titleOf(cur.data.edition)) },
+  ...(legacy ? [{ key: 'legacy', label: `第 1–10 屆｜專題實作（以第 ${legacy.data.edition} 屆為例）`, tl: build(legacy, plusEvents) }] : []),
+];
+const now = Date.now();
+const stateText = { done: '已結束', now: '進行中', up: '未開始' };
+const listItems = (tl: any) => {
+  const main = [...tl.nodes].sort((a: any, b: any) => a.t - b.t);
+  const phaseOf = (t: number) => tl.segs.find((s: any) => t >= s.t1 && t <= s.t2 + 1) ?? tl.segs.find((s: any) => t <= s.t1);
+  return { main: main.map((n: any) => ({ ...n, phase: phaseOf(n.t) })), plus: tl.plus };
+};
+---
+<div class="tl" data-timeline>
+  {views.length > 1 && <div class="tl-switch" role="group" aria-label="時代">
+    {views.map((v, i) => <button type="button" class="tl-btn" aria-pressed={i === 0 ? 'true' : 'false'} data-view={v.key}>{v.label}</button>)}
+  </div>}
+  {views.map((v, i) => {
+    const L = listItems(v.tl);
+    let lastPhase = '';
+    return <figure class="tl-view" data-view-pane={v.key} hidden={i !== 0}>
+      <div class="tl-desktop"><TimelineSvg tl={v.tl} now={now} uid={`tl-${v.key}`} /></div>
+      <div class="tl-list">
+        <h3 class="tl-list-h main">第 {v.tl.edition} 屆</h3>
+        <ol class="tl-ol main">
+          {L.main.map((n: any) => {
+            const ph = n.phase && n.phase.phase !== lastPhase ? (lastPhase = n.phase.phase, n.phase) : null;
+            return <>
+              {ph && <li class="tl-li-phase">{ph.phase}｜{ph.name}</li>}
+              <li class="tl-li" data-t={n.t}><span class="tl-li-dot" aria-hidden="true"></span><a href={n.href}>{n.name}</a> <span class="tl-li-date">{n.date}</span> <span class="tl-li-state" data-state-text>{n.t < now ? stateText.done : stateText.up}</span></li>
+            </>;
+          })}
+        </ol>
+        {L.plus.length > 0 && <>
+          <h3 class="tl-list-h plus">青年圖靈++</h3>
+          <ol class="tl-ol plus">
+            {L.plus.map((p: any) => <li class="tl-li plus" data-t={p.seg.t2}><span class="tl-li-dot" aria-hidden="true"></span><a href={p.href}>{p.name}</a> <span class="tl-li-date">{p.dates}</span></li>)}
+          </ol>
+        </>}
+      </div>
+      <figcaption class="tl-legend">
+        <span><i class="lg-dot main" aria-hidden="true"></i>少年圖靈計畫（圓點）</span>
+        <span><i class="lg-dot plus" aria-hidden="true"></i>青年圖靈++（方塊）</span>
+        <span><i class="lg-dot now" aria-hidden="true"></i>下一站</span>
+      </figcaption>
+    </figure>;
+  })}
+</div>
+
+<style is:global>
+.tl{margin-top:20px}
+.tl-switch{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tl-btn{font:inherit;font-size:var(--fs-2);padding:8px 14px;min-height:44px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--radius-sm);cursor:pointer}
+.tl-btn[aria-pressed="true"]{background:var(--main);border-color:var(--main);color:var(--on-main);font-weight:700}
+.tl-view{margin:0}
+.tl-svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--font-sans)}
+.tl-svg a{text-decoration:none}
+.tl-svg a:focus-visible{outline:none}
+.tl-svg a:focus-visible .tl-dot,.tl-svg a:focus-visible .tl-psq,.tl-svg a:focus-visible .tl-seg.bg{stroke:var(--focus-ring);stroke-width:3}
+.tl-yearband.year-2026,.tl-year.year-2026{fill:var(--year-2026)} .tl-yearband.year-2027,.tl-year.year-2027{fill:var(--year-2027)}
+.tl-yearband.year-2028,.tl-year.year-2028{fill:var(--year-2028)} .tl-yearband.year-2029,.tl-year.year-2029{fill:var(--year-2029)}
+.tl-year{font-family:var(--font-mono);font-weight:700;font-size:14px}
+.tl-tick{stroke:var(--ink-2);stroke-width:1}
+.tl-month{font-family:var(--font-mono);font-size:12px;fill:var(--ink-2);text-anchor:middle}
+.tl-yeardiv{stroke:var(--line);stroke-width:2}
+.tl-lane{font-size:15px;font-weight:800} .tl-lane.main{fill:var(--main)} .tl-lane.plus{fill:var(--plus)}
+.tl-bracket{fill:none;stroke:var(--main);stroke-width:1.5}
+.tl-phase{font-size:12px;font-weight:700;fill:var(--main);text-anchor:middle}
+.tl-seg{stroke-width:6;stroke-linecap:butt}
+.tl-seg.bg{stroke:var(--main-faint)} .tl-seg.bg.dashed{stroke-dasharray:6 6}
+.tl-seg.prog{stroke:var(--main)}
+.tl-dot{fill:var(--paper);stroke:var(--main);stroke-width:3}
+.tl-node.done .tl-dot{fill:var(--main);stroke:var(--paper);stroke-width:2}
+.tl-halo{fill:transparent}
+.tl-node.now .tl-dot{fill:var(--signal);stroke:var(--on-signal);stroke-width:3}
+.tl-node.now .tl-halo{fill:var(--signal);opacity:.35}
+.tl-name{font-size:13px;font-weight:700;fill:var(--ink);text-anchor:middle}
+.tl-node.now .tl-name{font-weight:900}
+.tl-date{font-family:var(--font-mono);font-size:12px;fill:var(--ink-2);text-anchor:middle}
+.tl-leader{stroke:var(--line);stroke-width:1}
+.tl-pseg{stroke-width:8} .tl-pseg.bg{stroke:var(--plus-tint)} .tl-pseg.prog{stroke:var(--plus)}
+.tl-pbar{fill:var(--plus)}
+.tl-psq{fill:var(--paper);stroke:var(--plus);stroke-width:3}
+.tl-plus.done .tl-psq{fill:var(--plus)}
+.tl-plus.now .tl-psq{fill:var(--signal);stroke:var(--on-signal)}
+.tl-pbox{fill:none;stroke:var(--plus);stroke-width:2;stroke-dasharray:6 5}
+.tl-pname{font-size:13px;font-weight:700;fill:var(--ink)}
+.tl-pdate{font-family:var(--font-mono);font-size:12px;fill:var(--ink-2)}
+.tl-today line{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 4}
+.tl-today text{font-size:12px;font-weight:700;fill:var(--ink)}
+.tl-legend{display:flex;gap:20px;flex-wrap:wrap;font-size:var(--fs-1);color:var(--ink-2);margin-top:8px}
+.lg-dot{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px;border-radius:999px;background:var(--main)}
+.lg-dot.plus{border-radius:3px;background:var(--plus)} .lg-dot.now{background:var(--signal);box-shadow:0 0 0 2px var(--on-signal)}
+/* 動態：軌道線由左畫到右，節點依序亮起（約 1.2 秒） */
+@media (prefers-reduced-motion: no-preference){
+  .tl-seg,.tl-pseg{stroke-dasharray:1;stroke-dashoffset:1;animation:tl-draw .9s ease-out forwards;animation-delay:calc(var(--d,0) * 1ms)}
+  .tl-seg.bg.dashed{stroke-dasharray:6 6;stroke-dashoffset:0;animation:none}
+  .tl-plus .tl-pseg{animation-delay:calc(var(--d,0) * 1ms)}
+  .tl-node,.tl-plus .tl-psq{opacity:0;animation:tl-in .35s ease-out forwards;animation-delay:calc(var(--d,0) * 1ms)}
+  .tl-node.now .tl-halo{animation:tl-breathe 2.4s ease-in-out 1.6s infinite}
+}
+@keyframes tl-draw{to{stroke-dashoffset:0}}
+@keyframes tl-in{to{opacity:1}}
+@keyframes tl-breathe{50%{opacity:.12}}
+/* 直式清單：手機顯示；桌機只給螢幕閱讀器 */
+.tl-list{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tl-list-h{font-size:var(--fs-3);margin:16px 0 8px} .tl-list-h.main{color:var(--main)} .tl-list-h.plus{color:var(--plus)}
+.tl-ol{list-style:none;margin:0 0 0 9px;padding:0 0 0 20px;border-left:3px solid var(--main-faint);display:flex;flex-direction:column;gap:12px}
+.tl-ol.plus{border-left-color:var(--plus-tint)}
+.tl-li{position:relative;font-size:var(--fs-2)}
+.tl-li a{font-weight:700;color:var(--ink)}
+.tl-li-dot{position:absolute;left:-33px;top:4px;width:21px;height:21px;border-radius:999px;border:3px solid var(--main);background:var(--paper)}
+.tl-li.plus .tl-li-dot{border-radius:5px;border-color:var(--plus)}
+.tl-li.done .tl-li-dot{background:var(--main)} .tl-li.plus.done .tl-li-dot{background:var(--plus)}
+.tl-li.now .tl-li-dot{background:var(--signal);border-color:var(--on-signal)}
+.tl-li-date{font-family:var(--font-mono);font-size:var(--fs-1);color:var(--ink-2);display:block}
+.tl-li-state{font-size:var(--fs-1);color:var(--ink-2)}
+.tl-li-phase{font-family:var(--font-mono);font-size:var(--fs-1);font-weight:700;color:var(--main);margin-left:-8px}
+@media (max-width:639px){
+  .tl-desktop{display:none}
+  .tl-list{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal}
+  .tl-legend span:first-child,.tl-legend span:nth-child(2){display:none}
+}
+</style>
+
+<script>
+  // 依瀏覽器的「今天」（台北時間）重算狀態、今天線與進度；切換時代。
+  const DAY = 86400000;
+  const tp = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const [yy, mm, dd] = tp.split('-').map(Number);
+  const today = Date.UTC(yy, mm - 1, dd);
+  const label = `${String(mm).padStart(2, '0')}/${String(dd).padStart(2, '0')}`;
+  const stateText: Record<string, string> = { done: '已結束', now: '下一站', up: '未開始' };
+
+  document.querySelectorAll<HTMLElement>('[data-timeline]').forEach(root => {
+    root.querySelectorAll<SVGSVGElement>('.tl-svg').forEach(svg => {
+      const w0 = +svg.dataset.w0!, w1 = +svg.dataset.w1!, x0 = +svg.dataset.x0!, ppm = +svg.dataset.ppm!;
+      const x = (t: number) => x0 + (Math.min(Math.max(t, w0), w1) - w0) * ppm;
+      const tx = x(today), inWin = today >= w0 && today < w1;
+      const g = svg.querySelector<SVGGElement>('[data-today]')!;
+      g.style.display = inWin ? '' : 'none';
+      g.querySelector('line')!.setAttribute('x1', tx.toFixed(1)); g.querySelector('line')!.setAttribute('x2', tx.toFixed(1));
+      const t = g.querySelector('text')!; t.setAttribute('x', (tx + 6).toFixed(1)); t.textContent = `今天 ${label}`;
+      svg.querySelectorAll<SVGLineElement>('line.prog').forEach(l => {
+        const a = +l.dataset.x1!, b = +l.dataset.x2!;
+        l.setAttribute('x2', Math.min(Math.max(tx, a), b).toFixed(1));
+      });
+      const nodes = [...svg.querySelectorAll<SVGAElement>('.tl-node')].sort((p, q) => +p.dataset.t! - +q.dataset.t!);
+      const next = inWin ? nodes.find(n => +n.dataset.t! >= today) : undefined;
+      nodes.forEach(n => { n.classList.remove('done', 'now', 'up'); n.classList.add(+n.dataset.t! < today ? 'done' : n === next ? 'now' : 'up'); });
+      svg.querySelectorAll<SVGAElement>('.tl-plus:not(.pending)').forEach(p => {
+        const a = +p.dataset.t1!, b = +p.dataset.t2!;
+        p.classList.remove('done', 'now', 'up'); p.classList.add(b < today ? 'done' : a <= today ? 'now' : 'up');
+      });
+      // 清單同步
+      const pane = svg.closest('figure')!;
+      const items = [...pane.querySelectorAll<HTMLElement>('.tl-ol.main .tl-li')];
+      const nextLi = inWin ? items.find(li => +li.dataset.t! >= today) : undefined;
+      items.forEach(li => {
+        const s = +li.dataset.t! < today ? 'done' : li === nextLi ? 'now' : 'up';
+        li.classList.remove('done', 'now', 'up'); li.classList.add(s);
+        const st = li.querySelector('[data-state-text]'); if (st) st.textContent = stateText[s];
+      });
+      pane.querySelectorAll<HTMLElement>('.tl-ol.plus .tl-li').forEach(li => li.classList.toggle('done', +li.dataset.t! < today));
+    });
+    root.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(btn => btn.addEventListener('click', () => {
+      root.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      root.querySelectorAll<HTMLElement>('[data-view-pane]').forEach(p => { p.hidden = p.dataset.viewPane !== btn.dataset.view; });
+    }));
+  });
+</script>

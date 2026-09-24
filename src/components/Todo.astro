@@ -1,0 +1,8 @@
+---
+// 內部待補提示。PUBLIC_SHOW_TODO=false 時「完全不輸出」——
+// 不能只用 CSS 隱藏，否則內部備註（向誰要什麼材料）會留在正式站的 HTML 原始碼裡。
+export const showTodo = import.meta.env.PUBLIC_SHOW_TODO !== 'false';
+interface Props { text?: string }
+const { text } = Astro.props;
+---
+{showTodo && <p class="todo">{text}<slot /></p>}

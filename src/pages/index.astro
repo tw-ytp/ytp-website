@@ -1,0 +1,142 @@
+---
+import Base from '../layouts/Base.astro';
+import Todo from '../components/Todo.astro';
+import YearTimeline from '../components/YearTimeline.astro';
+import markPlusDark from '../assets/marks/mark-plus-dark.svg';
+import season from '../data/season.json';
+import stats from '../data/stats.json';
+import { getCollection } from 'astro:content';
+import { fmtRange } from '../lib/cohort';
+
+const projects = (await getCollection('projects', p => p.data.status !== 'todo' && p.data.source === 'stage2-project'))
+  .filter(p => p.data.rank === 1).sort((a, b) => b.data.year - a.data.year).slice(0, 4);
+const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 1);
+const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+
+const e = season.edition, y = season.year;
+const cohort = (await getCollection('cohorts')).find(c => c.data.edition === e)!;
+const plus = (await getCollection('turingPlus')).sort((a, b) => a.id.localeCompare(b.id));
+const plusNext = plus.find(h => h.data.state !== 'archived') ?? plus.at(-1)!;       // 下一場（或最近一場）
+const plusLast = [...plus].reverse().find(h => h.data.state === 'archived');         // 最近辦完的一場
+const plusState = { archived: '已結束', upcoming: '即將舉行', planning: '籌備中' };
+const shortTitle = (s: string) => s.split('：')[0];
+const hero = {
+  registration: { kicker: `第 ${e} 屆 · ${y}`, h: '報名開跑', sub: `${season.registration.close} 截止。3 人一組（國中組 2–3 人），不收報名費。`,
+    ctas: [['/program/apply/', '立即報名', ''], ['/program/', '看計畫全覽', 'ghost']] },
+  preliminary: { kicker: `第 ${e} 屆 · ${y}`, h: '線上初賽準備中', sub: `${season.stages[1].date}，台灣時間下午，人在哪裡都能參加。`,
+    ctas: [['/resources/past-exams/', '練考古題', ''], ['/program/rules/', '看規則', 'ghost']] },
+  camp: { kicker: `第 ${e} 屆 · ${y}`, h: '程式挑戰營即將舉行', sub: `${season.stages[2].date}，台北實體賽。晉級通知已寄至隊長信箱。`,
+    ctas: [['/news/', '看最新公告', ''], ['/program/faq/', '交通補助與設備 FAQ', 'ghost']] },
+  hackathon: { kicker: `第 ${e} 屆 · ${y}`, h: `YTP${y}H2黑客松進行中`, sub: `${season.stages[3].date} 一日實體賽，教育類應用。8/28 起六場賽前培訓，10/17 名單凍結。限本屆挑戰營高中組晉級隊伍。`,
+    ctas: [[season.hackathonUrl, `YTP${y}H2黑客松`, ''], [`/cohorts/${e}/`, `第 ${e} 屆時程`, 'ghost']] },
+  offseason: { kicker: `第 ${e} 屆回顧`, h: '下一屆，3 月見', sub: `第 ${e + 1} 屆預計 ${y + 1} 年 3 月開放報名；YTP${y + 1}黑客松預計 ${y + 1} 年上半年舉辦。先看看考古題和歷屆專題吧。`,
+    ctas: [['/resources/', '備賽資源', ''], ['/projects/', '歷屆專題', 'ghost']] },
+}[season.phase];
+---
+<Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
+  <section class="section hero">
+    <div class="wrap">
+      <div class="hero-dual">
+        <div class="hero-main">
+          <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap">少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
+          <p class="hero-status">{hero.h}</p>
+          <p class="lead measure">{hero.sub}</p>
+          <div class="btn-row">
+            {hero.ctas.map(([href, label, cls]) => <a class={`btn ${cls}`} href={href}>{label}</a>)}
+          </div>
+        </div>
+        <div class="hero-plus">
+          <img class="hero-mark" src={markPlusDark.src} width="48" height="36" alt="" />
+          <p class="hero-title"><a href="/turing-plus/">青年圖靈<span class="pp">++</span></a></p>
+          <p class="hero-status"><a href={`/turing-plus/${plusNext.id}/`}>{shortTitle(plusNext.data.title)}</a></p>
+          <p class="hero-meta">{plusNext.data.start ? fmtRange(plusNext.data.start, plusNext.data.end) : plusNext.data.period}｜{plusState[plusNext.data.state]}</p>
+          {plusLast && plusLast.id !== plusNext.id && <p class="hero-meta">上一場：<a href={`/turing-plus/${plusLast.id}/`}>{shortTitle(plusLast.data.title)} 得獎作品</a></p>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" aria-labelledby="timeline-h">
+    <div class="wrap">
+      <h2 id="timeline-h">{y}–{y + 1} 年度時程</h2>
+      <YearTimeline edition={e} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid c3">
+      <div class="rule-left">
+        <h3>參加對象</h3>
+        <p>國內註冊之公私立國中（含小六升國中）與高中職五專一至三年級（含國三升高中）在學學生。只要對程式設計有興趣就可以。</p>
+      </div>
+      <div class="rule-left">
+        <h3>三階段歷程</h3>
+        <p>線上初賽、台北實體挑戰營；高中組晉級隊伍再進入 YTP{y}H2黑客松，六場賽前培訓後 12 月一日決賽，優勝者進入隔年的海外參訪選拔。</p>
+      </div>
+      <div class="rule-left">
+        <h3>報名方式</h3>
+        <p>高中職五專組 3 人一組、國中組 2–3 人一組，可跨校跨年級。報名期間線上填表即可，不收費。<a href="/program/faq/">常見問題</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>{stats.sinceYear}–{y} 成果</h2>
+      <div class="grid c4">
+        {stats.items.map(s => (
+          <div class="stat">
+            <b>{s.value ?? '—'}</b><span>{s.label}</span>
+            {s.value == null && <Todo>{s.todo}</Todo>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <h2>第 1–10 屆 專題實作第一名</h2>
+      <ul class="list">
+        {projects.map(p => (
+          <li>
+            <span class="meta">第 {p.data.edition} 屆・{p.data.year}</span><br/>
+            <a href={`/projects/${p.id}/`}><b>{p.data.title}</b></a>
+            <div class="meta">{p.data.members.map(m => `${m.name}（${m.school}）`).join('、')}</div>
+          </li>
+        ))}
+      </ul>
+      <div class="btn-row"><a class="btn ghost" href="/projects/">全部專題</a></div>
+    </div>
+  </section>
+
+  {stories.map(s => (
+    <section class="section">
+      <div class="wrap grid c2">
+        <div>
+          <h2>學員故事</h2>
+          <p class="lead">「{s.body?.replace(/^#.*$/gm, '').replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/<!--[\s\S]*?-->/g, '').trim().split('。')[0]}。」</p>
+          <p class="meta">{s.data.author}，{s.data.school}，{s.data.trip}</p>
+          <a href={`/stories/${s.id}/`}>讀全文</a>
+        </div>
+        <div>
+          <h2>最新消息</h2>
+          <ul class="list">
+            {news.map(n => <li><span class="meta">{n.data.date.toISOString().slice(0,10)}</span><br/><a href={`/news/${n.id}/`}>{n.data.title}</a></li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section alt">
+    <div class="wrap grid c2">
+      <div>
+        <h2>YTP 十週年影片</h2>
+        <p class="lead">「就是要尋找那些年少卻瘋狂、瘋狂到能夠改變世界的少年。」</p>
+        <p><a href="https://www.facebook.com/groups/1527998927505701/" rel="noopener">追蹤 FB 社團</a>｜<a href="https://discord.gg/KpqC6CEthk" rel="noopener">加入 Discord</a></p>
+      </div>
+      <iframe class="video" src={season.video} title="YTP 十週年影片" loading="lazy" allowfullscreen></iframe>
+    </div>
+  </section>
+</Base>

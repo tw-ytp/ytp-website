@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection } from 'astro:content';
+const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="學員故事" description="YTP 學長姐的海外參訪心得與經驗分享。">
+  <PageHead title="學員故事" lead="走過這條路的人怎麼說。海外參訪心得、學長姐分享。" />
+  <div class="wrap">
+    <ul class="list">{stories.map(s => <li><span class="meta">{s.data.date.toISOString().slice(0,10)}｜{s.data.author}{s.data.school && `，${s.data.school}`}｜{s.data.kind === 'interview' ? '少年圖靈的故事' : s.data.trip}</span><br/><a href={`/stories/${s.id}/`}><b>{s.data.title}</b></a></li>)}</ul>
+    <p class="small muted" style="margin-top:16px">活動相簿在 <a href="https://www.facebook.com/groups/1527998927505701/">FB 社團</a>。</p>
+    <Todo>舊站最新消息第 1–4 頁已逐篇檢視完畢：2022–2024 海外參訪心得、2021–2023「軟體青年培力—少年圖靈的故事」訪談皆已搬入。待補：更早期（第 1–4 屆）的校友訪談與去向追蹤，舊站無此內容，需另行採訪。</Todo>
+  </div>
+</Base>

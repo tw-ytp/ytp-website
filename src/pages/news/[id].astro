@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import Todo from '../../components/Todo.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  return (await getCollection('news')).map(n => ({ params: { id: n.id }, props: { n } }));
+}
+const { n } = Astro.props;
+const { Content } = await render(n);
+---
+<Base title={n.data.title}>
+  <div class="wrap page-head">
+    <p class="crumb"><a href="/news/">最新消息</a>｜{n.data.date.toISOString().slice(0,10)}{n.data.edition && `｜第 ${n.data.edition} 屆`}</p>
+    <h1>{n.data.title}</h1>
+  </div>
+  <article class="wrap prose">
+    <Content />
+    {n.data.status === 'excerpt' && <Todo>此篇為摘錄，全文待補。<a href={n.data.source_url}>舊站原文</a></Todo>}
+  </article>
+</Base>

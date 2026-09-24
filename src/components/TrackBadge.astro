@@ -1,0 +1,8 @@
+---
+// 軌道標籤。顏色取自 --track-main / --track-plus（階段 3 由 Claude Design 定稿後替換 tokens）。
+import { TRACK } from '../lib/cohort';
+interface Props { track: 'main' | 'plus'; link?: boolean }
+const { track, link = false } = Astro.props;
+const t = TRACK[track];
+---
+{link ? <a class={`track-badge ${track}`} href={t.href}>{t.label}</a> : <span class={`track-badge ${track}`}>{t.label}</span>}

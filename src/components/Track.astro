@@ -1,0 +1,26 @@
+---
+// 賽道：全站共用的視覺主軸。current = 目前階段 key；compact 用於專題頁頁首
+import season from '../data/season.json';
+interface Props { current?: string; animate?: boolean; showDates?: boolean }
+const { current = season.phase, animate = false, showDates = true } = Astro.props;
+const stages = season.stages.filter(s => s.kind !== 'plus');
+const opens = season.stages.filter(s => s.kind === 'plus');
+const keys = stages.map(s => s.key);
+const idx = keys.indexOf(current);
+const pct = idx <= 0 ? 0 : (idx / (keys.length - 1)) * 80;
+---
+<ol class="track" aria-label="賽季進度">
+  <span class="fill" style={`width:${animate ? 0 : pct}%`} data-target={pct}></span>
+  {stages.map((s, i) => (
+    <li class={i < idx ? 'done' : i === idx ? 'now' : ''} aria-current={i === idx ? 'step' : undefined}>
+      {s.href ? <a href={s.href}>{s.label}</a> : s.label}{showDates && <small>{s.date}</small>}
+    </li>
+  ))}
+</ol>
+{showDates && opens.length > 0 && <ul class="track-open">
+  {opens.map(s => <li><a href={s.href}>{s.label}</a><small>{s.date}｜{s.detail}</small></li>)}
+</ul>}
+{animate && <script>
+  const f = document.querySelector('.track .fill');
+  if (f) requestAnimationFrame(() => { f.style.width = f.dataset.target + '%'; });
+</script>}

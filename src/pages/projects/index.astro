@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection } from 'astro:content';
+const all = (await getCollection('projects')).sort((a, b) => b.data.year - a.data.year || (a.data.rank || 9) - (b.data.rank || 9));
+const editions = [...new Set(all.filter(p => p.data.source === 'stage2-project').map(p => p.data.edition))].sort((a, b) => b - a);
+const events = [...new Set(all.filter(p => p.data.source !== 'stage2-project').map(p => `${p.data.source}:${p.data.event}`))].sort().reverse();
+const eventLabel = (k: string) => { const [src, ev] = k.split(':'); return src === 'turing-plus' ? `YTP${ev}黑客松` : `第 ${ev} 屆黑客松`; };
+const medal = ['', '金牌', '銀牌', '銅牌', '佳作'];
+const tagCount: Record<string, number> = {};
+all.forEach(p => p.data.tags.forEach(t => tagCount[t] = (tagCount[t] || 0) + 1));
+const tags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([t]) => t);
+const rankLabel = ['', '第一名', '第二名', '第三名'];
+---
+<Base title="歷屆成果" description="YTP 少年圖靈計畫歷屆專題資料庫：AI、區塊鏈、資安、教育科技……高中生用半年時間做出的作品，依屆次與技術篩選。">
+  <PageHead title="歷屆成果" lead={`Coding Heroes, let's rock the world. 2016 年至今 ${all.filter(p => p.data.status !== 'todo').length} 件作品：第 1–10 屆專題實作與黑客松得獎作品，依屆次、活動與技術篩選。`} />
+  <div class="wrap">
+    <div class="tabs" role="group" aria-label="依屆次">
+      <button data-f="edition" data-v="all" aria-selected="true">全部屆次</button>
+      {events.map(e => <button data-f="edition" data-v={`h-${e}`} aria-selected="false">{eventLabel(e)}</button>)}
+      {editions.map(e => <button data-f="edition" data-v={e} aria-selected="false">第 {e} 屆</button>)}
+    </div>
+    <div class="tabs" role="group" aria-label="依技術">
+      <button data-f="tag" data-v="all" aria-selected="true">全部技術</button>
+      {tags.map(t => <button data-f="tag" data-v={t} aria-selected="false">{t}</button>)}
+    </div>
+    <ul class="list" id="plist">
+      {all.map(p => (
+        <li data-edition={p.data.source !== 'stage2-project' ? `h-${p.data.source}:${p.data.event}` : p.data.edition} data-tags={p.data.tags.join('|')}>
+          <span class="meta">{p.data.source !== 'stage2-project' ? `${eventLabel(`${p.data.source}:${p.data.event}`)}・${p.data.group === 'youth' ? '青年組' : '高中組'}` : `第 ${p.data.edition} 屆・${p.data.year}`}</span>
+          {p.data.rank > 0 && <> <span class="rank">{p.data.source !== 'stage2-project' ? medal[p.data.rank] : rankLabel[p.data.rank]}</span></>}
+          {p.data.status === 'todo' && <> <span class="tag">待補</span></>}
+          <br/>
+          <a href={`/projects/${p.id}/`}><b>{p.data.title}</b></a>
+          <div class="meta">{[p.data.team, p.data.members.map(m => `${m.name}（${m.school}）`).join('、')].filter(Boolean).join('｜')}</div>
+          <div style="margin-top:6px">{p.data.tags.map(t => <span class="tag">{t}</span>)}</div>
+        </li>
+      ))}
+    </ul>
+    <p class="muted small" id="empty" hidden>沒有符合的專題。</p>
+  </div>
+  <script>
+    const state = { edition: 'all', tag: 'all' };
+    const apply = () => {
+      let n = 0;
+      document.querySelectorAll('#plist li').forEach(li => {
+        const ok = (state.edition === 'all' || li.dataset.edition === state.edition) &&
+                   (state.tag === 'all' || li.dataset.tags.split('|').includes(state.tag));
+        li.hidden = !ok; if (ok) n++;
+      });
+      document.getElementById('empty').hidden = n > 0;
+    };
+    const q = new URLSearchParams(location.search).get('kind');
+    if (q === 'hackathon') { const b = document.querySelector('[data-v^="h-"]'); if (b) b.click(); }
+    document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+      state[b.dataset.f] = b.dataset.v;
+      b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', 'false'));
+      b.setAttribute('aria-selected', 'true'); apply();
+    }));
+  </script>
+</Base>
