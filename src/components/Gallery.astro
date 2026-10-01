@@ -1,0 +1,69 @@
+---
+// 各屆程式挑戰營花絮。mode="full"：完整縮圖格 + 燈箱；mode="preview"：前 6 張，連到程式挑戰營頁。
+import gallery from '../data/gallery.json';
+import { stagePath } from '../lib/cohort';
+interface Props { edition: number; year: number; mode?: 'full' | 'preview' }
+const { edition, year, mode = 'full' } = Astro.props;
+const photos: { f: string; w: number; h: number }[] = (gallery as any)[String(edition)] ?? [];
+const base = `/photos/${edition}/`;
+const label = (i: number) => `第 ${edition} 屆程式挑戰營 照片 ${i + 1}／${photos.length}`;
+const shown = mode === 'preview' ? photos.slice(0, 6) : photos;
+const href = `${stagePath(edition, 'camp')}#photos`;
+---
+{photos.length > 0 && (mode === 'preview'
+  ? <section class="section gallery-preview">
+      <div class="wrap">
+        <h2>{year} 程式挑戰營 花絮</h2>
+        <ul class="gallery-grid g6">
+          {shown.map((p, i) => <li><a href={href}><img src={`${base}${p.f}-t.jpg`} width={p.w > p.h ? 480 : Math.round(480 * p.w / p.h)} height={p.w > p.h ? Math.round(480 * p.h / p.w) : 480} alt={label(i)} loading="lazy" decoding="async" /></a></li>)}
+        </ul>
+        <p><a href={href}>全部 {photos.length} 張 →</a></p>
+      </div>
+    </section>
+  : <section class="gallery" id="photos" data-gallery>
+      <h2>{year} 程式挑戰營 花絮（{photos.length}）</h2>
+      <ul class="gallery-grid">
+        {shown.map((p, i) => <li><a href={`${base}${p.f}.jpg`} data-i={i} data-w={p.w} data-h={p.h}><img src={`${base}${p.f}-t.jpg`} width={p.w > p.h ? 480 : Math.round(480 * p.w / p.h)} height={p.w > p.h ? Math.round(480 * p.h / p.w) : 480} alt={label(i)} loading="lazy" decoding="async" /></a></li>)}
+      </ul>
+      <dialog class="lightbox" aria-label={`${year} 程式挑戰營 花絮`}>
+        <figure><img alt="" /><figcaption class="meta"></figcaption></figure>
+        <button type="button" class="lb-prev" aria-label="上一張">‹</button>
+        <button type="button" class="lb-next" aria-label="下一張">›</button>
+        <button type="button" class="lb-close" aria-label="關閉">×</button>
+      </dialog>
+    </section>)}
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
+    const links = [...root.querySelectorAll<HTMLAnchorElement>('.gallery-grid a')];
+    const dlg = root.querySelector<HTMLDialogElement>('dialog')!;
+    const img = dlg.querySelector('img')!;
+    const cap = dlg.querySelector('figcaption')!;
+    let cur = 0;
+    const show = (i: number) => {
+      cur = (i + links.length) % links.length;
+      const a = links[cur];
+      img.src = a.href; img.width = +a.dataset.w!; img.height = +a.dataset.h!;
+      img.alt = a.querySelector('img')!.alt;
+      cap.textContent = `${cur + 1}／${links.length}`;
+      // 預載下一張
+      const nx = links[(cur + 1) % links.length]; if (nx) { const p = new Image(); p.src = nx.href; }
+    };
+    links.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); show(i); dlg.showModal(); }));
+    dlg.querySelector('.lb-prev')!.addEventListener('click', () => show(cur - 1));
+    dlg.querySelector('.lb-next')!.addEventListener('click', () => show(cur + 1));
+    dlg.querySelector('.lb-close')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(cur + 1); }
+    });
+    let x0: number | null = null;
+    dlg.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    dlg.addEventListener('touchend', e => {
+      if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
+    });
+    dlg.addEventListener('close', () => links[cur]?.focus());
+  }
+</script>

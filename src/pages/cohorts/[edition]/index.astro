@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import TrackBadge from '../../../components/TrackBadge.astro';
 import StageEvents from '../../../components/StageEvents.astro';
+import Gallery from '../../../components/Gallery.astro';
 import { getCollection } from 'astro:content';
 import { PHASE_LABEL, stagePath, cohortPath } from '../../../lib/cohort';
 import season from '../../../data/season.json';
@@ -35,6 +36,7 @@ const current = d.edition === season.edition;
       </div>)}
     </div>
   </section>
+  <Gallery edition={d.edition} year={d.year} mode="preview" />
   <nav class="wrap pager" aria-label="其他屆次">
     {prev ? <a href={cohortPath(prev.data.edition)}>← 第 {prev.data.edition} 屆</a> : <span></span>}
     {next ? <a href={cohortPath(next.data.edition)}>第 {next.data.edition} 屆 →</a> : <span></span>}

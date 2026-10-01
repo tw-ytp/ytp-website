@@ -5,7 +5,8 @@
 /past-exam/        /resources/past-exams/   301
 /past-exam-eng/    /resources/past-exams/   301
 /coding-heroes/    /projects/               301
-/eventphoto/       /stories/                301
+/eventphoto/       /cohorts/                301
+/eventphoto/*      /cohorts/                301
 /project/          /projects/               301
 /news/page/*       /news/                   301
 /1st-projectresult-1/  /projects/2016-03-sorting-hat-based-on/  301
