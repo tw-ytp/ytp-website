@@ -6,7 +6,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # name: (source, aspect w:h, focus-y 0..1 用於垂直裁切[, 先保留左側寬度比例 0..1：讓圖中主體往右移，避開左側標題])
 BANNERS = {
-    'home':       ('public/photos/11/001.jpg', (16, 7), 0.45),
+    'home':       ('public/photos/11/045.jpg', (16, 8), 0.55),   # 第 11 屆挑戰營大合照
     'program':    ('public/photos/11/027.jpg', (21, 9), 0.5),
     'cohorts':    ('public/photos/11/045.jpg', (21, 9), 0.55),
     'projects':   ('public/photos/11/018.jpg', (21, 9), 0.4),
