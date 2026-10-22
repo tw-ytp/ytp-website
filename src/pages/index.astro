@@ -32,33 +32,49 @@ const hero = {
   offseason: { kicker: `第 ${e} 屆回顧`, h: '下一屆，3 月見', sub: `第 ${e + 1} 屆預計 ${y + 1} 年 3 月開放報名；YTP${y + 1}黑客松預計 ${y + 1} 年上半年舉辦。先看看考古題和歷屆專題吧。`,
     ctas: [['/resources/', '備賽資源', ''], ['/projects/', '歷屆專題', 'ghost']] },
 }[season.phase];
+// 候選底圖（Unsplash License）。key 對應 ?bg=；credit 為攝影者，上線時放在頁尾或 about 頁致謝。
+const u = (id: string) => `https://images.unsplash.com/${id}?w=1800&h=900&fit=crop&q=70&fm=webp`;
+const bgs = [
+  { key: 'matrix',  label: 'A 綠色程式雨', src: u('photo-1547190027-9156686aa2f0'), credit: 'Photo by Markus Spiske on Unsplash' },
+  { key: 'grid',    label: 'B 藍色光點網格', src: u('photo-1790955208838-12fb1886b0ba'), credit: 'Photo by HYEWON HWANG on Unsplash' },
+  { key: 'circuit', label: 'C 深藍電路板', src: u('photo-1592659762303-90081d34b277'), credit: 'Photo by Vishnu Mohanan on Unsplash' },
+];
 ---
 <Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
-  <section class="section hero banner banner-hero">
+  {/* 首頁 Hero「照片全幅」版（home-image-bg 分支）：比照舊官網，整幅底圖 + 置中文字。
+      底圖三選一，網址帶 ?bg=matrix|grid|circuit 切換；右下角也有切換鈕，定案後移除。
+      圖片暫時直連 Unsplash CDN（Unsplash License，免費商用）；定案後下載到 public/banners/ 再由 gen_banners.py 產生 WebP。 */}
+  <section class="section hero banner banner-photo" id="hero">
     <picture class="banner-bg" aria-hidden="true">
-      <source media="(min-width: 760px)" srcset="/banners/home-1800.webp" />
-      <img src="/banners/home-900.webp" width="900" height="450" alt="" loading="eager" fetchpriority="high" decoding="async" />
+      <img id="hero-bg" src={bgs[0].src} width="1800" height="900" alt="" loading="eager" fetchpriority="high" decoding="async" />
     </picture>
-    <div class="wrap">
-      <div class="hero-dual">
-        <div class="hero-main">
-          <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap">少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
-          <p class="hero-status">{hero.h}</p>
-          <p class="lead measure">{hero.sub}</p>
-          <div class="btn-row">
-            {hero.ctas.map(([href, label, cls]) => <a class={`btn ${cls}`} href={href}>{label}</a>)}
-          </div>
-        </div>
-        <div class="hero-plus">
-          <img class="hero-mark" src={markPlusDark.src} width="48" height="36" alt="" />
-          <p class="hero-title"><a href="/turing-plus/">青年圖靈<span class="pp">++</span></a></p>
-          <p class="hero-status"><a href={`/turing-plus/${plusNext.id}/`}>{shortTitle(plusNext.data.title)}</a></p>
-          <p class="hero-meta">{plusNext.data.start ? fmtRange(plusNext.data.start, plusNext.data.end) : plusNext.data.period}｜{plusState[plusNext.data.state]}</p>
-          {plusLast && plusLast.id !== plusNext.id && <p class="hero-meta">上一場：<a href={`/turing-plus/${plusLast.id}/`}>{shortTitle(plusLast.data.title)} 得獎作品</a></p>}
-        </div>
+    <div class="wrap banner-body hero-photo-body">
+      <p class="kicker">Young Turing Program</p>
+      <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap">少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
+      <p class="hero-status">{hero.h}</p>
+      <p class="lead">{hero.sub}</p>
+      <div class="btn-row">
+        {hero.ctas.map(([href, label, cls]) => <a class={`btn ${cls}`} href={href}>{label}</a>)}
       </div>
     </div>
   </section>
+  <section class="hero-plus-band">
+    <div class="wrap">
+      <p class="hero-title"><a href="/turing-plus/"><img class="hero-mark" src={markPlusDark.src} width="32" height="24" alt="" />青年圖靈<span class="pp">++</span></a></p>
+      <p class="hero-status"><a href={`/turing-plus/${plusNext.id}/`}>{shortTitle(plusNext.data.title)}</a>
+        <span class="hero-meta">｜{plusNext.data.start ? fmtRange(plusNext.data.start, plusNext.data.end) : plusNext.data.period}｜{plusState[plusNext.data.state]}</span></p>
+      {plusLast && plusLast.id !== plusNext.id && <p class="hero-meta">上一場：<a href={`/turing-plus/${plusLast.id}/`}>{shortTitle(plusLast.data.title)} 得獎作品</a></p>}
+    </div>
+  </section>
+  <div class="bg-switch" role="group" aria-label="底圖切換（預覽用）">
+    {bgs.map(b => <button type="button" data-bg={b.key} title={b.credit}>{b.label}</button>)}
+  </div>
+  <script define:vars={{ bgs }}>
+    const img = document.getElementById('hero-bg'), btns = [...document.querySelectorAll('.bg-switch button')];
+    const apply = (key) => { const b = bgs.find(x => x.key === key) || bgs[0]; img.src = b.src; btns.forEach(x => x.setAttribute('aria-pressed', String(x.dataset.bg === b.key))); };
+    apply(new URLSearchParams(location.search).get('bg'));
+    btns.forEach(x => x.addEventListener('click', () => { history.replaceState(null, '', '?bg=' + x.dataset.bg); apply(x.dataset.bg); }));
+  </script>
 
   <section class="section alt" aria-labelledby="timeline-h">
     <div class="wrap">

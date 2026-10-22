@@ -178,7 +178,7 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 .banner-body h1{color:#fff;font-size:var(--fs-7);margin:0 0 .3em;text-wrap:balance;text-shadow:0 2px 8px rgba(0,0,0,.45)}
 .banner-body .lead{color:rgba(255,255,255,.92);margin-bottom:.6em;text-shadow:0 1px 6px rgba(0,0,0,.45)}
 .banner-body .crumb{color:rgba(255,255,255,.8);margin-bottom:12px}
-.banner-body a:not(.btn):not(.track-badge){color:#fff;text-decoration:underline;text-underline-offset:3px}
+.banner-body a:not(.btn):not(.track-badge):not(.hero-title a){color:#fff;text-decoration:underline;text-underline-offset:3px}
 .banner-body .btn-row{margin-top:14px}
 .banner-body .btn{background:#fff;border-color:#fff;color:var(--band-dark)}
 .banner-body .btn:hover{background:rgba(255,255,255,.88);border-color:rgba(255,255,255,.88)}
@@ -198,3 +198,30 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 .banner-hero .banner-bg img{object-position:center 45%}
 .banner-hero .hero-main,.banner-hero .hero-plus{box-shadow:0 12px 32px rgba(0,0,0,.28)}
 .banner-hero .hero-main{background:var(--surface)}
+
+/* 首頁 Hero「照片全幅」版（home-image-bg 分支） */
+.banner-photo::before{background:linear-gradient(180deg,rgba(var(--overlay),.55) 0%,rgba(var(--overlay),.45) 50%,rgba(var(--overlay),.7) 100%)}
+.banner-photo::after{display:none}
+.banner-photo.section{padding:96px 0 88px}
+.hero-photo-body{text-align:center;align-items:center;max-width:860px}
+.hero-photo-body .kicker{font-family:var(--font-mono);letter-spacing:.18em;text-transform:uppercase;font-size:var(--fs-2);color:rgba(255,255,255,.8);margin:0 0 8px}
+.hero-photo-body .hero-title{font-size:60px;color:#fff;margin-bottom:16px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.hero-photo-body .hero-title a,.hero-photo-body .hero-title .slot{color:#fff}
+.hero-photo-body .hero-title .slot{color:var(--logo-lime)}
+.hero-photo-body .hero-status{color:#fff;font-size:var(--fs-5);text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.hero-photo-body .lead{max-width:640px;margin-left:auto;margin-right:auto}
+.hero-photo-body .btn-row{justify-content:center;margin-top:22px}
+@media(max-width:640px){.hero-photo-body .hero-title{font-size:38px}.banner-photo.section{padding:56px 0 48px}}
+.hero-plus-band{background:var(--plus-block);color:var(--on-plus-block);padding:22px 0}
+.hero-plus-band .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 28px}
+.hero-plus-band .hero-title{font-size:26px;margin:0}
+.hero-plus-band .hero-title a{color:var(--on-plus-block);display:inline-flex;align-items:center;gap:8px}
+.hero-plus-band .pp{font-family:var(--font-mono);font-weight:700;color:var(--plus-bright);position:relative;top:-.28em;letter-spacing:-.06em}
+.hero-plus-band .hero-status{color:var(--on-plus-block);font-size:var(--fs-3);margin:0}
+.hero-plus-band .hero-status a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.hero-plus-band .hero-meta{color:var(--plus-soft);margin:0;font-weight:400}
+.hero-plus-band .hero-meta a{color:var(--on-plus-block)}
+.hero-plus-band :focus-visible{outline-color:var(--on-plus-block)}
+.bg-switch{position:fixed;right:12px;bottom:12px;z-index:20;display:flex;gap:4px;background:rgba(20,33,61,.9);padding:6px;border-radius:var(--radius-pill);backdrop-filter:blur(6px)}
+.bg-switch button{font:inherit;font-size:var(--fs-1);font-weight:700;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.4);border-radius:var(--radius-pill);padding:4px 10px;cursor:pointer}
+.bg-switch button[aria-pressed="true"]{background:#fff;color:var(--band-dark);border-color:#fff}
