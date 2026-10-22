@@ -42,7 +42,10 @@ const activeHref = score(active) > 0 ? active[0] : '';
 <body>
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/">YTP <span>少年圖靈計畫</span></a>
+      <a class="brand" href="/" aria-label="YTP 少年圖靈計畫 首頁">
+        <img class="brand-logo brand-logo-light" src="/brand/logo_ytp_rgb.png" width="150" height="45" alt="YTP 少年圖靈計畫 Young Turing Program" />
+        <img class="brand-logo brand-logo-dark" src="/brand/ytp-logo-white.png" width="142" height="45" alt="" aria-hidden="true" />
+      </a>
       <button class="menu-btn" aria-expanded="false" aria-controls="nav">選單</button>
       <nav class="nav" id="nav" aria-label="主選單">
         {nav.map(([href, label, track]) => (
@@ -76,7 +79,7 @@ const activeHref = score(active) > 0 ? active[0] : '';
         <ul>
           <li><a href="/about/">關於 YTP</a></li>
           <li><a href="/resources/">備賽資源</a></li>
-          <li><a href="/cohorts/">歷屆一覽</a></li>
+          <li><a href="/cohorts/">歷屆資訊</a></li>
           <li><a href="/downloads/">簡章與檔案下載</a></li>
           <li><a href="/en/">English</a></li>
         </ul>

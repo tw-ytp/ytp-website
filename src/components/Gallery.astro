@@ -17,7 +17,7 @@ const href = `${stagePath(edition, 'camp')}#photos`;
         <ul class="gallery-grid g6">
           {shown.map((p, i) => <li><a href={href}><img src={`${base}${p.f}-t.jpg`} width={p.w > p.h ? 480 : Math.round(480 * p.w / p.h)} height={p.w > p.h ? Math.round(480 * p.h / p.w) : 480} alt={label(i)} loading="lazy" decoding="async" /></a></li>)}
         </ul>
-        <p><a href={href}>全部 {photos.length} 張 →</a></p>
+        <p><a href={href}>more</a></p>
       </div>
     </section>
   : <section class="gallery" id="photos" data-gallery>

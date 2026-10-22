@@ -8,7 +8,7 @@ const stories = (await getCollection('stories')).sort((a, b) => b.data.date.valu
 const kind = { announcement: '公告', recap: '回顧', notice: '通知' };
 ---
 <Base title="最新消息">
-  <Banner image="news" title="最新消息" lead="長效內容放這裡；即時通知請看 FB 社團與 Discord。" />
+  <Banner image="news" title="最新消息" />
   <section class="section">
     <div class="wrap grid c2">
       <div>

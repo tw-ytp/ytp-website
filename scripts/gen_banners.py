@@ -12,8 +12,8 @@ BANNERS = {
     'projects':   ('public/photos/11/018.jpg', (21, 9), 0.4),
     'resources':  ('public/photos/11/042.jpg', (21, 9), 0.5),
     'news':       ('public/photos/10/022.jpg', (21, 9), 0.5),
-    'stories':    ('public/legacy/web/LINE_ALBUM_2024813Google_Gino_240903_12.jpg', (21, 9), 0.6),
-    'turing-plus':('public/photos/11/016.jpg', (21, 9), 0.12),   # 黑客松主視覺的文字會和標題打架，先用挑戰營照片；有 2026H1 現場照再換
+    'stories':    ('src/assets/banner-src/overseas-2024-google.jpg', (21, 9), 0.55),   # 2024 海外參訪 Google 園區（2026-10-22 提供）
+    'turing-plus':('src/assets/banner-src/hackathon-2026.jpg', (21, 9), 0.45),   # YTP2026黑客松現場（2026-10-22 提供）
     'about':      ('public/photos/10/064.jpg', (21, 9), 0.5),
 }
 for name, spec in BANNERS.items():

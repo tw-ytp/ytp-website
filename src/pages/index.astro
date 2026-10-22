@@ -27,31 +27,24 @@ const hero = {
     ctas: [['/resources/past-exams/', '練考古題', ''], ['/program/rules/', '看規則', 'ghost']] },
   camp: { kicker: `第 ${e} 屆 · ${y}`, h: '程式挑戰營即將舉行', sub: `${season.stages[2].date}，台北實體賽。晉級通知已寄至隊長信箱。`,
     ctas: [['/news/', '看最新公告', ''], ['/program/faq/', '交通補助與設備 FAQ', 'ghost']] },
-  hackathon: { kicker: `第 ${e} 屆 · ${y}`, h: `YTP${y}H2黑客松進行中`, sub: `${season.stages[3].date} 一日實體賽，教育類應用。8/28 起六場賽前培訓，10/17 名單凍結。限本屆挑戰營高中組晉級隊伍。`,
+  hackathon: { kicker: `第 ${e} 屆 · ${y}`, h: `YTP${y}H2黑客松進行中`, sub: `${season.stages[3].date} 一日實體賽。限本屆挑戰營高中組晉級隊伍。`,
     ctas: [[season.hackathonUrl, `YTP${y}H2黑客松`, ''], [`/cohorts/${e}/`, `第 ${e} 屆時程`, 'ghost']] },
   offseason: { kicker: `第 ${e} 屆回顧`, h: '下一屆，3 月見', sub: `第 ${e + 1} 屆預計 ${y + 1} 年 3 月開放報名；YTP${y + 1}黑客松預計 ${y + 1} 年上半年舉辦。先看看考古題和歷屆專題吧。`,
     ctas: [['/resources/', '備賽資源', ''], ['/projects/', '歷屆專題', 'ghost']] },
 }[season.phase];
-// 候選底圖。A 定案：平面程式碼晶格（scripts/gen_lattice_bg.py，Claude Design 方案 6）；B 程式碼牆（gen_codewall_bg.py）；B、C 為 Unsplash License 照片，
-// 以 Unsplash CDN 的 duotone 參數轉成黑底綠光（NVIDIA 色調）。key 對應 ?bg=；credit 上線時放致謝。
-const u = (id: string, extra = '') => `https://images.unsplash.com/${id}?w=1800&h=900&fit=crop&q=70&fm=webp${extra}`;
-const bgs = [
-  { key: 'lattice',  label: 'A 程式碼晶格', src: '/banners/home-lattice-1800.webp', dim: 0.8, credit: 'YTP 自製（scripts/gen_lattice_bg.py，Claude Design 方案 6）' },   // 2026-10-22 定案
-  { key: 'codewall', label: 'B 程式碼牆', src: '/banners/home-codewall-1800.webp', dim: 0.85, credit: 'YTP 自製（scripts/gen_codewall_bg.py）' },
-  { key: 'circuit',  label: 'C 綠光電路板', src: u('photo-1631375937044-6dd5beac01d2', '&duotone=000000,76B900&bri=-20'), dim: 0.95, credit: 'Photo by Malachi Brooks on Unsplash' },
-];
+// 首頁底圖：平面程式碼晶格（scripts/gen_lattice_bg.py，Claude Design 方案 6，2026-10-22 定案）
+const heroBg = { src: '/banners/home-lattice-1800.webp', srcSmall: '/banners/home-lattice-900.webp', dim: 0.8 };
 ---
 <Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
-  {/* 首頁 Hero「照片全幅」版（home-image-bg 分支）：比照舊官網，整幅底圖 + 置中文字。
-      底圖三選一，網址帶 ?bg=matrix|grid|circuit 切換；右下角也有切換鈕，定案後移除。
-      圖片暫時直連 Unsplash CDN（Unsplash License，免費商用）；定案後下載到 public/banners/ 再由 gen_banners.py 產生 WebP。 */}
-  <section class="section hero banner banner-photo" id="hero">
+  {/* 首頁 Hero「照片全幅」版：整幅程式碼晶格底圖 + 置中文字。 */}
+  <section class="section hero banner banner-photo" id="hero" style={`--dim:${heroBg.dim}`}>
     <picture class="banner-bg" aria-hidden="true">
-      <img id="hero-bg" src={bgs[0].src} width="1800" height="900" alt="" loading="eager" fetchpriority="high" decoding="async" />
+      <source media="(min-width: 760px)" srcset={heroBg.src} />
+      <img src={heroBg.srcSmall} width="900" height="450" alt="" loading="eager" fetchpriority="high" decoding="async" />
     </picture>
     <div class="wrap banner-body hero-photo-body">
-      <p class="kicker">Young Turing Program</p>
-      <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap">少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
+      <img class="hero-logo" src="/brand/ytp-logo-white.png" width="184" height="59" alt="YTP 少年圖靈計畫 Young Turing Program" loading="eager" />
+      <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap"><span class="ytp">YTP</span> 少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
       <p class="hero-status">{hero.h}</p>
       <p class="lead">{hero.sub}</p>
       <div class="btn-row">
@@ -63,19 +56,10 @@ const bgs = [
     <div class="wrap">
       <p class="hero-title"><a href="/turing-plus/"><img class="hero-mark" src={markPlusDark.src} width="32" height="24" alt="" />青年圖靈<span class="pp">++</span></a></p>
       <p class="hero-status"><a href={`/turing-plus/${plusNext.id}/`}>{shortTitle(plusNext.data.title)}</a>
-        <span class="hero-meta">｜{plusNext.data.start ? fmtRange(plusNext.data.start, plusNext.data.end) : plusNext.data.period}｜{plusState[plusNext.data.state]}</span></p>
-      {plusLast && plusLast.id !== plusNext.id && <p class="hero-meta">上一場：<a href={`/turing-plus/${plusLast.id}/`}>{shortTitle(plusLast.data.title)} 得獎作品</a></p>}
+        <span class="hero-meta">｜{plusNext.data.start ? fmtRange(plusNext.data.start, plusNext.data.end) : plusNext.data.period.replace(/（確切日期待公布）/, '')}｜{plusState[plusNext.data.state]}</span></p>
+      {plusLast && plusLast.id !== plusNext.id && <p class="hero-meta"><a href={`/turing-plus/${plusLast.id}/`}>{shortTitle(plusLast.data.title)} 得獎作品</a></p>}
     </div>
   </section>
-  <div class="bg-switch" role="group" aria-label="底圖切換（預覽用）">
-    {bgs.map(b => <button type="button" data-bg={b.key} title={b.credit}>{b.label}</button>)}
-  </div>
-  <script define:vars={{ bgs }}>
-    const img = document.getElementById('hero-bg'), btns = [...document.querySelectorAll('.bg-switch button')];
-    const apply = (key) => { const b = bgs.find(x => x.key === key) || bgs[0]; img.src = b.src; document.getElementById('hero').style.setProperty('--dim', b.dim); btns.forEach(x => x.setAttribute('aria-pressed', String(x.dataset.bg === b.key))); };
-    apply(new URLSearchParams(location.search).get('bg'));
-    btns.forEach(x => x.addEventListener('click', () => { history.replaceState(null, '', '?bg=' + x.dataset.bg); apply(x.dataset.bg); }));
-  </script>
 
   <section class="section alt" aria-labelledby="timeline-h">
     <div class="wrap">
@@ -88,15 +72,15 @@ const bgs = [
     <div class="wrap grid c3">
       <div class="rule-left">
         <h3>參加對象</h3>
-        <p>國內註冊之公私立國中（含小六升國中）與高中職五專一至三年級（含國三升高中）在學學生。只要對程式設計有興趣就可以。</p>
+        <p>國內註冊之公私立國中（含小六升國中）與高中職五專一至三年級（含國三升高中）在學學生。</p>
       </div>
       <div class="rule-left">
         <h3>三階段歷程</h3>
-        <p>線上初賽、台北實體挑戰營；高中組晉級隊伍再進入 YTP{y}H2黑客松，六場賽前培訓後 12 月一日決賽，優勝者進入隔年的海外參訪選拔。</p>
+        <p>線上初賽、台北實體挑戰營；高中組晉級隊伍再進入 YTP{y}H2黑客松，完成六場賽前培訓後，12 月 12 日黑客松競賽優勝者將取得隔年海外參訪選拔資格。</p>
       </div>
       <div class="rule-left">
         <h3>報名方式</h3>
-        <p>高中職五專組 3 人一組、國中組 2–3 人一組，可跨校跨年級。報名期間線上填表即可，不收費。<a href="/program/faq/">常見問題</a></p>
+        <p>高中職五專組 3 人一組、國中組 2–3 人一組，可跨校跨年級。報名期間線上填表即可。<a href="/program/faq/">常見問題</a></p>
       </div>
     </div>
   </section>
@@ -151,13 +135,9 @@ const bgs = [
   ))}
 
   <section class="section alt">
-    <div class="wrap grid c2">
-      <div>
-        <h2>YTP 十週年影片</h2>
-        <p class="lead">「就是要尋找那些年少卻瘋狂、瘋狂到能夠改變世界的少年。」</p>
-        <p><a href="https://www.facebook.com/groups/1527998927505701/" rel="noopener">追蹤 FB 社團</a>｜<a href="https://discord.gg/KpqC6CEthk" rel="noopener">加入 Discord</a></p>
-      </div>
-      <iframe class="video" src={season.video} title="YTP 十週年影片" loading="lazy" allowfullscreen></iframe>
+    <div class="wrap">
+      <h2>社群</h2>
+      <p class="lead"><a href="https://www.facebook.com/groups/1527998927505701/" rel="noopener">追蹤 FB 社團</a>｜<a href="https://discord.gg/KpqC6CEthk" rel="noopener">加入 Discord</a></p>
     </div>
   </section>
 </Base>

@@ -13,7 +13,7 @@ const tags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 14).m
 const rankLabel = ['', '第一名', '第二名', '第三名'];
 ---
 <Base title="歷屆成果" description="YTP 少年圖靈計畫歷屆專題資料庫：AI、區塊鏈、資安、教育科技……高中生用半年時間做出的作品，依屆次與技術篩選。">
-  <Banner image="projects" title="歷屆成果" lead={`Coding Heroes, let's rock the world. 2016 年至今 ${all.filter(p => p.data.status !== 'todo').length} 件作品：第 1–10 屆專題實作與黑客松得獎作品，依屆次、活動與技術篩選。`} />
+  <Banner image="projects" title="歷屆成果" />
   <div class="wrap">
     <div class="tabs" role="group" aria-label="依屆次">
       <button data-f="edition" data-v="all" aria-selected="true">全部屆次</button>

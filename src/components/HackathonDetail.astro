@@ -30,7 +30,6 @@ const cohortYear = stage ? (await getCollection('cohorts')).find(c => c.data.edi
     <h1>{d.title}</h1>
     {d.tagline && <p class="lead measure">{d.tagline}</p>}
     {d.state === 'planning' && <Todo>此頁為預留架構，材料到齊後填入。</Todo>}
-    {d.state === 'upcoming' && stage && <p class="muted">邀請制，不對外報名。所有內容以《參賽者手冊》與 email 通知為準。</p>}
     {d.links.registerYouth && d.state === 'upcoming' && <div class="btn-row"><a class="btn" href={d.links.registerYouth}>報名・青年組</a><a class="btn" href={d.links.registerSenior}>報名・高中組</a></div>}
   </div>
 
