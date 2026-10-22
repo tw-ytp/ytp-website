@@ -8,7 +8,7 @@ const groups = { student: '學生', parent: '家長', teacher: '教師' } as con
 const rendered = await Promise.all(all.map(async f => ({ ...f, Content: (await render(f)).Content })));
 ---
 <Base title="常見問題" description="YTP 報名、線上初賽、程式挑戰營、交通補助、設備、獎金——學生、家長、教師常見問題。">
-  <Banner title="常見問題" lead="如有其他問題請洽詢 ytp@tw-ytp.org。" />
+  <Banner image="faq" title="常見問題" lead="如有其他問題請洽詢 ytp@tw-ytp.org。" />
   <div class="wrap prose">
     <div class="tabs" role="tablist">
       {Object.entries(groups).map(([k, v], i) => <button role="tab" aria-selected={i === 0} aria-controls={`tab-${k}`} data-tab={k}>{v}</button>)}
