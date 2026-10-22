@@ -44,4 +44,3 @@
 /wp-admin/*               /                                        301
 /wp-login.php             /                                        301
 /feed/                    /news/                                   301
-/?p=*                     /news/                                   301
