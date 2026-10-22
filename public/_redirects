@@ -38,3 +38,10 @@
 /hackathon/2026h2         /cohorts/11/hackathon/                   301
 /hackathon/               /turing-plus/                            301
 /hackathon/*              /turing-plus/                            301
+# 舊站 WordPress 上傳檔（簡章、FAQ 等 PDF）的舊連結：先一律導到檔案下載頁，待 IT 提供上傳目錄清單後逐檔對應到 /legacy/
+/wp-content/uploads/*     /downloads/                              302
+/wp-content/*             /downloads/                              302
+/wp-admin/*               /                                        301
+/wp-login.php             /                                        301
+/feed/                    /news/                                   301
+/?p=*                     /news/                                   301
