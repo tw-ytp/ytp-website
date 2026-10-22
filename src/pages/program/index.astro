@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import TrackBadge from '../../components/TrackBadge.astro';
+import Banner from '../../components/Banner.astro';
 import StageEvents from '../../components/StageEvents.astro';
 import { getCollection } from 'astro:content';
 import { PHASE_LABEL, stagePath } from '../../lib/cohort';
@@ -8,17 +9,15 @@ import season from '../../data/season.json';
 const cur = (await getCollection('cohorts')).find(c => c.data.edition === season.edition)!;
 ---
 <Base title="計畫介紹" description="YTP 少年圖靈計畫一次看懂：程式挑戰營、第二階段（第 1–10 屆專題實作、第 11 屆起黑客松）、海外參訪。誰可以參加、會得到什麼。">
-  <div class="wrap page-head track-main">
-    <p class="crumb"><TrackBadge track="main" /></p>
-    <h1>少年圖靈計畫</h1>
-    <p class="lead measure">國中、高中職五專學生的年度計畫，以「屆」編號（第 N 屆 = 2015 + N 年）。國中組參加第一階段，高中職五專組走完三個階段。</p>
+  <Banner image="program" track="main" title="少年圖靈計畫" lead="國中、高中職五專學生的年度計畫，以「屆」編號（第 N 屆 = 2015 + N 年）。國中組參加第一階段，高中職五專組走完三個階段。">
+    <TrackBadge slot="crumb" track="main" />
     <div class="btn-row">
       <a class="btn" href="/program/apply/">報名</a>
       <a class="btn ghost" href="/program/rules/">時程與規則</a>
       <a class="btn ghost" href="/program/faq/">常見問題</a>
       <a class="btn ghost" href="/cohorts/">歷屆一覽</a>
     </div>
-  </div>
+  </Banner>
   <section class="section alt">
     <div class="wrap">
       <h2>第 {season.edition} 屆（{season.year}）時程</h2>

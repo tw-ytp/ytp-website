@@ -34,7 +34,11 @@ const hero = {
 }[season.phase];
 ---
 <Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
-  <section class="section hero">
+  <section class="section hero banner banner-hero">
+    <picture class="banner-bg" aria-hidden="true">
+      <source media="(min-width: 760px)" srcset="/banners/home-1800.webp" />
+      <img src="/banners/home-900.webp" width="900" height="393" alt="" loading="eager" fetchpriority="high" decoding="async" />
+    </picture>
     <div class="wrap">
       <div class="hero-dual">
         <div class="hero-main">

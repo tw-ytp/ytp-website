@@ -1,0 +1,28 @@
+---
+/** 分頁 Landing Banner。
+ *  - image：public/banners/{image}-1800.webp / -900.webp（由 scripts/gen_banners.py 產生）；不給就用深色幾何圖樣底。
+ *  - track：main（藍）／plus（綠）決定頂端色條與疊色。
+ *  - slot name="crumb"：放 TrackBadge 等麵包屑；預設 slot：放 CTA 按鈕列。
+ *  首頁 Hero 不用這個元件（index.astro 有自己的雙軌版面，只共用 .banner 底圖樣式）。 */
+interface Props {
+  title: string; lead?: string; crumb?: string;
+  image?: string; track?: 'main' | 'plus';
+  eager?: boolean;   // 首屏 banner 用 eager，避免 LCP 延遲
+}
+const { title, lead, crumb, image, track, eager = true } = Astro.props;
+const cls = ['banner', 'banner-section', track && `track-${track}`, !image && 'banner-pattern'].filter(Boolean).join(' ');
+---
+<section class={cls}>
+  {image && (
+    <picture class="banner-bg" aria-hidden="true">
+      <source media="(min-width: 760px)" srcset={`/banners/${image}-1800.webp`} />
+      <img src={`/banners/${image}-900.webp`} width="900" height="385" alt="" loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding="async" />
+    </picture>
+  )}
+  <div class="wrap banner-body">
+    {(crumb || Astro.slots.has('crumb')) && <p class="crumb">{crumb}<slot name="crumb" /></p>}
+    <h1>{title}</h1>
+    {lead && <p class="lead measure">{lead}</p>}
+    <slot />
+  </div>
+</section>

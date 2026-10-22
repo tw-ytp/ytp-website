@@ -1,14 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Todo from '../../components/Todo.astro';
-import PageHead from '../../components/PageHead.astro';
+import Banner from '../../components/Banner.astro';
 import { getCollection, render } from 'astro:content';
 const all = (await getCollection('faq')).sort((a, b) => a.data.order - b.data.order);
 const groups = { student: '學生', parent: '家長', teacher: '教師' } as const;
 const rendered = await Promise.all(all.map(async f => ({ ...f, Content: (await render(f)).Content })));
 ---
 <Base title="常見問題" description="YTP 報名、線上初賽、程式挑戰營、交通補助、設備、獎金——學生、家長、教師常見問題。">
-  <PageHead crumb="參賽指南" title="常見問題" lead="依身份分頁。找不到答案請來信 ytp@tw-ytp.org。" />
+  <Banner crumb="參賽指南" title="常見問題" lead="依身份分頁。找不到答案請來信 ytp@tw-ytp.org。" />
   <div class="wrap prose">
     <div class="tabs" role="tablist">
       {Object.entries(groups).map(([k, v], i) => <button role="tab" aria-selected={i === 0} aria-controls={`tab-${k}`} data-tab={k}>{v}</button>)}

@@ -162,3 +162,37 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 .lb-close{right:var(--space-3);top:var(--space-3)}
 @media (max-width:720px){.lightbox figure{padding:var(--space-6) var(--space-2)}.lb-prev,.lb-next{top:auto;bottom:var(--space-4);transform:none}}
 @media (prefers-reduced-motion:reduce){.gallery-grid img{transition:none}}
+
+/* Banner（Banner.astro／首頁 Hero 共用）：照片底 + 深色漸層疊色 + 頂端 logo 漸層色條。
+   文字一律白字，所以不受淺／深色模式影響；對比由疊色保證（左側 ≥ 85% 深藍）。 */
+.banner{position:relative;isolation:isolate;overflow:hidden;background:var(--band-dark);color:#fff;--accent-a:var(--logo-lime);--accent-b:var(--logo-teal);--accent-c:var(--logo-blue);--overlay:20,33,61}
+.banner.track-plus{--accent-a:var(--plus-bright);--accent-b:var(--plus-bright);--accent-c:var(--plus);--overlay:18,69,42}
+.banner-bg{position:absolute;inset:0;z-index:-2;margin:0}
+.banner-bg img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.banner::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(var(--overlay),.9) 0%,rgba(var(--overlay),.78) 40%,rgba(var(--overlay),.35) 100%)}
+.banner::after{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,var(--accent-a),var(--accent-b),var(--accent-c))}
+.banner-pattern{background-color:var(--band-dark);background-image:radial-gradient(rgba(255,255,255,.14) 1.2px,transparent 1.3px),radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.3px);background-size:28px 28px,28px 28px;background-position:0 0,14px 14px}
+.banner-pattern::before{background:linear-gradient(90deg,rgba(var(--overlay),.55) 0%,rgba(var(--overlay),0) 70%)}
+.banner-section .banner-body{min-height:280px;padding-top:52px;padding-bottom:40px;display:flex;flex-direction:column;justify-content:flex-end}
+.banner-pattern .banner-body{min-height:210px}
+.banner-body h1{color:#fff;font-size:var(--fs-7);margin:0 0 .3em;text-wrap:balance;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.banner-body .lead{color:rgba(255,255,255,.88);margin-bottom:.6em}
+.banner-body .crumb{color:rgba(255,255,255,.8);margin-bottom:12px}
+.banner-body a:not(.btn):not(.track-badge){color:#fff;text-decoration:underline;text-underline-offset:3px}
+.banner-body .btn-row{margin-top:14px}
+.banner-body .btn{background:#fff;border-color:#fff;color:var(--band-dark)}
+.banner-body .btn:hover{background:rgba(255,255,255,.88);border-color:rgba(255,255,255,.88)}
+.banner-body .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
+.banner-body .btn.ghost:hover{background:rgba(255,255,255,.14);border-color:#fff}
+.banner-body :focus-visible{outline-color:var(--signal)}
+@media(max-width:640px){
+  .banner-section .banner-body{min-height:220px;padding-top:40px;padding-bottom:28px}
+  .banner-body h1{font-size:var(--fs-6)}
+  .banner::before{background:linear-gradient(180deg,rgba(var(--overlay),.55) 0%,rgba(var(--overlay),.9) 100%)}
+}
+/* 首頁 Hero：雙軌色塊卡片疊在挑戰營照片上。色塊本身維持 2026-09-24 定案版本 A。 */
+.banner-hero::after{display:none}
+.banner-hero::before{background:linear-gradient(180deg,rgba(var(--overlay),.72) 0%,rgba(var(--overlay),.82) 100%)}
+.banner-hero.section{padding:48px 0 56px}
+.banner-hero .hero-main,.banner-hero .hero-plus{box-shadow:0 12px 32px rgba(0,0,0,.28)}
+.banner-hero .hero-main{background:var(--surface)}
