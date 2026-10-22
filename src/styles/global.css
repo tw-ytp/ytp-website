@@ -214,7 +214,7 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 .hero-photo-body .kicker{font-family:var(--font-mono);letter-spacing:.18em;text-transform:uppercase;font-size:var(--fs-2);color:rgba(255,255,255,.8);margin:0 0 8px}
 .hero-photo-body .hero-title{font-size:60px;color:#fff;margin-bottom:16px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
 .hero-photo-body .hero-title a,.hero-photo-body .hero-title .slot{color:#fff}
-.hero-title .ytp{font-family:var(--font-mono);font-weight:700;letter-spacing:-.02em;margin-right:.12em}
+.hero-title .ytp{font-family:var(--font-mono);font-weight:700;letter-spacing:.06em;margin-right:.05em}
 .hero-photo-body .hero-title .slot{color:var(--logo-lime)}
 .hero-photo-body .hero-status{color:#fff;font-size:var(--fs-5);text-shadow:0 1px 8px rgba(0,0,0,.5)}
 .hero-photo-body .lead{max-width:640px;margin-left:auto;margin-right:auto}

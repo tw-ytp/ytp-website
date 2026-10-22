@@ -7,13 +7,12 @@
   "social": {
     "facebook": "https://www.facebook.com/groups/1527998927505701/",
     "discord": "https://discord.gg/KpqC6CEthk",
-    "youtube": "",
+    "youtube": "https://www.youtube.com/@YoungTuringProgram",
     "github": "https://github.com/26ytph"
   },
   "organizer": "精誠集團",
   "coOrganizers": ["財團法人台灣資訊科技發展教育基金會", "資訊之芽", "台大程式解題社"],
   "todo": {
-    "youtube": "確認 YTP YouTube 頻道正式網址（舊站僅有單支影片與直播連結）",
     "github_note": "26ytph 為 2026 上半年黑客松作品專用 organization；若日後有 YTP 總 org 請改此處"
   }
 }

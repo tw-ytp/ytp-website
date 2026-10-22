@@ -32,8 +32,9 @@ const hero = {
   offseason: { kicker: `第 ${e} 屆回顧`, h: '下一屆，3 月見', sub: `第 ${e + 1} 屆預計 ${y + 1} 年 3 月開放報名；YTP${y + 1}黑客松預計 ${y + 1} 年上半年舉辦。先看看考古題和歷屆專題吧。`,
     ctas: [['/resources/', '備賽資源', ''], ['/projects/', '歷屆專題', 'ghost']] },
 }[season.phase];
-// 首頁底圖：平面程式碼晶格（scripts/gen_lattice_bg.py，Claude Design 方案 6，2026-10-22 定案）
-const heroBg = { src: '/banners/home-lattice-1800.webp', srcSmall: '/banners/home-lattice-900.webp', dim: 0.8 };
+// 首頁底圖：平面程式碼晶格，Claude Design 方案 6 的 artboard 直接輸出（同種子、同字型；輸出工具頁「晶格底圖輸出」）。
+// scripts/gen_lattice_bg.py 是早期的 PIL 重繪版，已不使用。
+const heroBg = { src: '/banners/home-lattice-1800.webp', srcSmall: '/banners/home-lattice-900.webp', dim: 0 };   // 圖檔即設計稿方案 6 的 artboard 輸出（光帶、暗角已在圖內），網站不再疊色
 ---
 <Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
   {/* 首頁 Hero「照片全幅」版：整幅程式碼晶格底圖 + 置中文字。 */}
@@ -44,7 +45,7 @@ const heroBg = { src: '/banners/home-lattice-1800.webp', srcSmall: '/banners/hom
     </picture>
     <div class="wrap banner-body hero-photo-body">
       <img class="hero-logo" src="/brand/ytp-logo-white.png" width="184" height="59" alt="YTP 少年圖靈計畫 Young Turing Program" loading="eager" />
-      <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap"><span class="ytp">YTP</span> 少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
+      <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap"><span class="ytp">YTP</span>少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
       <p class="hero-status">{hero.h}</p>
       <p class="lead">{hero.sub}</p>
       <div class="btn-row">
