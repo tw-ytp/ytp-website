@@ -32,12 +32,13 @@ const hero = {
   offseason: { kicker: `第 ${e} 屆回顧`, h: '下一屆，3 月見', sub: `第 ${e + 1} 屆預計 ${y + 1} 年 3 月開放報名；YTP${y + 1}黑客松預計 ${y + 1} 年上半年舉辦。先看看考古題和歷屆專題吧。`,
     ctas: [['/resources/', '備賽資源', ''], ['/projects/', '歷屆專題', 'ghost']] },
 }[season.phase];
-// 候選底圖（Unsplash License）。key 對應 ?bg=；credit 為攝影者，上線時放在頁尾或 about 頁致謝。
-const u = (id: string) => `https://images.unsplash.com/${id}?w=1800&h=900&fit=crop&q=70&fm=webp`;
+// 候選底圖。A 為自行產生（scripts/gen_codewall_bg.py，兩層真實程式碼平鋪，依 Claude Design 方案 1）；B、C 為 Unsplash License 照片，
+// 以 Unsplash CDN 的 duotone 參數轉成黑底綠光（NVIDIA 色調）。key 對應 ?bg=；credit 上線時放致謝。
+const u = (id: string, extra = '') => `https://images.unsplash.com/${id}?w=1800&h=900&fit=crop&q=70&fm=webp${extra}`;
 const bgs = [
-  { key: 'matrix',  label: 'A 程式碼', src: u('photo-1722080826167-4ea87368cbc5'), dim: 0.62, credit: 'Photo by Rob Wingate on Unsplash' },        // 清晰的 Rust 程式碼，綠字黑底
-  { key: 'grid',    label: 'B 綠色網格', src: u('photo-1771792449304-7a0b9843f631'), dim: 0.8, credit: 'Photo by Logan Voss on Unsplash' },         // NVIDIA 色調：黑底綠格
-  { key: 'circuit', label: 'C 綠光電路板', src: u('photo-1631375937044-6dd5beac01d2'), dim: 0.5, credit: 'Photo by Malachi Brooks on Unsplash' },   // NVIDIA 色調：黑底發光綠走線
+  { key: 'codewall', label: 'A 程式碼牆', src: '/banners/home-codewall-1800.webp', dim: 0.85, credit: 'YTP 自製（scripts/gen_codewall_bg.py）' },   // 設計稿方案 1
+  { key: 'grid',     label: 'B 綠光網格', src: u('photo-1790955208838-12fb1886b0ba', '&duotone=050a05,76B900&bri=10'), dim: 1, credit: 'Photo by HYEWON HWANG on Unsplash' },
+  { key: 'circuit',  label: 'C 綠光電路板', src: u('photo-1631375937044-6dd5beac01d2', '&duotone=000000,76B900&bri=-20'), dim: 0.95, credit: 'Photo by Malachi Brooks on Unsplash' },
 ];
 ---
 <Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
