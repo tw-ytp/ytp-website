@@ -35,9 +35,9 @@ const hero = {
 // 候選底圖（Unsplash License）。key 對應 ?bg=；credit 為攝影者，上線時放在頁尾或 about 頁致謝。
 const u = (id: string) => `https://images.unsplash.com/${id}?w=1800&h=900&fit=crop&q=70&fm=webp`;
 const bgs = [
-  { key: 'matrix',  label: 'A 綠色程式雨', src: u('photo-1547190027-9156686aa2f0'), credit: 'Photo by Markus Spiske on Unsplash' },
-  { key: 'grid',    label: 'B 藍色光點網格', src: u('photo-1790955208838-12fb1886b0ba'), credit: 'Photo by HYEWON HWANG on Unsplash' },
-  { key: 'circuit', label: 'C 深藍電路板', src: u('photo-1592659762303-90081d34b277'), credit: 'Photo by Vishnu Mohanan on Unsplash' },
+  { key: 'matrix',  label: 'A 程式碼', src: u('photo-1722080826167-4ea87368cbc5'), dim: 0.62, credit: 'Photo by Rob Wingate on Unsplash' },        // 清晰的 Rust 程式碼，綠字黑底
+  { key: 'grid',    label: 'B 綠色網格', src: u('photo-1771792449304-7a0b9843f631'), dim: 0.8, credit: 'Photo by Logan Voss on Unsplash' },         // NVIDIA 色調：黑底綠格
+  { key: 'circuit', label: 'C 綠光電路板', src: u('photo-1631375937044-6dd5beac01d2'), dim: 0.5, credit: 'Photo by Malachi Brooks on Unsplash' },   // NVIDIA 色調：黑底發光綠走線
 ];
 ---
 <Base title="首頁" description="為台灣培育世界級軟體人才。國中、高中職五專學生的程式競賽、專題實作、黑客松與海外參訪計畫，自 2016 年起舉辦。">
@@ -71,7 +71,7 @@ const bgs = [
   </div>
   <script define:vars={{ bgs }}>
     const img = document.getElementById('hero-bg'), btns = [...document.querySelectorAll('.bg-switch button')];
-    const apply = (key) => { const b = bgs.find(x => x.key === key) || bgs[0]; img.src = b.src; btns.forEach(x => x.setAttribute('aria-pressed', String(x.dataset.bg === b.key))); };
+    const apply = (key) => { const b = bgs.find(x => x.key === key) || bgs[0]; img.src = b.src; document.getElementById('hero').style.setProperty('--dim', b.dim); btns.forEach(x => x.setAttribute('aria-pressed', String(x.dataset.bg === b.key))); };
     apply(new URLSearchParams(location.search).get('bg'));
     btns.forEach(x => x.addEventListener('click', () => { history.replaceState(null, '', '?bg=' + x.dataset.bg); apply(x.dataset.bg); }));
   </script>

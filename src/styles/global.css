@@ -200,7 +200,8 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 .banner-hero .hero-main{background:var(--surface)}
 
 /* 首頁 Hero「照片全幅」版（home-image-bg 分支） */
-.banner-photo::before{background:linear-gradient(180deg,rgba(var(--overlay),.55) 0%,rgba(var(--overlay),.45) 50%,rgba(var(--overlay),.7) 100%)}
+.banner-photo{--dim:1;--overlay:8,12,10}  /* 黑底綠光系底圖用近黑疊色；每張底圖自己的疊色強度（index.astro bgs[].dim） */
+.banner-photo::before{background:linear-gradient(180deg,rgba(var(--overlay),calc(.55*var(--dim))) 0%,rgba(var(--overlay),calc(.45*var(--dim))) 50%,rgba(var(--overlay),calc(.7*var(--dim))) 100%)}
 .banner-photo::after{display:none}
 .banner-photo.section{padding:96px 0 88px}
 .hero-photo-body{text-align:center;align-items:center;max-width:860px}
