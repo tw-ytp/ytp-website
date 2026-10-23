@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import Todo from '../components/Todo.astro';
 import YearTimeline from '../components/YearTimeline.astro';
 import markPlusDark from '../assets/marks/mark-plus-dark.svg';
 import season from '../data/season.json';
@@ -88,11 +87,10 @@ const heroBg = { src: '/banners/home-lattice-1800.webp', srcSmall: '/banners/hom
   <section class="section">
     <div class="wrap">
       <h2>{stats.sinceYear}–{y} 成果</h2>
-      <div class="grid c4">
+      <div class="grid c3 stats">
         {stats.items.map(s => (
           <div class="stat">
-            <b>{s.value ?? '—'}</b><span>{s.label}</span>
-            {s.value == null && <Todo>{s.todo}</Todo>}
+            <b>{s.prefix && <small class="pre">{s.prefix}</small>}{s.value}{s.unit && <small>{s.unit}</small>}</b><span>{s.label}</span>
           </div>
         ))}
       </div>

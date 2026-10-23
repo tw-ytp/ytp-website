@@ -95,6 +95,12 @@ summary::marker{color:var(--track)}
 .stat{padding:16px 0}
 .stat b{display:block;font-size:var(--fs-6);font-weight:800;line-height:1.1}
 .stat span{color:var(--ink-2);font-size:var(--fs-2)}
+.stat b{font-family:var(--font-mono);letter-spacing:-.02em;font-weight:700}
+.stat b small{font-family:var(--font-sans);font-size:var(--fs-3);font-weight:700;margin-left:4px;color:var(--ink-2)}
+.stat b small.pre{margin:0 4px 0 0}
+.stats{row-gap:8px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.stats{grid-template-columns:repeat(6,1fr);gap:16px}.stats .stat b{font-size:var(--fs-5)}}
 .video{aspect-ratio:16/9;width:100%;border:0;border-radius:var(--r);background:var(--band-dark)}
 
 /* 黑客松頁：主視覺與單位 logo 帶（logo 為白字透明底，需深色底） */
