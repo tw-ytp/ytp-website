@@ -3,6 +3,8 @@ import site from '../data/site.json';
 import season from '../data/season.json';
 import '../styles/tokens.css';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import SearchDialog from '../components/SearchDialog.astro';
 // brand：分頁標題的後綴。青年圖靈++ 的頁面傳入「青年圖靈++」，其餘預設為站名。
 interface Props { title: string; description?: string; brand?: string }
 const { title, description = site.description, brand = site.shortName } = Astro.props;
@@ -16,12 +18,24 @@ const nav: [string, string, string, string[]][] = [
   ['/stories/', '學員故事', '', []],
   ['/news/', '最新消息', '', []],
   ['/program/faq/', '常見問題', '', []],
+  ['/about/', '關於 YTP', '', []],
 ];
 // 取最長相符的前綴：/program/faq/ 只點亮「常見問題」，/cohorts/7/ 點亮「歷屆成果」，/cohorts/11/ 點亮「第 11 屆」
 const score = ([href, , , more]: typeof nav[number]) =>
   href === '/' ? (path === '/' ? 1 : 0) : Math.max(0, ...[href, ...more].map(h => (path.startsWith(h) ? h.length : 0)));
 const active = nav.reduce((best, n) => (score(n) > score(best) ? n : best), nav[0]);
 const activeHref = score(active) > 0 ? active[0] : '';
+// Pagefind 的「類型」篩選：依路徑判定，與 SearchDialog.astro 的 TYPE_ORDER 對應。404 不進索引。
+const pageType = path.startsWith('/projects/') ? '專題'
+  : path.startsWith('/news/') ? '最新消息'
+  : path.startsWith('/stories/') ? '學員故事'
+  : path.startsWith('/program/faq/') ? '常見問題'
+  : path.startsWith('/turing-plus/') ? '青年圖靈++'
+  : path.startsWith('/cohorts/') || path.startsWith('/program/') ? '計畫'
+  : path.startsWith('/resources/') || path.startsWith('/downloads/') ? '資源'
+  : path.startsWith('/en/') ? 'English'
+  : '其他';
+const indexable = !/^\/404/.test(path) && import.meta.env.PUBLIC_NOINDEX !== 'true';
 ---
 <!doctype html>
 <html lang="zh-Hant-TW">
@@ -39,6 +53,7 @@ const activeHref = score(active) > 0 ? active[0] : '';
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <ClientRouter />
 </head>
 <body>
   <header class="site-header">
@@ -47,7 +62,13 @@ const activeHref = score(active) > 0 ? active[0] : '';
         <img class="brand-logo brand-logo-light" src="/brand/logo_ytp_rgb.png" width="150" height="45" alt="YTP 少年圖靈計畫 Young Turing Program" />
         <img class="brand-logo brand-logo-dark" src="/brand/ytp-logo-white.png" width="142" height="45" alt="" aria-hidden="true" />
       </a>
-      <button class="menu-btn" aria-expanded="false" aria-controls="nav">選單</button>
+      <div class="header-actions">
+        <button type="button" class="search-btn" data-search-open aria-label="搜尋（Ctrl+K）" title="搜尋（Ctrl+K）">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span class="search-btn-text">搜尋</span><kbd class="search-btn-kbd">⌘K</kbd>
+        </button>
+        <button class="menu-btn" aria-expanded="false" aria-controls="nav">選單</button>
+      </div>
       <nav class="nav" id="nav" aria-label="主選單">
         {nav.map(([href, label, track]) => (
           <a href={href} class={track ? `nav-${track}` : undefined} aria-current={href === activeHref ? 'page' : undefined}>{label}</a>
@@ -55,7 +76,8 @@ const activeHref = score(active) > 0 ? active[0] : '';
       </nav>
     </div>
   </header>
-  <main><slot /></main>
+  <main data-pagefind-body={indexable ? '' : undefined} data-pagefind-filter={indexable ? `type:${pageType}` : undefined}><slot /></main>
+  <SearchDialog />
   <footer class="site-footer">
     <div class="wrap grid c4">
       <div>
@@ -89,8 +111,12 @@ const activeHref = score(active) > 0 ? active[0] : '';
     </div>
   </footer>
   <script>
-    const b = document.querySelector('.menu-btn'), n = document.getElementById('nav');
-    b?.addEventListener('click', () => { const o = n.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+    const bindMenu = () => {
+      const b = document.querySelector('.menu-btn'), n = document.getElementById('nav');
+      b?.addEventListener('click', () => { const o = n.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+    };
+    bindMenu();
+    document.addEventListener('astro:after-swap', bindMenu);
   </script>
 </body>
 </html>

@@ -19,6 +19,16 @@ npm run build        # 輸出到 dist/
 npm run test:mask    # 同學姓名遮蔽規則的單元測試
 ```
 
+### 全站搜尋（Pagefind）
+
+- 索引在 `npm run build` 結束時由 `astro-pagefind` 產生到 `dist/pagefind/`，搜尋在瀏覽器端執行，沒有後端。
+- `npm run dev` 不會重建索引：先 `npm run build` 一次，dev server 會讀 `dist/pagefind/` 的上次索引（內容改了要再 build 才會反映）。
+- 只索引 `<main data-pagefind-body>`（`src/layouts/Base.astro`）；導覽、頁尾、篩選列、相關專題清單已用 `data-pagefind-ignore` 排除。
+- 搜尋面板：`src/components/SearchDialog.astro`（Ctrl+K／⌘K／`/` 開啟，`?q=` 可預填）。
+- 專題技術標籤由 `src/lib/tags.ts` 正規化（別名 → 23 個正規標籤），`/projects/` 篩選列與搜尋篩選器共用。
+```
+```
+
 建置時可用的環境變數：
 
 | 變數 | 用途 |

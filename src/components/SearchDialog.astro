@@ -1,0 +1,153 @@
+---
+/** 全站搜尋面板（階段一：Pagefind 關鍵字搜尋）。
+ *  - 索引由 astro-pagefind 在 `astro build` 結束時產生到 dist/pagefind/；搜尋完全在瀏覽器執行，沒有後端。
+ *  - 只索引 <main data-pagefind-body>（Base.astro）；頁面類型來自 data-pagefind-filter="type:…"，
+ *    專題頁再加 tag／edition 篩選（projects/[id].astro），與 /projects/ 篩選列用同一組正規標籤。
+ *  - 開啟：header 的搜尋鈕、Ctrl+K／⌘K、或網址帶 ?q=。
+ *  - `astro dev` 看不到結果：先 `npm run build` 一次，dev server 會從 dist/pagefind/ 讀上次的索引。
+ *  - 搜尋 log：預設關閉；階段二把 window.YTP_SEARCH_LOG 設為 true 並提供 /api/search-log 即可收集落空率。 */
+---
+<dialog class="search-dialog" id="search-dialog" aria-label="站內搜尋">
+  <form class="search-form" role="search" method="dialog" onsubmit="return false">
+    <label class="search-field">
+      <span class="sr-only">搜尋關鍵字</span>
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="search-input" placeholder="搜尋專題、公告、常見問題…" autocomplete="off" spellcheck="false" />
+      <button type="button" class="search-close" data-close aria-label="關閉">Esc</button>
+    </label>
+    <div class="search-filters" id="search-filters" hidden></div>
+  </form>
+  <div class="search-status meta" id="search-status" aria-live="polite">輸入關鍵字開始搜尋；也可以用 <kbd>Ctrl</kbd>+<kbd>K</kbd> 隨時開啟。</div>
+  <ol class="search-results" id="search-results"></ol>
+</dialog>
+
+<script>
+  type PF = {
+    options: (o: Record<string, unknown>) => Promise<void>;
+    init: () => Promise<void>;
+    filters: () => Promise<Record<string, Record<string, number>>>;
+    search: (q: string, o?: Record<string, unknown>) => Promise<{ results: { id: string; data: () => Promise<PFResult> }[]; filters: Record<string, Record<string, number>> }>;
+  };
+  type PFResult = { url: string; excerpt: string; meta: { title?: string }; filters: Record<string, string[]> };
+
+  const CJK_RUN = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]{2,}/g;
+  const TYPE_ORDER = ['專題', '最新消息', '學員故事', '常見問題', '計畫', '青年圖靈++', '資源', '其他', 'English'];
+  let pf: PF | null = null;
+  let loadErr = false;
+  let seq = 0;
+  const state = { q: '', type: '' };
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const dialog = () => $<HTMLDialogElement>('search-dialog');
+  const input = () => $<HTMLInputElement>('search-input');
+
+  async function load(): Promise<PF | null> {
+    if (pf || loadErr) return pf;
+    try {
+      // 索引檔由 pagefind 在 build 時產生，不經 Vite 打包：路徑放變數，Rollup 才不會在 build 時嘗試解析
+      const bundle = '/pagefind/pagefind.js';
+      const m: PF = await import(/* @vite-ignore */ bundle);
+      await m.options({ excerptLength: 40 });
+      await m.init();
+      await m.filters();        // 先載入篩選索引，search() 回傳的結果才會附各類型計數
+      pf = m;
+    } catch { loadErr = true; }
+    return pf;
+  }
+
+  function logSearch(q: string, n: number) {
+    // 階段二：把 window.YTP_SEARCH_LOG 設為 true，並在 functions/api/search-log.ts 收資料（Analytics Engine），用來算落空率。
+    if (!(window as any).YTP_SEARCH_LOG || !navigator.sendBeacon) return;
+    try { navigator.sendBeacon('/api/search-log', JSON.stringify({ q, n, t: Date.now(), p: location.pathname })); } catch {}
+  }
+
+  function esc(s: string) { return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!)); }
+
+  function renderFilters(counts: Record<string, number>) {
+    const box = $('search-filters');
+    const types = TYPE_ORDER.filter(t => counts[t]);
+    if (!types.length) { box.hidden = true; box.innerHTML = ''; return; }
+    box.hidden = false;
+    box.innerHTML = [['', '全部'], ...types.map(t => [t, `${t} <small>${counts[t]}</small>`])]
+      .map(([v, label]) => `<button type="button" data-type="${esc(v)}" aria-pressed="${state.type === v}">${label}</button>`).join('');
+  }
+
+  async function run() {
+    const q = state.q.trim();
+    const results = $('search-results'), status = $('search-status');
+    if (!q) { results.innerHTML = ''; renderFilters({}); status.textContent = '輸入關鍵字開始搜尋；也可以用 Ctrl+K 隨時開啟。'; return; }
+    const m = await load();
+    if (!m) { status.textContent = '搜尋索引尚未建立（請先執行 npm run build）。'; return; }
+    const my = ++seq;
+    status.textContent = '搜尋中…';
+    const opts = state.type ? { filters: { type: state.type } } : {};
+    // 中文：Pagefind 建索引時用詞典斷詞（「智能｜合約」「區｜塊｜鏈」不一定和使用者打的詞一致），
+    // 所以同時查「原字串」與「逐字片語」（"區 塊 鏈" = 連續字元完全比對），取聯集，原字串命中排前面。
+    const segQ = q.replace(CJK_RUN, w => `"${[...w].join(' ')}"`);
+    const [a, b] = await Promise.all([m.search(q, opts), segQ !== q ? m.search(segQ, opts) : Promise.resolve(null)]);
+    if (my !== seq) return;
+    const seen = new Set<string>();
+    const merged = [...a.results, ...(b?.results ?? [])].filter(r => !seen.has(r.id) && seen.add(r.id));
+    const counts: Record<string, number> = {};
+    for (const f of [a.filters?.type, b?.filters?.type]) for (const [k, v] of Object.entries(f ?? {})) counts[k] = Math.max(counts[k] ?? 0, v);
+    renderFilters(counts);
+    const top = await Promise.all(merged.slice(0, 20).map(r => r.data()));
+    if (my !== seq) return;
+    const n = merged.length;
+    status.textContent = n ? `找到 ${n} 個結果` : `找不到「${q}」，換個關鍵字試試，或瀏覽歷屆成果與常見問題。`;
+    results.innerHTML = top.map(r => {
+      const type = r.filters?.type?.[0] ?? '';
+      const tags = (r.filters?.tag ?? []).slice(0, 4);
+      return `<li><a href="${esc(r.url)}">
+        <span class="search-type">${esc(type)}</span>
+        <b>${esc(r.meta.title ?? r.url)}</b>
+        <span class="search-excerpt">${r.excerpt}</span>
+        ${tags.length ? `<span class="search-tags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</span>` : ''}
+      </a></li>`;
+    }).join('');
+    if (!state.type) logSearch(q, n);
+  }
+
+  let timer = 0;
+  function onInput() { state.q = input().value; clearTimeout(timer); timer = window.setTimeout(run, 160); }
+
+  function open(q?: string) {
+    const d = dialog();
+    if (!d.open) d.showModal();
+    if (q !== undefined) { input().value = q; state.q = q; }
+    input().focus(); input().select();
+    load();                    // 開啟就預載索引，打字時不等
+    if (state.q) run();
+  }
+  function close() { const d = dialog(); if (d.open) d.close(); }
+
+  function init() {
+    const d = dialog();
+    if (!d || d.dataset.ready) return;
+    d.dataset.ready = '1';
+    input().addEventListener('input', onInput);
+    d.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); close(); } });   // type=search 的第一個 Esc 只會清空欄位，這裡直接關閉
+    d.addEventListener('click', e => {
+      const t = e.target as HTMLElement;
+      if (t.closest('[data-close]')) return close();
+      const fb = t.closest<HTMLButtonElement>('#search-filters button');
+      if (fb) { state.type = fb.dataset.type ?? ''; run(); return; }
+      if (t === d) close();   // 點背景關閉
+    });
+    document.querySelectorAll('[data-search-open]').forEach(b => b.addEventListener('click', () => open()));
+    if (!keysBound) {
+      keysBound = true;   // document 層的快捷鍵只綁一次（View Transitions 換頁後 body 會重建，但 document 不會）
+      document.addEventListener('keydown', e => {
+        const dd = dialog(); if (!dd) return;
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); dd.open ? close() : open(); }
+        else if (e.key === '/' && !dd.open && !(e.target as HTMLElement).matches('input,textarea,[contenteditable]')) { e.preventDefault(); open(); }
+      });
+    }
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) open(q);
+  }
+  let keysBound = false;
+  init();
+  document.addEventListener('astro:page-load', init);
+  document.addEventListener('astro:before-swap', close);
+</script>

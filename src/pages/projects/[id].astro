@@ -19,9 +19,9 @@ const related = (await getCollection('projects')).sort((a, b) => a.id.localeComp
 ---
 <Base title={p.data.title} description={`${isH ? eventName + '作品' : `YTP 第 ${p.data.edition} 屆專題`}：${p.data.title}。${p.data.members.map(m => m.name).join('、')}。`}>
   <div class="wrap page-head">
-    <p class="crumb"><a href="/projects/">歷屆成果</a>｜{isH ? <><a href={eventHref}>{eventName}</a>・{p.data.group === 'youth' ? '青年組' : '高中組'}</> : <><a href={`/cohorts/${p.data.edition}/project/`}>第 {p.data.edition} 屆專題實作</a>・{p.data.year}</>}</p>
-    <h1>{p.data.title}</h1>
-    <p>{p.data.rank > 0 && <span class="rank">{isH ? medal[p.data.rank] : rankLabel[p.data.rank]}</span>} {p.data.tags.map(t => <span class="tag">{t}</span>)}</p>
+    <p class="crumb" data-pagefind-filter={`edition:${isH ? eventName : `第 ${p.data.edition} 屆`}`}><a href="/projects/">歷屆成果</a>｜{isH ? <><a href={eventHref}>{eventName}</a>・{p.data.group === 'youth' ? '青年組' : '高中組'}</> : <><a href={`/cohorts/${p.data.edition}/project/`}>第 {p.data.edition} 屆專題實作</a>・{p.data.year}</>}</p>
+    <h1 transition:name={`project-title-${p.id}`}>{p.data.title}</h1>
+    <p>{p.data.rank > 0 && <span class="rank">{isH ? medal[p.data.rank] : rankLabel[p.data.rank]}</span>} {p.data.tags.map(t => <span class="tag" data-pagefind-filter="tag">{t}</span>)}</p>
     {!isH && <><Track current="hackathon" showDates={false} /><p class="small muted">出自第二階段專題實作（第 11 屆起改為黑客松）。</p></>}
   </div>
   <div class="wrap prose">
@@ -41,9 +41,9 @@ const related = (await getCollection('projects')).sort((a, b) => a.id.localeComp
         {p.data.poster && <li>簡報：<a href={p.data.poster}>開啟</a></li>}
       </ul>
     </>}
-    {related.length > 0 && <>
+    {related.length > 0 && <div data-pagefind-ignore>
       <h2>{isH ? '同場得獎作品' : '同屆專題'}</h2>
       <ul>{related.map(r => <li><a href={`/projects/${r.id}/`}>{r.data.title}</a></li>)}</ul>
-    </>}
+    </div>}
   </div>
 </Base>

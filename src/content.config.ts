@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { isMasked } from './lib/mask.ts';
+import { normalizeTags } from './lib/tags.ts';
 
 // 同學姓名遮蔽檢查（PLAN §2.5-4）：開啟後，學生欄位出現未遮蔽的全名，建置直接失敗。
 // 預設開啟（2026-09-24 套用遮蔽後）。緊急情況可用 YTP_MASK_GUARD=off 暫時關閉，但不得以此狀態部署。
@@ -53,7 +54,7 @@ const projects = defineCollection({
     edition: z.number(),
     year: z.number(),
     rank: z.number().default(0),
-    tags: z.array(z.string()).default([]),
+    tags: z.array(z.string()).default([]).transform(normalizeTags),   // 別名 → 正規標籤（src/lib/tags.ts），篩選與搜尋共用
     members: z.array(z.object({ name: studentName, school: z.string() })).default([]),
     overseasReps: z.array(studentName).default([]),
     github: z.string().default(''),
