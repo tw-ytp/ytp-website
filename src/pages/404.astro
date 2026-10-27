@@ -4,12 +4,31 @@ import Base from '../layouts/Base.astro';
 <Base title="找不到頁面">
   <div class="wrap page-head">
     <h1>找不到這一頁</h1>
-    <p class="lead">網址可能來自舊站。試試這些：</p>
+    {/* 靜態站的 404 不知道這個網址是草稿、已下架還是從來不存在；依網址前綴給最可能的說明（client-side）。 */}
+    <p class="lead" id="nf-lead">網址可能來自舊站，或內容尚未上稿、已下架。</p>
+    <p class="meta" id="nf-hint" hidden></p>
     <ul>
       <li><a href="/program/">參賽指南</a></li>
       <li><a href="/resources/past-exams/">考古題</a></li>
       <li><a href="/projects/">專題成果</a></li>
       <li><a href="/news/">最新消息</a></li>
     </ul>
+    <p class="small muted">內容維護者：若這是你剛在後台存的內容，請確認「草稿」已取消勾選，並等正式站重新建置（約 1–2 分鐘）；草稿只會出現在預覽站。</p>
   </div>
+  <script>
+    const sections: [RegExp, string, string][] = [
+      [/^\/news\//, '最新消息', '/news/'],
+      [/^\/stories\//, '學員故事', '/stories/'],
+      [/^\/projects\//, '歷屆成果', '/projects/'],
+      [/^\/resources\//, '備賽資源', '/resources/'],
+    ];
+    const hit = sections.find(([re]) => re.test(location.pathname));
+    if (hit) {
+      const [, name, href] = hit;
+      const lead = document.getElementById('nf-lead')!, hint = document.getElementById('nf-hint')!;
+      lead.textContent = `這則「${name}」目前不在正式站上：可能尚未上稿、已下架，或網址已變更。`;
+      hint.innerHTML = `到 <a href="${href}">${name}列表</a> 找找看。`;
+      hint.hidden = false;
+    }
+  </script>
 </Base>
