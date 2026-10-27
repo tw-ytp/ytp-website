@@ -1,0 +1,70 @@
+---
+/** 共用篩選列（階段一）。一個 FilterBar = 一個篩選維度（屆次、技術……），可在同頁放多個。
+ *  - 清單項目用 data-{key}="值" 標記（多值用 | 分隔，例如 data-tag="AI|教育"）；
+ *    篩選邏輯在 FilterBar 的 script 裡統一處理，頁面不必各寫一套。
+ *  - 篩選狀態同步到 URL query（?edition=11&tag=AI），可分享、可返回；
+ *    Pagefind 的篩選器（search.astro）用同一組 key / 值，兩邊一致。
+ *  - list：被篩選的 <ul> 或容器 id；empty：沒有結果時顯示的元素 id（可省略）。 */
+interface Props {
+  key: string;                       // 篩選維度，對應項目上的 data-{key}
+  label: string;                     // aria-label
+  options: [string, string][];       // [值, 顯示文字]
+  allLabel?: string;
+  list: string;
+  empty?: string;
+}
+const { key, label, options, allLabel = '全部', list, empty } = Astro.props;
+---
+<div class="tabs filter-bar" role="group" aria-label={label} data-filter={key} data-list={list} data-empty={empty}>
+  <button type="button" data-v="all" aria-pressed="true">{allLabel}</button>
+  {options.map(([v, text]) => <button type="button" data-v={v} aria-pressed="false">{text}</button>)}
+</div>
+
+<script>
+  // 同頁所有 FilterBar 共用一個狀態；每個 bar 的 key 是 URL query 的參數名。
+  const init = () => {
+    const bars = [...document.querySelectorAll<HTMLElement>('.filter-bar')].filter(b => !b.dataset.ready);
+    if (!bars.length) return;
+    bars.forEach(b => { b.dataset.ready = '1'; });
+    const params = new URLSearchParams(location.search);
+    const state: Record<string, string> = {};
+    bars.forEach(b => { state[b.dataset.filter!] = params.get(b.dataset.filter!) ?? 'all'; });
+
+    const paint = () => {
+      bars.forEach(b => {
+        const k = b.dataset.filter!;
+        b.querySelectorAll<HTMLButtonElement>('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === state[k])));
+      });
+      const listEl = document.getElementById(bars[0].dataset.list!);
+      if (!listEl) return;
+      let n = 0;
+      listEl.querySelectorAll<HTMLElement>(':scope > li').forEach(li => {
+        const ok = bars.every(b => {
+          const k = b.dataset.filter!, want = state[k];
+          if (want === 'all') return true;
+          return (li.dataset[k] ?? '').split('|').includes(want);
+        });
+        li.hidden = !ok; if (ok) n++;
+      });
+      const emptyId = bars[0].dataset.empty;
+      if (emptyId) { const e = document.getElementById(emptyId); if (e) e.hidden = n > 0; }
+      const count = document.getElementById(`${bars[0].dataset.list}-count`);
+      if (count) count.textContent = String(n);
+    };
+
+    bars.forEach(b => b.querySelectorAll<HTMLButtonElement>('button').forEach(x => x.addEventListener('click', () => {
+      const k = b.dataset.filter!;
+      state[k] = x.dataset.v!;
+      const p = new URLSearchParams(location.search);
+      if (state[k] === 'all') p.delete(k); else p.set(k, state[k]);
+      history.replaceState(null, '', `${location.pathname}${p.toString() ? '?' + p : ''}`);
+      paint();
+    })));
+
+    // 若 URL 指定的值不存在（例如舊連結），退回 all
+    bars.forEach(b => { const k = b.dataset.filter!; if (!b.querySelector(`button[data-v="${CSS.escape(state[k])}"]`)) state[k] = 'all'; });
+    paint();
+  };
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

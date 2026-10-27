@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import pagefind from 'astro-pagefind';
 
 /** 移除 Markdown 內文裡的 HTML 註解。
  *  內容檔用 <!-- TODO: … --> 記錄待補事項，那是給維運者看的，
@@ -21,4 +22,6 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   markdown: { remarkPlugins: [stripHtmlComments] },
+  // 全站搜尋索引（Pagefind）：build 結束時掃 dist/ 產生 dist/pagefind/；只索引 <main data-pagefind-body>（Base.astro）。
+  integrations: [pagefind()],
 });

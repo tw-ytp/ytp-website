@@ -1,0 +1,10 @@
+---
+/** 草稿標示。正式站不會建置 draft: true 的內容，所以這個元件只會在預覽（PUBLIC_SHOW_DRAFTS=true）或 astro dev 出現。
+ *  用法：<Draft draft={entry.data.draft} />（詳情頁橫幅）、<Draft draft={…} tag />（列表的小標籤）。 */
+interface Props { draft?: boolean; tag?: boolean }
+const { draft = false, tag = false } = Astro.props;
+---
+{draft && (tag
+  ? <span class="tag draft-tag">草稿</span>
+  : <p class="draft-banner" data-pagefind-ignore>草稿：這一筆尚未上稿，只在預覽環境看得到。要上稿請在後台把「草稿」取消勾選（或在檔案裡刪掉 <code>draft: true</code>）。</p>
+)}

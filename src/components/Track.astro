@@ -9,7 +9,7 @@ const keys = stages.map(s => s.key);
 const idx = keys.indexOf(current);
 const pct = idx <= 0 ? 0 : (idx / (keys.length - 1)) * 80;
 ---
-<ol class="track" aria-label="賽季進度">
+<ol class="track" aria-label="賽季進度" data-pagefind-ignore>
   <span class="fill" style={`width:${animate ? 0 : pct}%`} data-target={pct}></span>
   {stages.map((s, i) => (
     <li class={i < idx ? 'done' : i === idx ? 'now' : ''} aria-current={i === idx ? 'step' : undefined}>
@@ -17,7 +17,7 @@ const pct = idx <= 0 ? 0 : (idx / (keys.length - 1)) * 80;
     </li>
   ))}
 </ol>
-{showDates && opens.length > 0 && <ul class="track-open">
+{showDates && opens.length > 0 && <ul class="track-open" data-pagefind-ignore>
   {opens.map(s => <li><a href={s.href}>{s.label}</a><small>{s.date}｜{s.detail}</small></li>)}
 </ul>}
 {animate && <script>

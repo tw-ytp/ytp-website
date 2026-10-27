@@ -41,6 +41,8 @@ const heroBg = { src: '/banners/home-lattice-1800.webp', srcSmall: '/banners/hom
       <source media="(min-width: 760px)" srcset={heroBg.src} />
       <img src={heroBg.srcSmall} width="900" height="450" alt="" loading="eager" fetchpriority="high" decoding="async" />
     </picture>
+    {/* 動態背景（階段一）：晶格底圖緩慢推移 + 三色光暈漂移，純 CSS；prefers-reduced-motion 時靜止 */}
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="wrap banner-body hero-photo-body">
       <img class="hero-logo" src="/brand/ytp-logo-white.png" width="184" height="59" alt="YTP 少年圖靈計畫 Young Turing Program" loading="eager" />
       <h1 class="hero-title"><a href={`/cohorts/${e}/`}><span class="nowrap"><span class="ytp">YTP</span>少年圖靈計畫</span> <span class="nowrap slot">第 <span class="num">{e}</span> 屆・<span class="num">{y}</span></span></a></h1>
