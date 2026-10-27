@@ -37,7 +37,7 @@ const metaLine = (p: typeof all[number]) => p.data.source !== 'stage2-project'
               {p.data.status === 'todo' && <span class="tag">待補</span>}
               <Draft draft={p.data.draft} tag />
             </div>
-            <h3 class="card-title" transition:name={`project-title-${p.id}`}>{p.data.title}</h3>
+            <h2 class="card-title" transition:name={`project-title-${p.id}`}>{p.data.title}</h2>
             <p class="meta card-team">{[p.data.team, p.data.members.map(m => `${m.name}（${m.school}）`).join('、')].filter(Boolean).join('｜') || ' '}</p>
             <div class="card-tags">{p.data.tags.map(t => <span class="tag">{t}</span>)}</div>
           </a>
