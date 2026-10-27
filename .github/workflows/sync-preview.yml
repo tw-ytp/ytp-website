@@ -1,5 +1,5 @@
-# 固定預覽網址：main 每次有 push，就把 main 同步到 preview 分支。
-# Cloudflare Pages 會替 preview 分支建置到固定網址 https://preview.ytp-website.pages.dev（專案名稱不同時依 Cloudflare 顯示為準），
+# 固定預覽網址：main 每次有 push，就把 main 同步到 staging 分支（不能叫 preview：已有 preview/cms 等分支，git 不允許同名）。
+# Cloudflare Pages 會替 staging 分支建置到固定網址 https://staging.ytp-website.pages.dev（專案名稱不同時依 Cloudflare 顯示為準），
 # 而 Preview 環境變數 PUBLIC_SHOW_DRAFTS=true，所以那個網址永遠是「正式內容 + 所有草稿」。
 # 同仁流程：後台存成草稿 → 等 1–2 分鐘開預覽網址確認 → 回後台取消「草稿」→ 正式站上線。
 name: sync-preview
@@ -14,4 +14,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - run: git push --force origin main:preview
+      - run: git push --force origin main:staging
