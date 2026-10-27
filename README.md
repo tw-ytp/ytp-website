@@ -19,6 +19,16 @@ npm run build        # 輸出到 dist/
 npm run test:mask    # 同學姓名遮蔽規則的單元測試
 ```
 
+### 內容後台（Pages CMS）與上稿／下稿
+
+不碰 git 的同仁用 [app.pagescms.org](https://app.pagescms.org) 維護內容；後台設定在 `.pages.yml`，欄位與 `src/content.config.ts` 對應，改 schema 要同步改。
+
+- **第一次設定（管理員，需 GitHub 帳號且對本 repo 有寫入權）**：到 app.pagescms.org 用 GitHub 登入 → 安裝 Pages CMS 的 GitHub App 到 `tw-ytp` 組織並勾選 `ytp-website` → 開啟 repo，後台會讀 `.pages.yml`。
+- **加同仁**：後台 Settings → Collaborators，輸入 email 邀請；對方用 email 登入，不需要 GitHub 帳號，權限只限這個 repo 的內容與媒體，不能改 `.pages.yml` 或邀請他人。人員異動在同一處移除。
+- **上稿／下稿**：每筆內容有「草稿」開關（`draft`）。勾選 = 不上稿，正式站完全不建置這一筆（沒有網址、不進列表、不進搜尋）；取消 = 上稿。`status`（migrated／excerpt／todo／revised）只是舊站搬遷註記，不影響上下稿。
+- **預覽草稿**：Cloudflare Pages 的 Preview 環境變數設 `PUBLIC_SHOW_DRAFTS=true`，非 main 分支的建置就會帶草稿（頁面有「草稿」橫幅）；`npm run dev` 也會顯示草稿。
+- **存檔即部署**：後台存檔 = commit 到 GitHub → Cloudflare Pages 自動建置；建置失敗（例如姓名未遮蔽、欄位格式錯）不會上線，正式站維持上一版。
+
 ### 全站搜尋（Pagefind）
 
 - 索引在 `npm run build` 結束時由 `astro-pagefind` 產生到 `dist/pagefind/`，搜尋在瀏覽器端執行，沒有後端。

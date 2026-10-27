@@ -1,0 +1,466 @@
+# Pages CMS 後台設定（https://app.pagescms.org）
+#
+# 這個檔案描述網站內容在後台長什麼樣：哪些資料夾是「集合」（一筆一檔）、每個欄位用什麼輸入元件。
+# 後台存檔 = 直接 commit 到 GitHub，接著 Cloudflare Pages 自動建置上線，流程與用 git 完全相同。
+#
+# 上稿／下稿：每一筆都有「草稿」開關（draft）。勾起來 = 不上稿（正式站完全不建置這一筆）；取消 = 上稿。
+# 「搬遷註記」（status）是舊站搬遷時的紀錄，不影響上下稿，一般維護不必動。
+#
+# 欄位定義必須與 src/content.config.ts 的 zod schema 一致；改 schema 時請同步改這裡。
+
+media:
+  - name: photos
+    label: 活動照片
+    input: public/photos
+    output: /photos
+    categories: [image]
+  - name: files
+    label: 下載檔案（簡章、PDF）
+    input: public/downloads
+    output: /downloads
+    extensions: [pdf, docx, xlsx, pptx, zip]
+  - name: banners
+    label: 頁首橫幅
+    input: public/banners
+    output: /banners
+    categories: [image]
+
+content:
+  # ───────── 日常維護 ─────────
+  - name: news
+    label: 最新消息
+    description: 公告、活動回顧、通知。一則一檔，檔名自動用日期＋標題。
+    type: collection
+    path: src/content/news
+    filename: "{year}-{month}-{day}-{hour}{minute}.md"   # 中文標題無法轉成檔名，改用日期時間；網址會是 /news/2026-10-27-1455/
+    view:
+      primary: title
+      fields: [title, date, kind, draft]
+      sort: [date, title]
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: 標題, type: string, required: true }
+      - { name: date, label: 日期, type: date, required: true, options: { format: "yyyy-MM-dd" } }
+      - name: kind
+        label: 類型
+        type: select
+        default: announcement
+        options:
+          values:
+            - { value: announcement, label: 公告 }
+            - { value: recap, label: 活動回顧 }
+            - { value: notice, label: 通知 }
+      - { name: edition, label: 相關屆次（選填，數字）, type: number }
+      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: body, label: 內文, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - { name: source_url, label: 舊站原文網址, type: string, hidden: true }
+
+  - name: stories
+    label: 學員故事
+    description: 海外參訪心得與「少年圖靈的故事」訪談。作者為學員本人且已同意刊登，保留全名。
+    type: collection
+    path: src/content/stories
+    filename: "{year}-{month}-{day}-{hour}{minute}.md"
+    view:
+      primary: title
+      fields: [title, author, date, kind, draft]
+      sort: [date, title]
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: 標題, type: string, required: true }
+      - { name: date, label: 日期, type: date, required: true, options: { format: "yyyy-MM-dd" } }
+      - { name: author, label: 作者（學員姓名）, type: string, required: true }
+      - { name: school, label: 學校, type: string }
+      - { name: cohort, label: 屆次（如「第 10 屆」）, type: string }
+      - { name: trip, label: 參訪團（如「2025 矽谷」）, type: string }
+      - name: kind
+        label: 類型
+        type: select
+        default: overseas
+        options:
+          values:
+            - { value: overseas, label: 海外參訪心得 }
+            - { value: interview, label: 少年圖靈的故事（訪談） }
+      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: body, label: 內文, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - { name: source_url, label: 舊站原文網址, type: string, hidden: true }
+
+  - name: faq
+    label: 常見問題
+    description: 依受眾（學生／家長／教師）分頁籤，同一頁籤內依「區塊」分組、依「順序」排列。
+    type: collection
+    path: src/content/faq
+    view:
+      primary: question
+      fields: [question, audience, section, order, draft]
+      sort: [audience, section, order]
+    fields:
+      - { name: question, label: 問題, type: string, required: true }
+      - name: audience
+        label: 受眾
+        type: select
+        required: true
+        options:
+          values:
+            - { value: student, label: 學生 }
+            - { value: parent, label: 家長 }
+            - { value: teacher, label: 教師 }
+      - { name: section, label: 區塊（如「報名」「初賽」）, type: string, required: true }
+      - { name: order, label: 順序（數字，小的在前）, type: number, required: true }
+      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: body, label: 答案, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+
+  - name: projects
+    label: 歷屆成果（專題與黑客松作品）
+    description: 一件作品一檔。技術標籤請優先使用正規名稱（AI、LLM 應用、機器學習、NLP、影像辨識、語音與音訊、區塊鏈、演算法與競程、資安、資料科學、推薦系統、聊天機器人、行動 App、網頁應用、桌面與工具、硬體與 IoT、遊戲、教育、醫療、金融、旅遊與地理、職涯與創業、社會與公益）；其他名稱會由 src/lib/tags.ts 的別名表轉換。同學姓名必須遮蔽（王O明），否則建置會失敗。
+    type: collection
+    path: src/content/projects
+    filename: "{fields.year}-{month}{day}{hour}{minute}.md"   # 既有檔名為「年份-流水號」；新檔用年份＋時間戳避免撞名
+    view:
+      primary: title
+      fields: [title, year, edition, source, rank, draft]
+      sort: [year, edition, rank, title]
+      default: { sort: year, order: desc }
+      search: [title, team]
+    fields:
+      - { name: title, label: 作品名稱, type: string, required: true }
+      - name: source
+        label: 出處
+        type: select
+        default: stage2-hackathon
+        options:
+          values:
+            - { value: stage2-project, label: 第 1–10 屆 第二階段專題實作 }
+            - { value: stage2-hackathon, label: 第 11 屆起 第二階段黑客松 }
+            - { value: turing-plus, label: 青年圖靈++ 黑客松 }
+      - { name: edition, label: 屆次（數字；青年圖靈++ 填 0）, type: number, required: true }
+      - { name: year, label: 年份, type: number, required: true }
+      - { name: event, label: 活動編號（黑客松：青年圖靈++ 填年度如 2026；第二階段填屆次如 11）, type: string }
+      - name: group
+        label: 黑客松組別
+        type: select
+        options:
+          values:
+            - { value: youth, label: 青年組 }
+            - { value: senior, label: 高中組 }
+            - { value: junior, label: 國中組 }
+      - { name: rank, label: 名次（0 = 未得名；專題實作 1–3 = 第一至三名；黑客松 1–4 = 金銀銅佳作）, type: number, default: 0 }
+      - { name: team, label: 隊名, type: string }
+      - { name: theme, label: 賽題, type: string }
+      - { name: stack, label: 技術棧（一句話）, type: string }
+      - { name: advisor, label: 指導教授, type: string }
+      - { name: tags, label: 技術標籤, type: string, list: true }
+      - name: members
+        label: 隊員（姓名請遮蔽，如 王O明）
+        type: object
+        list: true
+        fields:
+          - { name: name, label: 姓名（遮蔽）, type: string, required: true }
+          - { name: school, label: 學校, type: string, required: true }
+      - { name: overseasReps, label: 海外參訪代表（遮蔽姓名）, type: string, list: true }
+      - { name: github, label: GitHub 網址, type: string }
+      - { name: demo, label: Demo 網址, type: string }
+      - { name: poster, label: 海報／簡報網址, type: string }
+      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: body, label: 作品簡介, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - { name: source_url, label: 資料來源網址, type: string, hidden: true }
+
+  - name: hub
+    label: 備賽資源（解析／指南／影片）
+    type: collection
+    path: src/content/hub
+    view:
+      primary: title
+      fields: [title, type, year, group, draft]
+      sort: [date]
+      default: { sort: date, order: desc }
+    fields:
+      - { name: title, label: 標題, type: string, required: true }
+      - { name: date, label: 日期, type: date, required: true, options: { format: "yyyy-MM-dd" } }
+      - name: type
+        label: 類型
+        type: select
+        required: true
+        options:
+          values:
+            - { value: solution, label: 題目解析 }
+            - { value: guide, label: 指南 }
+            - { value: video, label: 影片 }
+      - { name: year, label: 年份, type: number }
+      - name: group
+        label: 組別
+        type: select
+        default: both
+        options:
+          values:
+            - { value: junior, label: 國中組 }
+            - { value: senior, label: 高中組 }
+            - { value: both, label: 兩組皆適用 }
+      - { name: video_url, label: 影片網址, type: string }
+      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: body, label: 內文, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+
+  # ───────── 賽季設定（每年改幾次） ─────────
+  - name: season
+    label: 當屆賽季狀態（首頁 Hero）
+    description: 改「目前階段」就會切換首頁主視覺的文案與按鈕。各階段日期以「歷屆」裡的該屆資料為準。
+    type: file
+    path: src/data/season.json
+    format: json
+    fields:
+      - { name: _doc, label: 說明, type: text, hidden: true }
+      - { name: edition, label: 當屆屆次, type: number, required: true }
+      - { name: year, label: 年份, type: number, required: true }
+      - name: phase
+        label: 目前階段
+        type: select
+        required: true
+        options:
+          values:
+            - { value: registration, label: 報名中 }
+            - { value: preliminary, label: 線上初賽準備中 }
+            - { value: camp, label: 程式挑戰營 }
+            - { value: hackathon, label: H2 黑客松 }
+            - { value: offseason, label: 賽季結束（等下一屆） }
+      - { name: phaseNote, label: 備註（內部）, type: text }
+      - name: registration
+        label: 報名資訊
+        type: object
+        fields:
+          - { name: open, label: 報名開始, type: string }
+          - { name: close, label: 報名截止, type: string }
+          - { name: closeNote, label: 備註（內部）, type: text }
+          - { name: formSenior, label: 高中組報名表單, type: string }
+          - { name: formJunior, label: 國中組報名表單, type: string }
+      - name: stages
+        label: 各階段（首頁進度列）
+        type: object
+        list: true
+        fields:
+          - { name: key, label: 代號（勿改）, type: string }
+          - { name: label, label: 名稱, type: string }
+          - { name: date, label: 日期（顯示文字）, type: string }
+          - { name: detail, label: 說明, type: string }
+          - { name: groups, label: 適用組別, type: string }
+          - { name: href, label: 連結, type: string }
+      - name: documents
+        label: 簡章與 FAQ 檔案
+        type: object
+        fields:
+          - name: brochure
+            label: 簡章
+            type: object
+            fields:
+              - { name: label, label: 顯示文字, type: string }
+              - { name: url, label: 檔案路徑, type: string }
+          - name: faq
+            label: FAQ 檔案
+            type: object
+            fields:
+              - { name: label, label: 顯示文字, type: string }
+              - { name: url, label: 檔案路徑, type: string }
+      - { name: hackathonUrl, label: H2 黑客松頁面連結, type: string }
+      - { name: video, label: 首頁影片（YouTube embed 網址）, type: string }
+      - { name: plusUrl, label: 青年圖靈++ 連結, type: string }
+
+  - name: stats
+    label: 影響力數字（首頁與關於頁）
+    type: file
+    path: src/data/stats.json
+    format: json
+    fields:
+      - { name: _doc, label: 說明, type: text, hidden: true }
+      - { name: editions, label: 累計屆數, type: number }
+      - { name: sinceYear, label: 發起年份, type: number }
+      - name: items
+        label: 數字卡
+        type: object
+        list: true
+        fields:
+          - { name: prefix, label: 前綴（如「近」）, type: string }
+          - { name: value, label: 數字（顯示文字）, type: string, required: true }
+          - { name: unit, label: 單位, type: string }
+          - { name: label, label: 說明, type: string, required: true }
+
+  - name: site
+    label: 站台基本資料（聯絡信箱、社群連結）
+    type: file
+    path: src/data/site.json
+    format: json
+    fields:
+      - { name: name, label: 站名, type: string }
+      - { name: shortName, label: 短名, type: string }
+      - { name: description, label: 預設描述（SEO）, type: text }
+      - { name: url, label: 網址, type: string }
+      - { name: email, label: 聯絡信箱, type: string }
+      - { name: organizer, label: 主辦單位, type: string }
+      - { name: coOrganizers, label: 協辦單位, type: string, list: true }
+      - name: social
+        label: 社群
+        type: object
+        fields:
+          - { name: facebook, label: Facebook, type: string }
+          - { name: discord, label: Discord, type: string }
+          - { name: youtube, label: YouTube, type: string }
+          - { name: github, label: GitHub, type: string }
+      - name: todo
+        label: 內部備註
+        type: object
+        hidden: true
+        fields:
+          - { name: github_note, label: GitHub 備註, type: text }
+
+  # ───────── 進階（結構化活動資料，建議由熟悉網站的人維護） ─────────
+  - name: stage-hackathons
+    label: 進階：第二階段黑客松（第 11 屆起）
+    description: 檔名 = 屆次（11.md）。欄位多且有巢狀結構，建議對照既有檔案修改。
+    type: collection
+    path: src/content/stage-hackathons
+    operations: { delete: false }
+    view: { primary: title, fields: [title, label, state, draft] }
+    fields: &hackathonFields
+      - { name: title, label: 標題, type: string, required: true }
+      - { name: label, label: 短標（如「2026 下半年」）, type: string, required: true }
+      - name: state
+        label: 狀態
+        type: select
+        required: true
+        options:
+          values:
+            - { value: planning, label: 籌備中 }
+            - { value: upcoming, label: 即將舉行 }
+            - { value: archived, label: 已結束 }
+      - { name: edition, label: 屆次, type: number }
+      - { name: year, label: 年度（青年圖靈++）, type: number }
+      - { name: regStart, label: 報名開始（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
+      - { name: start, label: 競賽開始（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
+      - { name: end, label: 競賽結束（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
+      - { name: tagline, label: 一句話, type: string }
+      - { name: period, label: 競賽期間（顯示文字）, type: string, required: true }
+      - { name: venue, label: 地點, type: string }
+      - { name: organizer, label: 主辦, type: string }
+      - { name: coOrganizers, label: 協辦, type: string, list: true }
+      - { name: partners, label: 合作單位, type: string, list: true }
+      - name: themes
+        label: 賽題
+        type: object
+        list: true
+        fields:
+          - { name: name, label: 名稱, type: string }
+          - { name: detail, label: 說明, type: text }
+      - { name: groups, label: 組別, type: string, list: true }
+      - { name: eligibility, label: 參賽資格（一條一項）, type: text, list: true }
+      - name: timeline
+        label: 時程
+        type: object
+        list: true
+        fields:
+          - { name: date, label: 日期, type: string }
+          - { name: label, label: 項目, type: string }
+          - { name: detail, label: 說明, type: text }
+      - name: judging
+        label: 評分
+        type: object
+        list: true
+        fields:
+          - { name: name, label: 項目, type: text }
+          - { name: weight, label: 權重, type: string }
+      - name: prizes
+        label: 獎項
+        type: object
+        list: true
+        fields:
+          - { name: group, label: 類別, type: string }
+          - { name: items, label: 項目, type: string, list: true }
+      - name: links
+        label: 連結
+        type: object
+        fields:
+          - { name: brochure, label: 簡章, type: string }
+          - { name: briefingVideo, label: 說明會影片, type: string }
+          - { name: registerYouth, label: 青年組報名, type: string }
+          - { name: registerSenior, label: 高中組報名, type: string }
+          - { name: github, label: GitHub, type: string }
+          - { name: recapPdf, label: 活動回顧 PDF, type: string }
+          - { name: original, label: 原始公告, type: string }
+      - name: stats
+        label: 數字
+        type: object
+        list: true
+        fields:
+          - { name: label, label: 說明, type: string }
+          - { name: value, label: 數值, type: string }
+      - { name: banner, label: 主視覺（站內路徑）, type: string }
+      - { name: logo, label: 活動 logo（白字透明底）, type: string }
+      - name: partnerLogos
+        label: 單位 logo
+        type: object
+        list: true
+        fields:
+          - { name: image, label: 圖檔路徑, type: string }
+          - { name: alt, label: 替代文字, type: string }
+      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: body, label: 內文, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+
+  - name: turing-plus
+    label: 進階：青年圖靈++ 黑客松
+    description: 檔名 = 年度（2026.md）。
+    type: collection
+    path: src/content/turing-plus
+    operations: { delete: false }
+    view: { primary: title, fields: [title, label, state, draft] }
+    fields: *hackathonFields
+
+  - name: cohorts
+    label: 進階：歷屆三階段時程
+    description: 每屆一檔（01.md … 11.md），首頁年度時間軸、屆次頁都從這裡讀。日期未定請留空，不要推估。
+    type: collection
+    path: src/content/cohorts
+    operations: { delete: false }
+    view: { primary: edition, fields: [edition, year, era], sort: [edition], default: { sort: edition, order: desc } }
+    fields:
+      - { name: edition, label: 屆次, type: number, required: true }
+      - { name: year, label: 年份, type: number, required: true }
+      - name: era
+        label: 第二階段型態
+        type: select
+        required: true
+        options:
+          values:
+            - { value: project, label: 專題實作（第 1–10 屆） }
+            - { value: hackathon, label: 黑客松（第 11 屆起） }
+      - name: stages
+        label: 三個階段（固定 3 個）
+        type: object
+        list: { min: 3, max: 3 }
+        fields:
+          - { name: phase, label: 階段（1／2／3）, type: number, required: true }
+          - name: type
+            label: 類型
+            type: select
+            required: true
+            options:
+              values:
+                - { value: camp, label: 程式挑戰營 }
+                - { value: project, label: 專題實作 }
+                - { value: hackathon, label: 黑客松 }
+                - { value: overseas, label: 海外參訪 }
+          - { name: title, label: 標題, type: string, required: true }
+          - { name: note, label: 備註, type: text }
+          - name: events
+            label: 子活動
+            type: object
+            list: true
+            fields:
+              - { name: name, label: 名稱, type: string, required: true }
+              - { name: start, label: 開始（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
+              - { name: end, label: 結束（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
+              - { name: note, label: 說明, type: text }
+      - { name: body, label: 內文, type: rich-text }
+      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }

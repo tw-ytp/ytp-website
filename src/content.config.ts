@@ -11,20 +11,41 @@ const studentName = z.string().refine(s => !MASK_GUARD || isMasked(s), { message
 
 const status = z.enum(['migrated', 'excerpt', 'todo', 'revised']).default('migrated');
 
+// 上稿／下稿機制（2026-10）：
+//   draft: true  = 草稿／下架，正式站「完全不建置」這一筆（沒有網址、不進列表、不進搜尋索引）。
+//   draft 未填或 false = 上稿。
+//   預覽：PUBLIC_SHOW_DRAFTS=true（Cloudflare Pages 的 Preview 環境變數）或 astro dev 會建出草稿並加上「草稿」標示。
+//   status 只是舊站搬遷的註記（migrated／excerpt／todo／revised），不影響上下稿。
+const SHOW_DRAFTS = process.env.PUBLIC_SHOW_DRAFTS === 'true' || process.env.NODE_ENV !== 'production';
+const draft = z.boolean().default(false);
+/** glob loader 的包裝：載入後把 draft 的項目從 store 移除，所有 getCollection() 呼叫就都看不到草稿，頁面不必各自過濾。 */
+const published = (base: string) => {
+  const inner = glob({ pattern: '**/*.md', base });
+  return {
+    name: 'glob-published',
+    load: async (ctx: Parameters<typeof inner.load>[0]) => {
+      await inner.load(ctx);
+      if (SHOW_DRAFTS) return;
+      for (const [id, entry] of ctx.store.entries()) if ((entry.data as { draft?: boolean }).draft) ctx.store.delete(id);
+    },
+  };
+};
+
 const news = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
+  loader: published('./src/content/news'),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
     edition: z.number().optional(),
     kind: z.enum(['announcement', 'recap', 'notice']).default('announcement'),
     status,
+    draft,
     source_url: z.string().optional(),
   }),
 });
 
 const stories = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/stories' }),
+  loader: published('./src/content/stories'),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -34,12 +55,13 @@ const stories = defineCollection({
     trip: z.string().optional(),
     kind: z.enum(['overseas', 'interview']).default('overseas'),  // overseas=海外參訪心得；interview=少年圖靈的故事訪談
     status,
+    draft,
     source_url: z.string().optional(),
   }),
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  loader: published('./src/content/projects'),
   schema: z.object({
     title: z.string(),
     // 作品出處（軌道）：stage2-project = 第 1–10 屆第二階段專題實作；stage2-hackathon = 第 11 屆起第二階段 YTP{年}H2黑客松；
@@ -61,23 +83,25 @@ const projects = defineCollection({
     demo: z.string().default(''),
     poster: z.string().default(''),
     status,
+    draft,
     source_url: z.string().optional(),
   }),
 });
 
 const faq = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/faq' }),
+  loader: published('./src/content/faq'),
   schema: z.object({
     question: z.string(),
     audience: z.enum(['student', 'parent', 'teacher']),
     section: z.string(),
     order: z.number(),
     status,
+    draft,
   }),
 });
 
 const hub = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/hub' }),
+  loader: published('./src/content/hub'),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -86,6 +110,7 @@ const hub = defineCollection({
     group: z.enum(['junior', 'senior', 'both']).default('both'),
     video_url: z.string().default(''),
     status,
+    draft,
   }),
 });
 
@@ -120,17 +145,18 @@ const hackathonFields = {
   logo: z.string().optional(),                   // 活動 logo，白字透明底，需深色底才看得見
   partnerLogos: z.array(z.object({ image: z.string(), alt: z.string() })).default([]), // 單位 logo 圖，白字透明底，標題已燒在圖上
   status,
+  draft,
 };
 
 // 青年圖靈++：YTP 校友的年度活動，每年上半年，檔名 = 年度（2026.md → /turing-plus/2026/）。2026 為第 1 場。
 const turingPlus = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/turing-plus' }),
+  loader: published('./src/content/turing-plus'),
   schema: z.object({ ...hackathonFields, year: z.number().optional() }),
 });
 
 // 少年圖靈計畫第二階段（第 11 屆起）：YTP{年}H2黑客松，檔名 = 屆次（11.md → /cohorts/11/hackathon/）
 const stageHackathons = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/stage-hackathons' }),
+  loader: published('./src/content/stage-hackathons'),
   schema: z.object({ ...hackathonFields, edition: z.number() }),
 });
 
@@ -142,7 +168,7 @@ const cohortEvent = z.object({
   note: z.string().optional(),             // 公開顯示的補充說明
 });
 const cohorts = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/cohorts' }),
+  loader: published('./src/content/cohorts'),
   schema: z.object({
     edition: z.number(),
     year: z.number(),

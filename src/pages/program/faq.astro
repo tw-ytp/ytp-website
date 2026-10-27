@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Draft from '../../components/Draft.astro';
 import Todo from '../../components/Todo.astro';
 import Banner from '../../components/Banner.astro';
 import { getCollection, render } from 'astro:content';
@@ -23,7 +24,7 @@ const rendered = await Promise.all(all.map(async f => ({ ...f, Content: (await r
               <h2>{sec}</h2>
               {items.filter(f => f.data.section === sec).map(f => (
                 <details>
-                  <summary>{f.data.question}</summary>
+                  <summary>{f.data.question} <Draft draft={f.data.draft} tag /></summary>
                   <div style="padding-top:8px"><f.Content /></div>
                   {f.data.status === 'todo' && <Todo>此題答案待執行小組補充。</Todo>}
                 </details>

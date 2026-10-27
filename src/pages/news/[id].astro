@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Draft from '../../components/Draft.astro';
 import Todo from '../../components/Todo.astro';
 import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
@@ -11,6 +12,7 @@ const { Content } = await render(n);
 <Base title={n.data.title}>
   <div class="wrap page-head">
     <p class="crumb"><a href="/news/">最新消息</a>｜{n.data.date.toISOString().slice(0,10)}{n.data.edition && `｜第 ${n.data.edition} 屆`}</p>
+    <Draft draft={n.data.draft} />
     <h1>{n.data.title}</h1>
   </div>
   <article class="wrap prose">

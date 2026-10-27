@@ -311,3 +311,7 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 @media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 /* 手機：篩選列改橫向捲動，避免 20 多個標籤把內容推到第二屏 */
 @media(max-width:640px){.filter-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding-bottom:6px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px}.filter-bar button{white-space:nowrap;flex:0 0 auto}}
+
+/* 草稿標示（Draft.astro）：只在預覽環境出現 */
+.draft-banner{background:var(--todo-bg);color:var(--todo-ink);border-left:4px solid var(--signal);padding:10px 14px;border-radius:var(--r);font-size:var(--fs-2);margin:0 0 12px}
+.draft-tag{background:var(--signal);color:var(--on-signal);border-color:var(--signal);font-weight:700}

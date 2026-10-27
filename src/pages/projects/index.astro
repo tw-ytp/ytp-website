@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Banner from '../../components/Banner.astro';
 import FilterBar from '../../components/FilterBar.astro';
+import Draft from '../../components/Draft.astro';
 import { getCollection } from 'astro:content';
 import { CANON, isCanon } from '../../lib/tags';
 const all = (await getCollection('projects')).sort((a, b) => b.data.year - a.data.year || (a.data.rank || 9) - (b.data.rank || 9) || a.id.localeCompare(b.id));
@@ -34,6 +35,7 @@ const metaLine = (p: typeof all[number]) => p.data.source !== 'stage2-project'
               <span class="meta">{metaLine(p)}</span>
               {p.data.rank > 0 && <span class="rank">{p.data.source !== 'stage2-project' ? medal[p.data.rank] : rankLabel[p.data.rank]}</span>}
               {p.data.status === 'todo' && <span class="tag">待補</span>}
+              <Draft draft={p.data.draft} tag />
             </div>
             <h3 class="card-title" transition:name={`project-title-${p.id}`}>{p.data.title}</h3>
             <p class="meta card-team">{[p.data.team, p.data.members.map(m => `${m.name}（${m.school}）`).join('、')].filter(Boolean).join('｜') || ' '}</p>
