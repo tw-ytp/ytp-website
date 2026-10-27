@@ -51,14 +51,8 @@ const indexable = !/^\/404/.test(path) && import.meta.env.PUBLIC_NOINDEX !== 'tr
   <meta property="og:site_name" content={site.name} />
   <link rel="canonical" href={new URL(path, site.url)} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  {/* 字型：非阻塞載入。Google Fonts 的 CSS 約 170 KiB（每個字重切成百餘個 unicode-range 區段），
-      若用一般 <link rel="stylesheet"> 會擋住首次繪製，行動版 FCP 曾量到 8.8 s。
-      改為 preload + onload 切換：先用系統中文字體畫出頁面，字型到了再換（font-display: swap）。
-      字重 5 → 3：500 由 400 代、900 由 800 代，瀏覽器依 CSS 字重比對規則自動選最近的。 */}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;800&display=swap" /></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
   <ClientRouter />
 </head>
 <body>
