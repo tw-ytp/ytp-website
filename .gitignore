@@ -7,3 +7,4 @@ _to_delete/
 
 # 私人名冊（含全名），不進任何 repo
 .private/
+docs/manual.html

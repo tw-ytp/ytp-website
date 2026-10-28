@@ -203,4 +203,17 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { pages, news, stories, projects, faq, hub, turingPlus, stageHackathons, cohorts };
+// 歷年考古題：一題一檔（src/content/exams/{年}-{組}-{階段}.md），只有 frontmatter。頁面建置時依年份新→舊、高中組在前排序，與檔案順序無關。
+const exams = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/exams' }),
+  schema: z.object({
+    year: z.number(),
+    group: z.enum(['senior', 'junior']),
+    stage: z.enum(['camp', 'prelim', 'revival', 'international']),
+    lang: z.string().default(''),
+    note: z.string().optional(),
+    url: z.string().default(''),        // PDF 路徑（public/downloads/exams/）；留空顯示「待上架」
+  }),
+});
+
+export const collections = { pages, exams, news, stories, projects, faq, hub, turingPlus, stageHackathons, cohorts };

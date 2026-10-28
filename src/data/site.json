@@ -11,8 +11,16 @@
     "github": "https://github.com/26ytph"
   },
   "organizer": "精誠集團",
-  "coOrganizers": ["財團法人台灣資訊科技發展教育基金會", "資訊之芽", "台大程式解題社"],
+  "coOrganizers": [
+    "財團法人台灣資訊科技發展教育基金會",
+    "資訊之芽",
+    "台大程式解題社"
+  ],
   "todo": {
     "github_note": "26ytph 為 2026 上半年黑客松作品專用 organization；若日後有 YTP 總 org 請改此處"
+  },
+  "oj": {
+    "label": "台大程式解題社 Online Judge（可上傳解題）",
+    "url": "https://oj.ntucpc.org/"
   }
 }
