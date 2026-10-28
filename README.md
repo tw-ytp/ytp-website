@@ -54,6 +54,11 @@ npm run test:mask    # 同學姓名遮蔽規則的單元測試
 - 後台要換圖或換檔：先按欄位上的 ×（刪除），欄位會變回「選擇／上傳」按鈕，再選新檔。
 - 影片不上傳，用 YouTube 連結。
 
+### 操作手冊（不對外）
+
+- 正本 `docs/manual.md`，截圖 `docs/manual/`；**不在 `public/`，網站不會顯示**。後台側欄最下方「操作手冊」就是這個檔，可直接改。
+- 匯出 PDF（邀請同仁時隨信附上）：`node scripts/manual-pdf.mjs` → `docs/manual.pdf`（需 `npx playwright install chromium` 一次）。手冊改完記得重新匯出並 commit。
+
 ### 全站搜尋（Pagefind）
 
 - 索引在 `npm run build` 結束時由 `astro-pagefind` 產生到 `dist/pagefind/`，搜尋在瀏覽器端執行，沒有後端。

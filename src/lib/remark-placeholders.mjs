@@ -11,7 +11,7 @@ const swap = (s) => s.replace(RE, (m, key) => { const v = get(key); return v ===
 export default function remarkPlaceholders() {
   return (tree) => {
     const walk = (node) => {
-      if (node.type === 'text' || node.type === 'inlineCode') node.value = swap(node.value);
+      if (node.type === 'text') node.value = swap(node.value);   // 行內程式碼（`{{…}}`）保留原樣
       if (node.type === 'link' && node.url) node.url = swap(node.url);
       node.children?.forEach(walk);
     };

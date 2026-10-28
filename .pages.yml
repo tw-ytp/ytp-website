@@ -26,6 +26,11 @@ media:
     input: public/banners
     output: /banners
     categories: [image]
+  - name: manual
+    label: 操作手冊截圖（不對外）
+    input: docs/manual
+    output: /docs/manual
+    categories: [image]
 
 content:
   # ───────── 日常維護 ─────────
@@ -571,3 +576,14 @@ content:
               - { name: note, label: 說明, type: text }
       - { name: body, label: 內文, type: rich-text }
       - { name: status, label: 內容狀態, type: select, hidden: true, default: revised, options: { values: [revised, todo] } }
+
+  # ───────── 文件（不會出現在網站上） ─────────
+  - name: manual
+    label: 操作手冊
+    description: 給內容維護同仁的操作手冊正本（docs/manual.md），只在這裡與邀請信附的 PDF 提供，網站不會顯示。改完請管理員重新匯出 PDF。
+    type: file
+    path: docs/manual.md
+    fields:
+      - { name: title, label: 標題, type: string }
+      - { name: updated, label: 最後更新, type: date, options: { format: "yyyy-MM-dd" } }
+      - { name: body, label: 內容, type: rich-text, options: { media: manual } }
