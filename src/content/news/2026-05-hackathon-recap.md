@@ -2,7 +2,7 @@
 title: 2026 YTP 黑客松成果回顧
 date: 2026-05-07
 kind: recap
-status: migrated
+status: revised
 source_url: https://www.tw-ytp.org/latest-news/
 ---
 

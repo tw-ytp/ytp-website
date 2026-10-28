@@ -3,7 +3,7 @@ title: 第十屆 YTP 程式挑戰營決賽晉級名單
 date: 2025-08-18
 edition: 10
 kind: announcement
-status: migrated
+status: revised
 source_url: https://www.tw-ytp.org/latest-news/
 ---
 

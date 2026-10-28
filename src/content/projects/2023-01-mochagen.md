@@ -17,7 +17,7 @@ overseasReps: []
 github: https://github.com/CKEFGISC/MochaGen
 demo: ''
 poster: https://drive.google.com/file/d/1W8LSlLoy9d3Qha06_YRAxRFDptNXLAxR/view
-status: migrated
+status: revised
 source_url: Google Drive：YTP 8th 專題實作成果發表會-各組成員及摘要.pptx
 team: 蔡摩卡與紙箱
 advisor: 鄭瑞光 教授

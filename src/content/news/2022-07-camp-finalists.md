@@ -3,7 +3,7 @@ title: 第七屆 YTP 程式挑戰營晉級名單公布
 date: 2022-07-25
 edition: 7
 kind: announcement
-status: migrated
+status: revised
 source_url: https://www.tw-ytp.org/seventh-codingcamp/
 ---
 

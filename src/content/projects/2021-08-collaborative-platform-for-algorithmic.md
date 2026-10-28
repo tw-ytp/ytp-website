@@ -17,7 +17,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1KpbUZtOQj4j0HC6twFar_mDmqUQMmcCy/view
-status: migrated
+status: revised
 source_url: Google Drive：第六屆 YTP 專題實作簡報資料夾
 team: 我負責雜耍
 ---

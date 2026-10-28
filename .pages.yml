@@ -4,7 +4,7 @@
 # 後台存檔 = 直接 commit 到 GitHub，接著 Cloudflare Pages 自動建置上線，流程與用 git 完全相同。
 #
 # 上稿／下稿：每一筆都有「草稿」開關（draft）。勾起來 = 不上稿（正式站完全不建置這一筆）；取消 = 上稿。
-# 「搬遷註記」（status）是舊站搬遷時的紀錄，不影響上下稿，一般維護不必動。
+# 「內容狀態」（status）：正常／內容待補。待補只是在頁面加黃色提示，內容仍會上線；要不上線請用「草稿」。
 #
 # 欄位定義必須與 src/content.config.ts 的 zod schema 一致；改 schema 時請同步改這裡。
 
@@ -55,7 +55,14 @@ content:
       - { name: edition, label: 相關屆次（選填，數字）, type: number }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
       - { name: source_url, label: 舊站原文網址, type: string, hidden: true }
 
   - name: stories
@@ -86,7 +93,14 @@ content:
             - { value: interview, label: 少年圖靈的故事（訪談） }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
       - { name: source_url, label: 舊站原文網址, type: string, hidden: true }
 
   - name: faq
@@ -113,7 +127,14 @@ content:
       - { name: order, label: 順序（數字，小的在前）, type: number, required: true }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 答案, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
 
   - name: projects
     label: 歷屆成果（專題與黑客松作品）
@@ -168,7 +189,14 @@ content:
       - { name: poster, label: 海報／簡報網址, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 作品簡介, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
       - { name: source_url, label: 資料來源網址, type: string, hidden: true }
 
   - name: hub
@@ -205,7 +233,14 @@ content:
       - { name: video_url, label: 影片網址, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
 
   - name: pages
     label: 網站頁面（關於、計畫介紹、報名、規則）
@@ -470,7 +505,14 @@ content:
           - { name: alt, label: 替代文字, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
 
   - name: turing-plus
     label: 進階：青年圖靈++ 黑客松
@@ -527,4 +569,4 @@ content:
               - { name: end, label: 結束（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
               - { name: note, label: 說明, type: text }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - { name: status, label: 內容狀態, type: select, hidden: true, default: revised, options: { values: [revised, todo] } }

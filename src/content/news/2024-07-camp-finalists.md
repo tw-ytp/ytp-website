@@ -3,7 +3,7 @@ title: 第九屆程式挑戰營晉級名單公告
 date: 2024-07-29
 edition: 9
 kind: announcement
-status: migrated
+status: revised
 source_url: https://www.tw-ytp.org/latest-news/
 ---
 

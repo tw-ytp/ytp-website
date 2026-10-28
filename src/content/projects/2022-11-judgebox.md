@@ -16,7 +16,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1RvdqgWRWF3ZRRWLH6MyBoSlnMBUNCV6Q/view
-status: migrated
+status: revised
 source_url: Google Drive：第七屆 YTP 專題實作(12組)_專題題目_專題摘要.xlsx
 team: 我燒雞您裝弱
 advisor: 鄭卜壬 教授

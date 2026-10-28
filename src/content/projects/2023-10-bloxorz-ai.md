@@ -18,7 +18,7 @@ overseasReps: []
 github: https://github.com/rey0818/bloxorz
 demo: https://www.youtube.com/watch?v=OkWJNB8Ffes
 poster: https://drive.google.com/file/d/1eEA2G9j_5gNlBe-jEBVz7D2oGOtjSvwY/view
-status: migrated
+status: revised
 source_url: Google Drive：YTP 8th 專題實作成果發表會-各組成員及摘要.pptx
 team: FURIOUS F
 advisor: 何信瑩 教授

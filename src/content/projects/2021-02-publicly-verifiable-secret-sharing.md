@@ -18,7 +18,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1n3Tozcdx-IlR9nF06VhVxx03wuBmoIuT/view
-status: migrated
+status: revised
 source_url: Google Drive：第六屆 YTP 專題實作簡報資料夾
 team: 婐部繪曲兌鳴
 advisor: 蕭旭君 教授
