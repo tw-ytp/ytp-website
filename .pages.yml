@@ -58,7 +58,8 @@ content:
             - { value: recap, label: 活動回顧 }
             - { value: notice, label: 通知 }
       - { name: edition, label: 相關屆次（選填，數字）, type: number }
-      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
+      - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
       - name: status
         label: 內容狀態
@@ -97,7 +98,8 @@ content:
             - { value: overseas, label: 海外參訪心得 }
             - { value: interview, label: 少年圖靈的故事（訪談） }
       - { name: cover, label: 封面照（列表卡片用，選填；建議橫式）, type: image, options: { media: photos, path: public/photos/posts/stories } }
-      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
+      - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
       - name: status
         label: 內容狀態
@@ -131,7 +133,8 @@ content:
             - { value: teacher, label: 教師 }
       - { name: section, label: 區塊（如「報名」「初賽」）, type: string, required: true }
       - { name: order, label: 順序（數字，小的在前）, type: number, required: true }
-      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
+      - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 答案, type: rich-text }
       - name: status
         label: 內容狀態
@@ -193,7 +196,8 @@ content:
       - { name: github, label: GitHub 網址, type: string }
       - { name: demo, label: Demo 網址, type: string }
       - { name: poster, label: 海報／簡報網址, type: string }
-      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
+      - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 作品簡介, type: rich-text }
       - name: status
         label: 內容狀態
@@ -237,7 +241,8 @@ content:
             - { value: senior, label: 高中組 }
             - { value: both, label: 兩組皆適用 }
       - { name: video_url, label: 影片網址, type: string }
-      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
+      - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
       - name: status
         label: 內容狀態
@@ -509,7 +514,8 @@ content:
         fields:
           - { name: image, label: 圖檔, type: image, options: { media: photos, path: public/photos/hackathon } }
           - { name: alt, label: 替代文字, type: string }
-      - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
+      - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
+      - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
       - name: status
         label: 內容狀態

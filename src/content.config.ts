@@ -20,6 +20,8 @@ const status = z.enum(['migrated', 'excerpt', 'todo', 'revised']).default('revis
 //   status（內容狀態）不影響上下稿。
 const SHOW_DRAFTS = process.env.PUBLIC_SHOW_DRAFTS === 'true' || process.env.NODE_ENV !== 'production';
 const draft = z.boolean().default(false);
+// archived: true = 已下架（封存）：正式站與預覽站都不建置，檔案保留；要重新上架就取消。與 draft（還沒上）語意分開。
+const archived = z.boolean().default(false);
 /** glob loader 的包裝：載入後把 draft 的項目從 store 移除，所有 getCollection() 呼叫就都看不到草稿，頁面不必各自過濾。 */
 const published = (base: string) => {
   const inner = glob({ pattern: '**/*.md', base });
@@ -27,8 +29,10 @@ const published = (base: string) => {
     name: 'glob-published',
     load: async (ctx: Parameters<typeof inner.load>[0]) => {
       await inner.load(ctx);
-      if (SHOW_DRAFTS) return;
-      for (const [id, entry] of ctx.store.entries()) if ((entry.data as { draft?: boolean }).draft) ctx.store.delete(id);
+      for (const [id, entry] of ctx.store.entries()) {
+        const d = entry.data as { draft?: boolean; archived?: boolean };
+        if (d.archived || (d.draft && !SHOW_DRAFTS)) ctx.store.delete(id);
+      }
     },
   };
 };
@@ -42,6 +46,7 @@ const news = defineCollection({
     kind: z.enum(['announcement', 'recap', 'notice']).default('announcement'),
     status,
     draft,
+    archived,
     source_url: z.string().optional(),
   }),
 });
@@ -59,6 +64,7 @@ const stories = defineCollection({
     cover: z.string().optional(),   // 列表卡片的封面圖（站內路徑）；沒填就用類型色帶
     status,
     draft,
+    archived,
     source_url: z.string().optional(),
   }),
 });
@@ -87,6 +93,7 @@ const projects = defineCollection({
     poster: z.string().default(''),
     status,
     draft,
+    archived,
     source_url: z.string().optional(),
   }),
 });
@@ -100,6 +107,7 @@ const faq = defineCollection({
     order: z.number(),
     status,
     draft,
+    archived,
   }),
 });
 
@@ -114,6 +122,7 @@ const hub = defineCollection({
     video_url: z.string().default(''),
     status,
     draft,
+    archived,
   }),
 });
 
@@ -149,6 +158,7 @@ const hackathonFields = {
   partnerLogos: z.array(z.object({ image: z.string(), alt: z.string() })).default([]), // 單位 logo 圖，白字透明底，標題已燒在圖上
   status,
   draft,
+  archived,
 };
 
 // 青年圖靈++：YTP 校友的年度活動，每年上半年，檔名 = 年度（2026.md → /turing-plus/2026/）。2026 為第 1 場。
