@@ -1,27 +1,17 @@
 ---
+/** 組隊報名。lead 依 season.phase 切換（leadOpen／leadClosed）；資格與流程來自 src/content/pages/apply.md；報名表單與相關文件為 season.json 資料。 */
 import Base from '../../layouts/Base.astro';
 import Todo from '../../components/Todo.astro';
 import PageHead from '../../components/PageHead.astro';
 import season from '../../data/season.json';
+import { getPage } from '../../lib/pages';
 const open = season.phase === 'registration';
+const page = await getPage('apply');
 ---
-<Base title="報名" description="YTP 少年圖靈計畫報名：資格、組隊規則、報名表單。">
-  <PageHead crumb="參賽指南" title="組隊報名" lead={open ? `第 ${season.edition} 屆報名至 ${season.registration.close} 24:00 截止。` : `第 ${season.edition} 屆報名已於 ${season.registration.close} 截止。下一屆預計 ${season.year + 1} 年 3 月開放。`} />
+<Base title={page.nav ?? page.title} description={page.description}>
+  <PageHead crumb={page.crumb} title={page.title} lead={open ? page.leadOpen : page.leadClosed} />
   <div class="wrap prose">
-    <h2>資格</h2>
-    <ul>
-      <li><b>高中職五專組</b>：國內註冊之公私立高中、高職、五專在學學生（五專為專一至專三），含應屆畢業生。3 人一組。</li>
-      <li><b>國中組</b>：國內註冊之公私立國中在學學生，含國三應屆畢業生。2–3 人一組。</li>
-      <li>可跨校、跨年級組隊；每隊推選一位隊長作為聯絡窗口。休學中請來信附證明。</li>
-      <li>有校內外程式競賽經驗尤佳，但不是必要條件。</li>
-    </ul>
-    <h2>流程</h2>
-    <ol>
-      <li>報名期間由隊長線上填寫全隊基本資料（SurveyCake 表單）。</li>
-      <li>收到自動回覆信即完成報名；沒收到請來信 ytp@tw-ytp.org。</li>
-      <li>初賽前一週前可來信更改隊員；之後不接受異動。</li>
-      <li>初賽晉級後，依通知在期限內填寫正式報名資料與家長同意書（未滿 18 歲）。</li>
-    </ol>
+    <page.Content />
     <h2>報名表單</h2>
     {open ? (
       <div class="btn-row">

@@ -207,6 +207,26 @@ content:
       - { name: body, label: 內文, type: rich-text }
       - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
 
+  - name: pages
+    label: 網站頁面（關於、計畫介紹、報名、規則）
+    description: 固定頁面的文字。頁面不可新增或刪除（版面在程式裡）。正文可用 {{season.edition}}、{{season.year}}、{{season.nextYear}}、{{season.registration.close}}、{{site.email}} 這類佔位字串，會自動換成當屆數字。
+    type: collection
+    path: src/content/pages
+    operations: { create: false, delete: false, rename: false }
+    view:
+      primary: title
+      fields: [title, nav]
+    fields:
+      - { name: title, label: 頁面標題, type: string, required: true }
+      - { name: nav, label: 短名（分頁標題與麵包屑）, type: string }
+      - { name: description, label: SEO 描述（搜尋引擎顯示的一句話）, type: text }
+      - { name: lead, label: 副標（標題下一句）, type: text }
+      - { name: leadOpen, label: 副標：報名期間（只有報名頁用）, type: text }
+      - { name: leadClosed, label: 副標：非報名期間（只有報名頁用）, type: text }
+      - { name: crumb, label: 麵包屑, type: string, hidden: true }
+      - { name: banner, label: 頁首橫幅代號, type: string, hidden: true }
+      - { name: body, label: 內文, type: rich-text }
+
   # ───────── 賽季設定（每年改幾次） ─────────
   - name: season
     label: 當屆賽季狀態（首頁 Hero）

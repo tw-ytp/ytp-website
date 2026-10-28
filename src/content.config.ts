@@ -184,4 +184,20 @@ const cohorts = defineCollection({
   }),
 });
 
-export const collections = { news, stories, projects, faq, hub, turingPlus, stageHackathons, cohorts };
+// 網站固定頁面（關於、計畫介紹、報名、規則…）：一頁一檔，正文 Markdown 可在後台改；頁面不可新增或刪除（版面在 src/pages 對應的模板裡）。
+// 正文與 lead 可用 {{season.edition}} 等佔位字串（src/lib/placeholders.ts）。
+const pages = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
+  schema: z.object({
+    title: z.string(),
+    nav: z.string().optional(),            // 選單／麵包屑用的短名
+    description: z.string().optional(),    // SEO
+    lead: z.string().optional(),
+    leadOpen: z.string().optional(),       // 報名頁：報名期間的 lead
+    leadClosed: z.string().optional(),     // 報名頁：非報名期間的 lead
+    crumb: z.string().optional(),
+    banner: z.string().optional(),         // public/banners/{banner}-1800.webp
+  }),
+});
+
+export const collections = { pages, news, stories, projects, faq, hub, turingPlus, stageHackathons, cohorts };
