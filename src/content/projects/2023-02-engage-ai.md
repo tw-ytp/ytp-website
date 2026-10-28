@@ -17,7 +17,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1NpNNFNrnodQU2iCFZMEoib768cWOOCpb/view
-status: migrated
+status: revised
 source_url: Google Drive：YTP 8th 專題實作成果發表會-各組成員及摘要.pptx
 team: 「 」
 advisor: 蔡芸琤 教授

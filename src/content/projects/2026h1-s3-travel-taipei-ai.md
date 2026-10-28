@@ -19,7 +19,7 @@ overseasReps: []
 github: https://github.com/26ytph/Travel-Taipei-AI
 demo: ''
 poster: ''
-status: migrated
+status: revised
 source_url: https://github.com/26ytph
 ---
 

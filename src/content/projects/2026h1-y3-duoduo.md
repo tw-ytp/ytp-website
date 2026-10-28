@@ -19,7 +19,7 @@ overseasReps: []
 github: https://github.com/26ytph/DuoDuo
 demo: ''
 poster: ''
-status: migrated
+status: revised
 source_url: https://github.com/26ytph
 ---
 

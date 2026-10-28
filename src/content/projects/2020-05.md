@@ -17,7 +17,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: ''
-status: migrated
+status: revised
 source_url: https://www.tw-ytp.org/coding-heroes/
 ---
 

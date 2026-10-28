@@ -18,7 +18,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1JknZXf6S0paHz_ST2kFq7p89t5LvFsu1/view
-status: migrated
+status: revised
 source_url: Google Drive：第七屆 YTP 專題實作(12組)_專題題目_專題摘要.xlsx
 team: 油魚䲆鱻䲜
 advisor: 林澤 教授

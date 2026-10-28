@@ -4,7 +4,8 @@ import gallery from '../data/gallery.json';
 import { stagePath } from '../lib/cohort';
 interface Props { edition: number; year: number; mode?: 'full' | 'preview' }
 const { edition, year, mode = 'full' } = Astro.props;
-const photos: { f: string; w: number; h: number }[] = (gallery as any)[String(edition)] ?? [];
+const photos: { f: string; ext?: string; w: number; h: number }[] = (gallery as any)[String(edition)] ?? [];
+const full = (p: { f: string; ext?: string }) => `${base}${p.f}.${p.ext ?? 'jpg'}`;   // 原圖副檔名由 scripts/images.mjs 寫入 gallery.json
 const base = `/photos/${edition}/`;
 const label = (i: number) => `第 ${edition} 屆程式挑戰營 照片 ${i + 1}／${photos.length}`;
 const shown = mode === 'preview' ? photos.slice(0, 6) : photos;
@@ -23,7 +24,7 @@ const href = `${stagePath(edition, 'camp')}#photos`;
   : <section class="gallery" id="photos" data-gallery>
       <h2>{year} 程式挑戰營 花絮（{photos.length}）</h2>
       <ul class="gallery-grid">
-        {shown.map((p, i) => <li><a href={`${base}${p.f}.jpg`} data-i={i} data-w={p.w} data-h={p.h}><img src={`${base}${p.f}-t.jpg`} width={p.w > p.h ? 480 : Math.round(480 * p.w / p.h)} height={p.w > p.h ? Math.round(480 * p.h / p.w) : 480} alt={label(i)} loading="lazy" decoding="async" /></a></li>)}
+        {shown.map((p, i) => <li><a href={full(p)} data-i={i} data-w={p.w} data-h={p.h}><img src={`${base}${p.f}-t.jpg`} width={p.w > p.h ? 480 : Math.round(480 * p.w / p.h)} height={p.w > p.h ? Math.round(480 * p.h / p.w) : 480} alt={label(i)} loading="lazy" decoding="async" /></a></li>)}
       </ul>
       <dialog class="lightbox" aria-label={`${year} 程式挑戰營 花絮`}>
         <figure><img alt="" /><figcaption class="meta"></figcaption></figure>

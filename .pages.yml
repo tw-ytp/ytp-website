@@ -4,7 +4,7 @@
 # 後台存檔 = 直接 commit 到 GitHub，接著 Cloudflare Pages 自動建置上線，流程與用 git 完全相同。
 #
 # 上稿／下稿：每一筆都有「草稿」開關（draft）。勾起來 = 不上稿（正式站完全不建置這一筆）；取消 = 上稿。
-# 「搬遷註記」（status）是舊站搬遷時的紀錄，不影響上下稿，一般維護不必動。
+# 「內容狀態」（status）：正常／內容待補。待補只是在頁面加黃色提示，內容仍會上線；要不上線請用「草稿」。
 #
 # 欄位定義必須與 src/content.config.ts 的 zod schema 一致；改 schema 時請同步改這裡。
 
@@ -14,6 +14,8 @@ media:
     input: public/photos
     output: /photos
     categories: [image]
+    # 子資料夾規則（建置時 scripts/images.mjs 會自動縮圖）：
+    #   數字資料夾（1、2…12）= 各屆程式挑戰營相簿，上傳即出現在屆次頁；posts/ = 文章內文用圖；hackathon/ = 黑客松主視覺與 logo
   - name: files
     label: 下載檔案（簡章、PDF）
     input: public/downloads
@@ -53,7 +55,14 @@ content:
       - { name: edition, label: 相關屆次（選填，數字）, type: number }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
       - { name: source_url, label: 舊站原文網址, type: string, hidden: true }
 
   - name: stories
@@ -82,9 +91,17 @@ content:
           values:
             - { value: overseas, label: 海外參訪心得 }
             - { value: interview, label: 少年圖靈的故事（訪談） }
+      - { name: cover, label: 封面照（列表卡片用，選填；建議橫式）, type: image, options: { media: photos, path: public/photos/posts } }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
       - { name: source_url, label: 舊站原文網址, type: string, hidden: true }
 
   - name: faq
@@ -111,7 +128,14 @@ content:
       - { name: order, label: 順序（數字，小的在前）, type: number, required: true }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 答案, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
 
   - name: projects
     label: 歷屆成果（專題與黑客松作品）
@@ -166,7 +190,14 @@ content:
       - { name: poster, label: 海報／簡報網址, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 作品簡介, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
       - { name: source_url, label: 資料來源網址, type: string, hidden: true }
 
   - name: hub
@@ -203,7 +234,34 @@ content:
       - { name: video_url, label: 影片網址, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
+
+  - name: pages
+    label: 網站頁面（關於、計畫介紹、報名、規則、下載、備賽資源、青年圖靈++、English）
+    description: 固定頁面的文字。頁面不可新增或刪除（版面在程式裡）。正文可用 {{season.edition}}、{{season.year}}、{{season.nextYear}}、{{season.registration.close}}、{{site.email}} 這類佔位字串，會自動換成當屆數字。
+    type: collection
+    path: src/content/pages
+    operations: { create: false, delete: false, rename: false }
+    view:
+      primary: title
+      fields: [title, nav]
+    fields:
+      - { name: title, label: 頁面標題, type: string, required: true }
+      - { name: nav, label: 短名（分頁標題與麵包屑）, type: string }
+      - { name: description, label: SEO 描述（搜尋引擎顯示的一句話）, type: text }
+      - { name: lead, label: 副標（標題下一句）, type: text }
+      - { name: leadOpen, label: 副標：報名期間（只有報名頁用）, type: text }
+      - { name: leadClosed, label: 副標：非報名期間（只有報名頁用）, type: text }
+      - { name: crumb, label: 麵包屑, type: string, hidden: true }
+      - { name: banner, label: 頁首橫幅代號, type: string, hidden: true }
+      - { name: body, label: 內文, type: rich-text }
 
   # ───────── 賽季設定（每年改幾次） ─────────
   - name: season
@@ -257,13 +315,13 @@ content:
             type: object
             fields:
               - { name: label, label: 顯示文字, type: string }
-              - { name: url, label: 檔案路徑, type: string }
+              - { name: url, label: 檔案（PDF）, type: file, options: { media: files } }
           - name: faq
             label: FAQ 檔案
             type: object
             fields:
               - { name: label, label: 顯示文字, type: string }
-              - { name: url, label: 檔案路徑, type: string }
+              - { name: url, label: 檔案（PDF）, type: file, options: { media: files } }
       - { name: hackathonUrl, label: H2 黑客松頁面連結, type: string }
       - { name: video, label: 首頁影片（YouTube embed 網址）, type: string }
       - { name: plusUrl, label: 青年圖靈++ 連結, type: string }
@@ -286,6 +344,48 @@ content:
           - { name: value, label: 數字（顯示文字）, type: string, required: true }
           - { name: unit, label: 單位, type: string }
           - { name: label, label: 說明, type: string, required: true }
+
+  - name: exams
+    label: 歷年考古題
+    description: 每年挑戰營後加兩筆（高中組／國中組）。PDF 先到「下載檔案」上傳，再在「檔案」欄選取。
+    type: file
+    path: src/data/exams.json
+    format: json
+    fields:
+      - { name: _doc, label: 說明, type: text, hidden: true }
+      - name: oj
+        label: 線上練習平台
+        type: object
+        fields:
+          - { name: label, label: 名稱, type: string }
+          - { name: url, label: 網址, type: string }
+      - name: items
+        label: 考古題
+        type: object
+        list: true
+        fields:
+          - { name: year, label: 年份, type: number, required: true }
+          - name: group
+            label: 組別
+            type: select
+            required: true
+            options:
+              values:
+                - { value: senior, label: 高中職五專組 }
+                - { value: junior, label: 國中組 }
+          - name: stage
+            label: 階段
+            type: select
+            required: true
+            options:
+              values:
+                - { value: camp, label: 程式挑戰營 }
+                - { value: prelim, label: 線上初賽 }
+                - { value: revival, label: 線上復活賽 }
+                - { value: international, label: 國際賽（APAC） }
+          - { name: lang, label: 語言（如 CH+EN）, type: string }
+          - { name: note, label: 備註, type: string }
+          - { name: url, label: 檔案（PDF；留空顯示「待上架」）, type: file, options: { media: files } }
 
   - name: site
     label: 站台基本資料（聯絡信箱、社群連結）
@@ -321,7 +421,7 @@ content:
     description: 檔名 = 屆次（11.md）。欄位多且有巢狀結構，建議對照既有檔案修改。
     type: collection
     path: src/content/stage-hackathons
-    operations: { delete: false }
+    operations: { create: false, delete: false }   # 新場次由管理員用 git 建檔
     view: { primary: title, fields: [title, label, state, draft] }
     fields: &hackathonFields
       - { name: title, label: 標題, type: string, required: true }
@@ -381,7 +481,7 @@ content:
         label: 連結
         type: object
         fields:
-          - { name: brochure, label: 簡章, type: string }
+          - { name: brochure, label: 簡章（PDF 或網址）, type: string }
           - { name: briefingVideo, label: 說明會影片, type: string }
           - { name: registerYouth, label: 青年組報名, type: string }
           - { name: registerSenior, label: 高中組報名, type: string }
@@ -395,25 +495,32 @@ content:
         fields:
           - { name: label, label: 說明, type: string }
           - { name: value, label: 數值, type: string }
-      - { name: banner, label: 主視覺（站內路徑）, type: string }
-      - { name: logo, label: 活動 logo（白字透明底）, type: string }
+      - { name: banner, label: 主視覺, type: image, options: { media: photos, path: public/photos/hackathon } }
+      - { name: logo, label: 活動 logo（白字透明底）, type: image, options: { media: photos, path: public/photos/hackathon } }
       - name: partnerLogos
         label: 單位 logo
         type: object
         list: true
         fields:
-          - { name: image, label: 圖檔路徑, type: string }
+          - { name: image, label: 圖檔, type: image, options: { media: photos, path: public/photos/hackathon } }
           - { name: alt, label: 替代文字, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - name: status
+        label: 內容狀態
+        type: select
+        default: revised
+        options:
+          values:
+            - { value: revised, label: 正常 }
+            - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
 
   - name: turing-plus
     label: 進階：青年圖靈++ 黑客松
     description: 檔名 = 年度（2026.md）。
     type: collection
     path: src/content/turing-plus
-    operations: { delete: false }
+    operations: { create: false, delete: false }
     view: { primary: title, fields: [title, label, state, draft] }
     fields: *hackathonFields
 
@@ -422,7 +529,7 @@ content:
     description: 每屆一檔（01.md … 11.md），首頁年度時間軸、屆次頁都從這裡讀。日期未定請留空，不要推估。
     type: collection
     path: src/content/cohorts
-    operations: { delete: false }
+    operations: { create: false, delete: false }
     view: { primary: edition, fields: [edition, year, era], sort: [edition], default: { sort: edition, order: desc } }
     fields:
       - { name: edition, label: 屆次, type: number, required: true }
@@ -463,4 +570,4 @@ content:
               - { name: end, label: 結束（YYYY-MM-DD）, type: string, pattern: "^\\d{4}(-\\d{2}(-\\d{2})?)?$" }
               - { name: note, label: 說明, type: text }
       - { name: body, label: 內文, type: rich-text }
-      - { name: status, label: 搬遷註記, type: select, hidden: true, default: revised, options: { values: [migrated, excerpt, todo, revised] } }
+      - { name: status, label: 內容狀態, type: select, hidden: true, default: revised, options: { values: [revised, todo] } }

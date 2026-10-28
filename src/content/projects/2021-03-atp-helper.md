@@ -18,7 +18,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1uGYWed_akoKyh0D3Wp_UnBauJWMPioGv/view
-status: migrated
+status: revised
 source_url: Google Drive：第六屆 YTP 專題實作簡報資料夾
 team: IOasis
 ---

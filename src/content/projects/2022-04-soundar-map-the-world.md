@@ -18,7 +18,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1Ts12EjxgfoD9VEgGM200Vsk0ohDlSTTp/view
-status: migrated
+status: revised
 source_url: Google Drive：第七屆 YTP 專題實作(12組)_專題題目_專題摘要.xlsx
 team: 春日的印記 融雪夕陽蒔蘿草 燃燒著思念
 advisor: 鄭卜壬 教授

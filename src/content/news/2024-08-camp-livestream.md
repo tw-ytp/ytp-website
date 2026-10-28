@@ -3,7 +3,7 @@ title: 8/3 程式挑戰營現場直播
 date: 2024-08-01
 edition: 9
 kind: recap
-status: migrated
+status: revised
 source_url: https://www.tw-ytp.org/latest-news/
 ---
 

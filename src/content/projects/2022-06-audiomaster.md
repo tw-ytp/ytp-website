@@ -19,7 +19,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1WwBzIDtb-SkG2fjrQHH71w9fSEBy1uQr/view
-status: migrated
+status: revised
 source_url: Google Drive：第七屆 YTP 專題實作(12組)_專題題目_專題摘要.xlsx
 team: GrandLion
 advisor: 蔡芸琤 教授

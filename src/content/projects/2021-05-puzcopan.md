@@ -16,7 +16,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/13wtdLCDW-9lNNWU-Ph9X5foAnsnI-X2s/view
-status: migrated
+status: revised
 source_url: Google Drive：第六屆 YTP 專題實作簡報資料夾
 team: DropPhoneMaster
 ---

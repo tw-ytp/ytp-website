@@ -1,26 +1,17 @@
 ---
+/** 關於 YTP。正文來自 src/content/pages/about.md（後台「網站頁面」可改）；影響力數字、主辦協辦、聯絡為資料檔，固定接在正文之後。 */
 import Base from '../layouts/Base.astro';
 import Todo from '../components/Todo.astro';
 import Banner from '../components/Banner.astro';
 import site from '../data/site.json';
 import stats from '../data/stats.json';
+import { getPage } from '../lib/pages';
+const page = await getPage('about');
 ---
-<Base title="關於 YTP">
-  <Banner image="about" title="關於少年圖靈計畫" lead="以電腦科學之父艾倫・圖靈（Alan Turing）為名，2016 年起由精誠集團舉辦的軟體人才培育計畫。" />
+<Base title={page.nav ?? page.title} description={page.description}>
+  <Banner image={page.banner} title={page.title} lead={page.lead} />
   <div class="wrap prose">
-    <h2>願景</h2>
-    <p><strong>為台灣培育世界級軟體人才。</strong></p>
-    <h2>為什麼有 YTP</h2>
-    <p>資訊科技的進步改變了人類的日常生活，也創造許多新的機會；產生這些變化的關鍵在於軟體。現在是軟體定義一切的時代，軟體與人才是產業發展與國家進步最重要的力量。</p>
-    <p>YTP 是精誠集團獨立舉辦的 ESG 計畫，呼應聯合國永續發展目標第 4 項（優質教育）與第 10 項（減少不平等），有計畫地透過程式競賽、專題實作、黑客松與海外參訪，協助優秀的年輕人擁有國際化的視野與格局，鼓勵他們投入軟體產業。</p>
-    <h2>我們怎麼做</h2>
-    <p>透過程式競賽、大學教授指導專題、企業志工導師輔導，啟發國中、高中、高職、五專學生學習程式設計的興趣，同時開啟學生與產業的連結，引導學生運用軟體解決問題、改善現況。</p>
-    <ul>
-      <li>世界規格演算法競賽</li>
-      <li>大學教授與企業志工陪伴共學</li>
-      <li>跨界跨文化交流</li>
-      <li>運算平台、資訊社群、矽谷新創與國際軟體公司的資源連結</li>
-    </ul>
+    <page.Content />
     <h2>影響力</h2>
     <div class="grid c4">
       {stats.items.map(s => <div class="stat"><b>{s.value ?? '—'}</b><span>{s.label}</span>{s.value == null && <Todo>{s.todo}</Todo>}</div>)}

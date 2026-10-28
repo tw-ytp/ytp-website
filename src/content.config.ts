@@ -9,13 +9,15 @@ import { normalizeTags } from './lib/tags.ts';
 const MASK_GUARD = (process.env.YTP_MASK_GUARD ?? 'on') === 'on';
 const studentName = z.string().refine(s => !MASK_GUARD || isMasked(s), { message: '同學姓名未遮蔽（見 PLAN-v1 §2、npm run mask）' });
 
-const status = z.enum(['migrated', 'excerpt', 'todo', 'revised']).default('migrated');
+// 內容狀態：revised = 正常；todo = 內容待補（頁面顯示黃色提示，仍會上線）；excerpt = 只有摘錄（舊站搬遷時用，現無）。
+// migrated 是 2026-09 搬遷時的註記，2026-10-28 已整批改為 revised，保留在 enum 只為相容舊檔。上下稿一律用 draft。
+const status = z.enum(['migrated', 'excerpt', 'todo', 'revised']).default('revised');
 
 // 上稿／下稿機制（2026-10）：
 //   draft: true  = 草稿／下架，正式站「完全不建置」這一筆（沒有網址、不進列表、不進搜尋索引）。
 //   draft 未填或 false = 上稿。
 //   預覽：PUBLIC_SHOW_DRAFTS=true（Cloudflare Pages 的 Preview 環境變數）或 astro dev 會建出草稿並加上「草稿」標示。
-//   status 只是舊站搬遷的註記（migrated／excerpt／todo／revised），不影響上下稿。
+//   status（內容狀態）不影響上下稿。
 const SHOW_DRAFTS = process.env.PUBLIC_SHOW_DRAFTS === 'true' || process.env.NODE_ENV !== 'production';
 const draft = z.boolean().default(false);
 /** glob loader 的包裝：載入後把 draft 的項目從 store 移除，所有 getCollection() 呼叫就都看不到草稿，頁面不必各自過濾。 */
@@ -54,6 +56,7 @@ const stories = defineCollection({
     cohort: z.string().optional(),
     trip: z.string().optional(),
     kind: z.enum(['overseas', 'interview']).default('overseas'),  // overseas=海外參訪心得；interview=少年圖靈的故事訪談
+    cover: z.string().optional(),   // 列表卡片的封面圖（站內路徑）；沒填就用類型色帶
     status,
     draft,
     source_url: z.string().optional(),
@@ -184,4 +187,20 @@ const cohorts = defineCollection({
   }),
 });
 
-export const collections = { news, stories, projects, faq, hub, turingPlus, stageHackathons, cohorts };
+// 網站固定頁面（關於、計畫介紹、報名、規則…）：一頁一檔，正文 Markdown 可在後台改；頁面不可新增或刪除（版面在 src/pages 對應的模板裡）。
+// 正文與 lead 可用 {{season.edition}} 等佔位字串（src/lib/placeholders.ts）。
+const pages = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
+  schema: z.object({
+    title: z.string(),
+    nav: z.string().optional(),            // 選單／麵包屑用的短名
+    description: z.string().optional(),    // SEO
+    lead: z.string().optional(),
+    leadOpen: z.string().optional(),       // 報名頁：報名期間的 lead
+    leadClosed: z.string().optional(),     // 報名頁：非報名期間的 lead
+    crumb: z.string().optional(),
+    banner: z.string().optional(),         // public/banners/{banner}-1800.webp
+  }),
+});
+
+export const collections = { pages, news, stories, projects, faq, hub, turingPlus, stageHackathons, cohorts };

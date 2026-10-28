@@ -4,6 +4,8 @@ import TrackBadge from '../../components/TrackBadge.astro';
 import Banner from '../../components/Banner.astro';
 import { getCollection } from 'astro:content';
 import { fmtRange } from '../../lib/cohort';
+import { getPage } from '../../lib/pages';
+const page = await getPage('turing-plus');   // Banner 文案與「參加資格」來自 src/content/pages/turing-plus.md
 const all = (await getCollection('turingPlus')).sort((a, b) => a.id.localeCompare(b.id));
 const round = (id: string) => all.findIndex(h => h.id === id) + 1;
 const stateLabel = { archived: '已結束', upcoming: '即將舉行', planning: '籌備中' };
@@ -11,8 +13,8 @@ const winners = (await getCollection('projects', p => p.data.source === 'turing-
 const medal = ['', '金牌', '銀牌', '銅牌', '佳作'];
 const first = all[0]?.id, last = all.at(-1)?.id;
 ---
-<Base title="青年圖靈++" brand="YTP 少年圖靈計畫" description="青年圖靈++：YTP 少年圖靈計畫校友的年度活動，自 2026 年起每年上半年舉辦，第 1 場為 YTP2026黑客松。">
-  <Banner image="turing-plus" track="plus" title="青年圖靈++" lead="YTP 校友黑客松活動，每年上半年舉辦。">
+<Base title={page.title} brand="YTP 少年圖靈計畫" description={page.description}>
+  <Banner image={page.banner} track="plus" title={page.title} lead={page.lead}>
     <TrackBadge slot="crumb" track="plus" />
   </Banner>
   <section class="section">
@@ -32,13 +34,7 @@ const first = all[0]?.id, last = all.at(-1)?.id;
   </section>
   <section class="section alt">
     <div class="wrap prose">
-      <h2>參加資格</h2>
-      <ul>
-        <li>以隊伍報名，每隊 3–5 人，每人限報名 1 隊。</li>
-        <li>隊伍中至少一人曾參加歷屆 YTP 程式挑戰營（初賽或複賽）。</li>
-        <li>分青年組（大學以上在學或已就業）與高中組；各場次細節以該場簡章為準。</li>
-      </ul>
-      <p class="small muted">高中生另參加<a href="/program/">少年圖靈計畫</a>；第 11 屆起其第二階段的 YTP2026H2黑客松為邀請制，與青年圖靈++ 分開報名。</p>
+      <page.Content />
     </div>
   </section>
   {winners.length > 0 && <section class="section">

@@ -1,13 +1,16 @@
 ---
+/** 備賽資源首頁。考古題與講解兩欄為動態資料；練習平台、社群文字來自 src/content/pages/resources.md。 */
 import Base from '../../layouts/Base.astro';
 import Banner from '../../components/Banner.astro';
 import { getCollection } from 'astro:content';
 import exams from '../../data/exams.json';
+import { getPage } from '../../lib/pages';
 const hub = (await getCollection('hub')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id));
 const latest = exams.items.filter(e => e.url).slice(0, 4);
+const page = await getPage('resources');
 ---
-<Base title="備賽資源" description="YTP 歷年線上初賽與程式挑戰營考古題、題目講解、練習平台與準備指南。">
-  <Banner image="resources" title="備賽資源" lead="舊站的 Coding Hub 重新定位：這裡只放對備賽有用的東西。" />
+<Base title={page.title} description={page.description}>
+  <Banner image={page.banner} title={page.title} lead={page.lead} />
   <section class="section">
     <div class="wrap grid c2">
       <div>
@@ -29,10 +32,7 @@ const latest = exams.items.filter(e => e.url).slice(0, 4);
   </section>
   <section class="section alt">
     <div class="wrap prose">
-      <h2>練習平台</h2>
-      <p><a href={exams.oj.url} rel="noopener">{exams.oj.label}</a>：收錄歷年線上初賽題目，註冊帳號即可上傳程式並取得評測結果。</p>
-      <h2>社群</h2>
-      <p>比賽期間與賽後的題目討論在 <a href="https://discord.gg/KpqC6CEthk">Discord</a>；公告與花絮在 <a href="https://www.facebook.com/groups/1527998927505701/">FB 社團</a>。</p>
+      <page.Content />
     </div>
   </section>
 </Base>

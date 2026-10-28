@@ -17,7 +17,7 @@ overseasReps: []
 github: ''
 demo: ''
 poster: https://drive.google.com/file/d/1jHZcVy2gDqepat-FabVZ_wOj6uW5Owux/view
-status: migrated
+status: revised
 source_url: Google Drive：YTP 8th 專題實作成果發表會-各組成員及摘要.pptx
 team: 蒜蓉大軍
 advisor: 廖世偉 教授

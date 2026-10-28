@@ -17,7 +17,7 @@ overseasReps: []
 github: https://github.com/GrandTiger1729/Aimbot
 demo: ''
 poster: https://drive.google.com/file/d/1qzXiAOquRZ1Lej2poG5NAwwOeYEW3yAH/view
-status: migrated
+status: revised
 source_url: Google Drive：YTP 8th 專題實作成果發表會-各組成員及摘要.pptx
 team: 台中彭于晏金城武郭富城
 advisor: 鄭瑞光 教授
