@@ -91,7 +91,7 @@ content:
           values:
             - { value: overseas, label: 海外參訪心得 }
             - { value: interview, label: 少年圖靈的故事（訪談） }
-      - { name: cover, label: 封面照（列表卡片用，選填；建議橫式）, type: image, options: { media: photos, path: public/photos/posts } }
+      - { name: cover, label: 封面照（列表卡片用，選填；建議橫式）, type: image, options: { media: photos, path: public/photos/posts/stories } }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
       - name: status
@@ -315,13 +315,13 @@ content:
             type: object
             fields:
               - { name: label, label: 顯示文字, type: string }
-              - { name: url, label: 檔案（PDF）, type: file, options: { media: files } }
+              - { name: url, label: 檔案（PDF）, type: file, options: { media: files, path: public/downloads } }
           - name: faq
             label: FAQ 檔案
             type: object
             fields:
               - { name: label, label: 顯示文字, type: string }
-              - { name: url, label: 檔案（PDF）, type: file, options: { media: files } }
+              - { name: url, label: 檔案（PDF）, type: file, options: { media: files, path: public/downloads } }
       - { name: hackathonUrl, label: H2 黑客松頁面連結, type: string }
       - { name: video, label: 首頁影片（YouTube embed 網址）, type: string }
       - { name: plusUrl, label: 青年圖靈++ 連結, type: string }
@@ -347,45 +347,39 @@ content:
 
   - name: exams
     label: 歷年考古題
-    description: 每年挑戰營後加兩筆（高中組／國中組）。PDF 先到「下載檔案」上傳，再在「檔案」欄選取。
-    type: file
-    path: src/data/exams.json
-    format: json
+    description: 一題一檔。每年挑戰營後按右上「Add an entry」加兩筆（高中組／國中組）；PDF 在「檔案」欄位直接上傳或從「下載檔案」選。網站會自動依年份新→舊排序。
+    type: collection
+    path: src/content/exams
+    filename: "{fields.year}-{fields.group}-{fields.stage}.md"
+    view:
+      primary: year
+      fields: [year, group, stage, lang, url]
+      sort: [year, group]
+      default: { sort: year, order: desc }
     fields:
-      - { name: _doc, label: 說明, type: text, hidden: true }
-      - name: oj
-        label: 線上練習平台
-        type: object
-        fields:
-          - { name: label, label: 名稱, type: string }
-          - { name: url, label: 網址, type: string }
-      - name: items
-        label: 考古題
-        type: object
-        list: true
-        fields:
-          - { name: year, label: 年份, type: number, required: true }
-          - name: group
-            label: 組別
-            type: select
-            required: true
-            options:
-              values:
-                - { value: senior, label: 高中職五專組 }
-                - { value: junior, label: 國中組 }
-          - name: stage
-            label: 階段
-            type: select
-            required: true
-            options:
-              values:
-                - { value: camp, label: 程式挑戰營 }
-                - { value: prelim, label: 線上初賽 }
-                - { value: revival, label: 線上復活賽 }
-                - { value: international, label: 國際賽（APAC） }
-          - { name: lang, label: 語言（如 CH+EN）, type: string }
-          - { name: note, label: 備註, type: string }
-          - { name: url, label: 檔案（PDF；留空顯示「待上架」）, type: file, options: { media: files } }
+      - { name: year, label: 年份, type: number, required: true }
+      - name: group
+        label: 組別
+        type: select
+        required: true
+        options:
+          values:
+            - { value: senior, label: 高中職五專組 }
+            - { value: junior, label: 國中組 }
+      - name: stage
+        label: 階段
+        type: select
+        required: true
+        default: camp
+        options:
+          values:
+            - { value: camp, label: 程式挑戰營 }
+            - { value: prelim, label: 線上初賽 }
+            - { value: revival, label: 線上復活賽 }
+            - { value: international, label: 國際賽（APAC） }
+      - { name: lang, label: 語言（如 CH+EN）, type: string, default: "CH+EN" }
+      - { name: note, label: 備註, type: string }
+      - { name: url, label: 檔案（PDF；留空顯示「待上架」）, type: file, options: { media: files, path: public/downloads/exams } }
 
   - name: site
     label: 站台基本資料（聯絡信箱、社群連結）
@@ -400,6 +394,12 @@ content:
       - { name: email, label: 聯絡信箱, type: string }
       - { name: organizer, label: 主辦單位, type: string }
       - { name: coOrganizers, label: 協辦單位, type: string, list: true }
+      - name: oj
+        label: 線上練習平台（考古題頁）
+        type: object
+        fields:
+          - { name: label, label: 名稱, type: string }
+          - { name: url, label: 網址, type: string }
       - name: social
         label: 社群
         type: object

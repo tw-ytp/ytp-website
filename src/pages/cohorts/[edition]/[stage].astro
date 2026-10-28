@@ -6,7 +6,7 @@ import HackathonDetail from '../../../components/HackathonDetail.astro';
 import Gallery from '../../../components/Gallery.astro';
 import { getCollection } from 'astro:content';
 import { PHASE_LABEL, cohortPath, cohortEditions } from '../../../lib/cohort';
-import exams from '../../../data/exams.json';
+import { getExams } from '../../../lib/exams';
 export async function getStaticPaths() {
   const cohorts = await getCollection('cohorts');
   const hacks = await getCollection('stageHackathons');
@@ -26,7 +26,7 @@ const stories = s.type === 'overseas'
   ? (await getCollection('stories', x => x.data.kind === 'overseas' && cohortEditions(x.data.cohort).includes(n))).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id))
   : [];
 const news = s.type === 'camp' ? (await getCollection('news', x => x.data.edition === n)).sort((a, b) => a.id.localeCompare(b.id)) : [];
-const papers = s.type === 'camp' ? exams.items.filter(e => e.year === d.year && e.url) : [];
+const papers = s.type === 'camp' ? (await getExams()).filter(e => e.year === d.year && e.url) : [];
 const stageLabel = { prelim: '線上初賽', camp: '程式挑戰營', revival: '複賽', international: '國際賽' };
 const groupLabel = { senior: '高中職五專組', junior: '國中組' };
 const rankLabel = ['', '第一名', '第二名', '第三名'];

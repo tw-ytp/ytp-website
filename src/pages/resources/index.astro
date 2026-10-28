@@ -3,10 +3,10 @@
 import Base from '../../layouts/Base.astro';
 import Banner from '../../components/Banner.astro';
 import { getCollection } from 'astro:content';
-import exams from '../../data/exams.json';
+import { getExams } from '../../lib/exams';
 import { getPage } from '../../lib/pages';
 const hub = (await getCollection('hub')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.id.localeCompare(b.id));
-const latest = exams.items.filter(e => e.url).slice(0, 4);
+const latest = (await getExams()).filter(e => e.url).slice(0, 4);
 const page = await getPage('resources');
 ---
 <Base title={page.title} description={page.description}>

@@ -1,16 +1,14 @@
-/** 內容裡的動態佔位字串：{{season.edition}}、{{season.year}}、{{season.registration.close}}、{{site.email}}、{{stats.editions}}、{{exams.oj.url}}、
+/** 內容裡的動態佔位字串：{{season.edition}}、{{season.year}}、{{season.registration.close}}、{{site.email}}、{{stats.editions}}、{{site.oj.url}}、
  *  以及 {{season.nextYear}}（= year + 1）。Markdown 正文由 astro.config.mjs 的 remark 外掛替換，frontmatter 欄位由頁面模板呼叫 interpolate()。
  *  後台同仁只要照打 {{season.edition}} 就會顯示當屆數字，賽季換屆時不必逐頁改。 */
 import season from '../data/season.json';
 import site from '../data/site.json';
 import stats from '../data/stats.json';
-import exams from '../data/exams.json';
 
 const data: Record<string, unknown> = {
   season: { ...season, nextYear: season.year + 1 },
   site,
   stats,
-  exams,
 };
 
 const get = (path: string): unknown => path.split('.').reduce<unknown>((o, k) => (o && typeof o === 'object' ? (o as Record<string, unknown>)[k] : undefined), data);

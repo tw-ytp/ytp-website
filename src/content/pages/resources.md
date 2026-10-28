@@ -7,7 +7,7 @@ banner: resources
 
 ## 練習平台
 
-[{{exams.oj.label}}]({{exams.oj.url}})：收錄歷年線上初賽題目，註冊帳號即可上傳程式並取得評測結果。
+[{{site.oj.label}}]({{site.oj.url}})：收錄歷年線上初賽題目，註冊帳號即可上傳程式並取得評測結果。
 
 ## 社群
 
