@@ -14,6 +14,8 @@ media:
     input: public/photos
     output: /photos
     categories: [image]
+    # 子資料夾規則（建置時 scripts/images.mjs 會自動縮圖）：
+    #   數字資料夾（1、2…12）= 各屆程式挑戰營相簿，上傳即出現在屆次頁；posts/ = 文章內文用圖；hackathon/ = 黑客松主視覺與 logo
   - name: files
     label: 下載檔案（簡章、PDF）
     input: public/downloads
@@ -257,13 +259,13 @@ content:
             type: object
             fields:
               - { name: label, label: 顯示文字, type: string }
-              - { name: url, label: 檔案路徑, type: string }
+              - { name: url, label: 檔案（PDF）, type: file, options: { media: files } }
           - name: faq
             label: FAQ 檔案
             type: object
             fields:
               - { name: label, label: 顯示文字, type: string }
-              - { name: url, label: 檔案路徑, type: string }
+              - { name: url, label: 檔案（PDF）, type: file, options: { media: files } }
       - { name: hackathonUrl, label: H2 黑客松頁面連結, type: string }
       - { name: video, label: 首頁影片（YouTube embed 網址）, type: string }
       - { name: plusUrl, label: 青年圖靈++ 連結, type: string }
@@ -286,6 +288,48 @@ content:
           - { name: value, label: 數字（顯示文字）, type: string, required: true }
           - { name: unit, label: 單位, type: string }
           - { name: label, label: 說明, type: string, required: true }
+
+  - name: exams
+    label: 歷年考古題
+    description: 每年挑戰營後加兩筆（高中組／國中組）。PDF 先到「下載檔案」上傳，再在「檔案」欄選取。
+    type: file
+    path: src/data/exams.json
+    format: json
+    fields:
+      - { name: _doc, label: 說明, type: text, hidden: true }
+      - name: oj
+        label: 線上練習平台
+        type: object
+        fields:
+          - { name: label, label: 名稱, type: string }
+          - { name: url, label: 網址, type: string }
+      - name: items
+        label: 考古題
+        type: object
+        list: true
+        fields:
+          - { name: year, label: 年份, type: number, required: true }
+          - name: group
+            label: 組別
+            type: select
+            required: true
+            options:
+              values:
+                - { value: senior, label: 高中職五專組 }
+                - { value: junior, label: 國中組 }
+          - name: stage
+            label: 階段
+            type: select
+            required: true
+            options:
+              values:
+                - { value: camp, label: 程式挑戰營 }
+                - { value: prelim, label: 線上初賽 }
+                - { value: revival, label: 線上復活賽 }
+                - { value: international, label: 國際賽（APAC） }
+          - { name: lang, label: 語言（如 CH+EN）, type: string }
+          - { name: note, label: 備註, type: string }
+          - { name: url, label: 檔案（PDF；留空顯示「待上架」）, type: file, options: { media: files } }
 
   - name: site
     label: 站台基本資料（聯絡信箱、社群連結）
@@ -321,7 +365,7 @@ content:
     description: 檔名 = 屆次（11.md）。欄位多且有巢狀結構，建議對照既有檔案修改。
     type: collection
     path: src/content/stage-hackathons
-    operations: { delete: false }
+    operations: { create: false, delete: false }   # 新場次由管理員用 git 建檔
     view: { primary: title, fields: [title, label, state, draft] }
     fields: &hackathonFields
       - { name: title, label: 標題, type: string, required: true }
@@ -381,7 +425,7 @@ content:
         label: 連結
         type: object
         fields:
-          - { name: brochure, label: 簡章, type: string }
+          - { name: brochure, label: 簡章（PDF 或網址）, type: string }
           - { name: briefingVideo, label: 說明會影片, type: string }
           - { name: registerYouth, label: 青年組報名, type: string }
           - { name: registerSenior, label: 高中組報名, type: string }
@@ -395,14 +439,14 @@ content:
         fields:
           - { name: label, label: 說明, type: string }
           - { name: value, label: 數值, type: string }
-      - { name: banner, label: 主視覺（站內路徑）, type: string }
-      - { name: logo, label: 活動 logo（白字透明底）, type: string }
+      - { name: banner, label: 主視覺, type: image, options: { media: photos, path: public/photos/hackathon } }
+      - { name: logo, label: 活動 logo（白字透明底）, type: image, options: { media: photos, path: public/photos/hackathon } }
       - name: partnerLogos
         label: 單位 logo
         type: object
         list: true
         fields:
-          - { name: image, label: 圖檔路徑, type: string }
+          - { name: image, label: 圖檔, type: image, options: { media: photos, path: public/photos/hackathon } }
           - { name: alt, label: 替代文字, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
@@ -413,7 +457,7 @@ content:
     description: 檔名 = 年度（2026.md）。
     type: collection
     path: src/content/turing-plus
-    operations: { delete: false }
+    operations: { create: false, delete: false }
     view: { primary: title, fields: [title, label, state, draft] }
     fields: *hackathonFields
 
@@ -422,7 +466,7 @@ content:
     description: 每屆一檔（01.md … 11.md），首頁年度時間軸、屆次頁都從這裡讀。日期未定請留空，不要推估。
     type: collection
     path: src/content/cohorts
-    operations: { delete: false }
+    operations: { create: false, delete: false }
     view: { primary: edition, fields: [edition, year, era], sort: [edition], default: { sort: edition, order: desc } }
     fields:
       - { name: edition, label: 屆次, type: number, required: true }

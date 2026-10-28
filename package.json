@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/gen_sitemap.mjs",
+    "build": "node scripts/images.mjs && astro build && node scripts/gen_sitemap.mjs",
+    "images": "node scripts/images.mjs",
     "preview": "astro preview",
     "test:mask": "node --experimental-strip-types --no-warnings --test src/lib/mask.test.ts"
   },
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "astro-pagefind": "^2.0.1",
-    "pagefind": "^1.5.2"
+    "pagefind": "^1.5.2",
+    "sharp": "^0.35.5"
   }
 }
