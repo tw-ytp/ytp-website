@@ -244,7 +244,7 @@ content:
             - { value: todo, label: 內容待補（頁面會顯示黃色待補提示；仍會上線，要不上線請用草稿） }
 
   - name: pages
-    label: 網站頁面（關於、計畫介紹、報名、規則）
+    label: 網站頁面（關於、計畫介紹、報名、規則、下載、備賽資源、青年圖靈++、English）
     description: 固定頁面的文字。頁面不可新增或刪除（版面在程式裡）。正文可用 {{season.edition}}、{{season.year}}、{{season.nextYear}}、{{season.registration.close}}、{{site.email}} 這類佔位字串，會自動換成當屆數字。
     type: collection
     path: src/content/pages
