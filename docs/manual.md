@@ -40,7 +40,7 @@ updated: 2026-10-28
 
 ![後台首頁：左側選單、左上角分支 main、右上 Add an entry](/docs/manual/03-dashboard-news-list.png)
 
-列表頁右上角的 **Add an entry** 是新增；每一列右側的 **Edit** 是修改，「⋮」裡有 Delete（平常不用，下架請用草稿，見第 4 節）。
+列表頁右上角的 **Add an entry** 是新增；每一列右側的 **Edit** 是修改，「⋮」裡有 Delete（平常不用：還沒上線的請勾「草稿」，要下架的請勾「已下架」，見第 4 節；Delete 會永久刪除檔案）。
 
 ## 3. 新增一則最新消息（逐步）
 
