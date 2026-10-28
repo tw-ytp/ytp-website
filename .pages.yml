@@ -91,6 +91,7 @@ content:
           values:
             - { value: overseas, label: 海外參訪心得 }
             - { value: interview, label: 少年圖靈的故事（訪談） }
+      - { name: cover, label: 封面照（列表卡片用，選填；建議橫式）, type: image, options: { media: photos, path: public/photos/posts } }
       - { name: draft, label: 草稿（勾選 = 不上稿）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
       - name: status

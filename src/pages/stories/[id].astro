@@ -13,7 +13,7 @@ const { Content } = await render(s);
   <div class="wrap page-head">
     <p class="crumb"><a href="/stories/">學員故事</a>｜{s.data.trip}</p>
     <Draft draft={s.data.draft} />
-    <h1>{s.data.title}</h1>
+    <h1 transition:name={`story-title-${s.id}`}>{s.data.title}</h1>
     <p class="meta">{s.data.author}｜{s.data.school}｜{s.data.cohort}｜{s.data.date.toISOString().slice(0,10)}</p>
   </div>
   <article class="wrap prose">

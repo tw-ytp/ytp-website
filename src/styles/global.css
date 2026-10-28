@@ -315,3 +315,11 @@ p:not(.hero-title):not(.hero-status) a,.prose li a,.meta a{text-decoration:under
 /* 草稿標示（Draft.astro）：只在預覽環境出現 */
 .draft-banner{background:var(--todo-bg);color:var(--todo-ink);border-left:4px solid var(--signal);padding:10px 14px;border-radius:var(--r);font-size:var(--fs-2);margin:0 0 12px}
 .draft-tag{background:var(--signal);color:var(--on-signal);border-color:var(--signal);font-weight:700}
+
+/* 學員故事卡片（B4）：封面圖 3:2，沒封面用類型色帶 */
+.card-cover{display:block;width:calc(100% + 36px);margin:-18px -18px 4px;aspect-ratio:3/2;object-fit:cover;background:var(--line);border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.card-cover-empty{background:linear-gradient(135deg,var(--main-tint),var(--main-faint));aspect-ratio:3/1}
+.card-interview{--card-accent:var(--plus)}
+.card-excerpt{margin:0;font-size:var(--fs-2);color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cards-stories .card-link{border-top-width:1px}
+.cards-stories .card-link{border-top:4px solid var(--card-accent)}

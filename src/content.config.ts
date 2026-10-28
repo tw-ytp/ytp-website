@@ -56,6 +56,7 @@ const stories = defineCollection({
     cohort: z.string().optional(),
     trip: z.string().optional(),
     kind: z.enum(['overseas', 'interview']).default('overseas'),  // overseas=海外參訪心得；interview=少年圖靈的故事訪談
+    cover: z.string().optional(),   // 列表卡片的封面圖（站內路徑）；沒填就用類型色帶
     status,
     draft,
     source_url: z.string().optional(),
