@@ -1,0 +1,4 @@
+Contact: mailto:ytp@tw-ytp.org
+Expires: 2027-11-18T00:00:00.000Z
+Preferred-Languages: zh-TW, en
+Canonical: https://www.tw-ytp.org/.well-known/security.txt

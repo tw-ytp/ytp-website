@@ -240,7 +240,7 @@ content:
             - { value: junior, label: 國中組 }
             - { value: senior, label: 高中組 }
             - { value: both, label: 兩組皆適用 }
-      - { name: video_url, label: 影片網址, type: string }
+      - { name: video_url, label: 影片網址（僅支援 YouTube embed 網址；其他平台正式站不會顯示）, type: string }
       - { name: draft, label: 草稿（勾選 = 不上稿，預覽站看得到）, type: boolean, default: false }
       - { name: archived, label: 已下架（勾選 = 正式站與預覽站都不顯示，檔案保留）, type: boolean, default: false }
       - { name: body, label: 內文, type: rich-text }
@@ -333,7 +333,7 @@ content:
               - { name: label, label: 顯示文字, type: string }
               - { name: url, label: 檔案（PDF）, type: file, options: { media: files, path: public/downloads } }
       - { name: hackathonUrl, label: H2 黑客松頁面連結, type: string }
-      - { name: video, label: 首頁影片（YouTube embed 網址）, type: string }
+      - { name: video, label: 首頁影片（僅支援 YouTube embed 網址）, type: string }
       - { name: plusUrl, label: 青年圖靈++ 連結, type: string }
 
   - name: stats
@@ -492,7 +492,7 @@ content:
         type: object
         fields:
           - { name: brochure, label: 簡章（PDF 或網址）, type: string }
-          - { name: briefingVideo, label: 說明會影片, type: string }
+          - { name: briefingVideo, label: 說明會影片（僅支援 YouTube 網址）, type: string }
           - { name: registerYouth, label: 青年組報名, type: string }
           - { name: registerSenior, label: 高中組報名, type: string }
           - { name: github, label: GitHub, type: string }

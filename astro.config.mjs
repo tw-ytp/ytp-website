@@ -25,4 +25,7 @@ export default defineConfig({
   markdown: { remarkPlugins: [stripHtmlComments, remarkPlaceholders] },   // {{season.edition}} 等佔位字串替換
   // 全站搜尋索引（Pagefind）：build 結束時掃 dist/ 產生 dist/pagefind/；只索引 <main data-pagefind-body>（Base.astro）。
   integrations: [pagefind()],
+  // 資安：所有 <script> 一律輸出成 /_astro/*.js 外部檔，不內嵌進 HTML。
+  // public/_headers 的 Content-Security-Policy 是 script-src 'self'（不含 'unsafe-inline'），內嵌腳本會被瀏覽器擋掉。
+  vite: { build: { assetsInlineLimit: 0 } },
 });
