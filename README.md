@@ -76,6 +76,21 @@ npm run test:mask    # 同學姓名遮蔽規則的單元測試
 | `PUBLIC_SHOW_TODO=false` | 不輸出內部待補提示（正式與預覽部署都要設） |
 | `PUBLIC_NOINDEX=true` | 預覽網址：加上 noindex、robots.txt 禁止索引 |
 
+### 安全標頭（`public/_headers`）
+
+回應標頭由 `public/_headers` 設定（Cloudflare Pages 格式），對應 2026-11 外部弱點掃描的修補：HSTS、COOP、CORP、CSP、X-Frame-Options、Permissions-Policy，並移除 Pages 預設的 `Access-Control-Allow-Origin: *`。
+
+CSP 帶來的開發與上稿限制：
+
+- **腳本只能同源外部檔**（`script-src 'self'`）。`astro.config.mjs` 已設 `vite.build.assetsInlineLimit: 0`，讓 Astro 不把 `<script>` 內嵌進 HTML；不要拿掉。不能寫行內事件處理器（`onclick="…"`、`onsubmit="…"`），一律用 `addEventListener`。不要用 `<script is:inline>`。
+- **圖片只能同源**（`img-src 'self' data:`）。內文插圖走媒體庫，不貼外部圖片網址。
+- **內嵌影片只限 YouTube**（`frame-src`）。要加其他來源（第三方腳本、分析工具、地圖、其他影片平台）必須先改 `_headers` 的 CSP，否則瀏覽器會擋掉且不會有建置錯誤，只在瀏覽器 Console 看得到。
+- `style-src` 保留 `'unsafe-inline'`：View Transitions 的 `transition:name` 與行內 `style` 屬性需要。
+- `Cross-Origin-Resource-Policy: same-origin`：其他網站無法在瀏覽器中直接嵌入本站圖片與檔案。
+- 未設 `Cross-Origin-Embedder-Policy`（會擋 YouTube 內嵌）；TLS 密碼組合 Cloudflare Pages 不支援設定。兩者已列風險接受。
+
+出問題時的最小回復：把 `_headers` 裡的 `Content-Security-Policy` 改名為 `Content-Security-Policy-Report-Only`（只回報、不阻擋）。
+
 ## 內容在哪裡
 
 | 想改的東西 | 檔案 |

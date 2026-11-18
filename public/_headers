@@ -1,0 +1,20 @@
+# 回應標頭（Cloudflare Pages 的 _headers；建置時原樣複製到 dist/）。
+# 對應 2026-11 外部弱點掃描：COOP、CORP、CSP、HSTS；另補點擊劫持防護、Permissions-Policy，並移除 Pages 預設的 CORS *。
+# 改這個檔之前請先讀 README「安全標頭」一節：CSP 會限制可載入的腳本、圖片與內嵌影片來源。
+# 未設定的項目（已列風險接受）：Cross-Origin-Embedder-Policy（會擋 YouTube 內嵌）、TLS 密碼組合（Pages 不支援設定）。
+
+/*
+  Strict-Transport-Security: max-age=300
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; worker-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  ! Access-Control-Allow-Origin
+
+# pages.dev 別名（正式別名與各分支預覽）不給搜尋引擎收錄，避免與 www.tw-ytp.org 重複。
+https://ytp-website.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:branch.ytp-website.pages.dev/*
+  X-Robots-Tag: noindex

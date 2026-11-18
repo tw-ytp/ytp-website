@@ -8,7 +8,7 @@
  *  - 搜尋 log：預設關閉；階段二把 window.YTP_SEARCH_LOG 設為 true 並提供 /api/search-log 即可收集落空率。 */
 ---
 <dialog class="search-dialog" id="search-dialog" aria-label="站內搜尋">
-  <form class="search-form" role="search" method="dialog" onsubmit="return false">
+  <form class="search-form" role="search" method="dialog">
     <label class="search-field">
       <span class="sr-only">搜尋關鍵字</span>
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -126,6 +126,8 @@
     if (!d || d.dataset.ready) return;
     d.dataset.ready = '1';
     input().addEventListener('input', onInput);
+    // 按 Enter 不送出表單（method=dialog 送出會關閉視窗）。不用行內 onsubmit：CSP 不允許行內事件處理器（public/_headers）。
+    d.querySelector('form')!.addEventListener('submit', e => e.preventDefault());
     d.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); close(); } });   // type=search 的第一個 Esc 只會清空欄位，這裡直接關閉
     d.addEventListener('click', e => {
       const t = e.target as HTMLElement;
