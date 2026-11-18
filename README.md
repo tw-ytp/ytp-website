@@ -57,7 +57,7 @@ npm run test:mask    # 同學姓名遮蔽規則的單元測試
 ### 操作手冊（不對外）
 
 - 正本 `docs/manual.md`，截圖 `docs/manual/`；**不在 `public/`，網站不會顯示**。後台側欄最下方「操作手冊」就是這個檔，可直接改。
-- 匯出 PDF（邀請同仁時隨信附上）：`node scripts/manual-pdf.mjs` → `docs/manual.pdf`（需 `npx playwright install chromium` 一次）。手冊改完記得重新匯出並 commit。
+- 匯出 PDF（邀請同仁時隨信附上）：`npm run manual:pdf` → `docs/manual.pdf`（用這台電腦已安裝的 Chrome 或 Edge 列印，不必另外下載瀏覽器；兩者都沒有時執行一次 `npx playwright-core install chromium`）。手冊改完記得重新匯出並 commit。
 
 ### 全站搜尋（Pagefind）
 

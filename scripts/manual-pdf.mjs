@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 /** 把 docs/manual.md 匯出成 PDF（邀請同仁時隨信附上）。用法：node scripts/manual-pdf.mjs → docs/manual.pdf
- *  需要 marked 與 playwright（npx 會自動抓）；截圖從 docs/manual/ 內嵌。 */
+ *  也可以用 npm run manual:pdf。截圖從 docs/manual/ 內嵌。
+ *  用 playwright-core 驅動這台電腦已安裝的 Chrome 或 Edge 來印 PDF，不必另外下載瀏覽器。
+ *  兩者都沒有時：npx playwright-core install chromium 一次即可。 */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const src = readFileSync(resolve(root, 'docs/manual.md'), 'utf8');
 const [, fm, body] = src.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
@@ -24,7 +26,15 @@ const page = `<!doctype html><html lang="zh-Hant-TW"><meta charset="utf-8"><titl
 </style><body><h1>${title}</h1><p class="meta">最後更新 ${updated}</p>${html}</body></html>`;
 const out = resolve(root, 'docs/manual.html');
 writeFileSync(out, page);
-const browser = await chromium.launch();
+// 依序試：系統的 Chrome → 系統的 Edge → playwright 自己下載的 Chromium
+async function launch() {
+  for (const opt of [{ channel: 'chrome' }, { channel: 'msedge' }, {}]) {
+    try { return await chromium.launch(opt); } catch { /* 試下一個 */ }
+  }
+  console.error('找不到可用的瀏覽器。請安裝 Google Chrome，或執行一次：npx playwright-core install chromium');
+  process.exit(1);
+}
+const browser = await launch();
 const p = await browser.newPage();
 await p.goto(pathToFileURL(out).href, { waitUntil: 'networkidle' });
 await p.pdf({ path: resolve(root, 'docs/manual.pdf'), format: 'A4', printBackground: true, displayHeaderFooter: true,
