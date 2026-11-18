@@ -1,6 +1,6 @@
 ---
 title: YTP 官網內容後台操作手冊
-updated: 2026-10-28
+updated: 2026-11-18
 ---
 
 這份手冊給負責維護 www.tw-ytp.org 內容的同仁，不需要懂 GitHub，後台存檔就是上線。手冊只在後台左側「操作手冊」與邀請信附的 PDF 提供，不對外公開。管理員：author@tw-ytp.org。
