@@ -4,7 +4,7 @@
 # 未設定的項目（已列風險接受）：Cross-Origin-Embedder-Policy（會擋 YouTube 內嵌）、TLS 密碼組合（Pages 不支援設定）。
 
 /*
-  Strict-Transport-Security: max-age=300
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   X-Frame-Options: DENY
